@@ -1,0 +1,54 @@
+{
+    "name" : "makinacorpus/drupal-udashboard",
+    "description" : "Advanced dashboard API for Drupal",
+    "type" : "library",
+    "license" : "GPL-2",
+    "authors" : [
+        {
+            "name" : "Lonny Loquesol",
+            "email" : "lonny.loquesol@makina-corpus.com"
+        },
+        {
+            "name" : "Pierre Rineau",
+            "email" : "pierre.rineau@makina-corpus.com"
+        },
+        {
+            "name" : "Régis Leroy",
+            "email" : "regis.leroy@makina-corpus.com"
+        },
+        {
+            "name" : "Sébastien Corbin",
+            "email" : "sebastien.corbin@makina-corpus.com"
+        },
+        {
+            "name" : "Yannick Chabbert",
+            "email" : "yannick.chabbert@makina-corpus.com"
+        },
+        {
+            "name" : "Makina Corpus",
+            "homepage" : "http://makina-corpus.com"
+        }
+    ],
+    "minimum-stability" : "dev",
+    "prefer-stable" : true,
+    "require : {
+        "makinacorpus/drupal-sf-dic" : "^3.1",
+        "symfony/dependency-injection" : "^3.1",
+        "symfony/event-dispatcher" : "^3.1",
+        "symfony/http-foundation" : "^3.1",
+        "symfony/security" : "^3.1",
+    }
+    "require-dev" : {
+        "phpunit/phpunit" : "^5.1",
+    },
+    "autoload" : {
+        "psr-4" : {
+            "MakinaCorpus\\Drupal\\Dashboard\\" : "src/"
+        }
+    }
+    "autoload-dev" : {
+        "psr-4" : {
+            "MakinaCorpus\\Drupal\\Dashboard\\Tests\\" : "tests/"
+        }
+    }
+}
