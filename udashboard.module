@@ -98,44 +98,49 @@ function udashboard_menu() {
  * Implements hook_menu_alter().
  */
 function udashboard_menu_alter(&$items) {
+  $container = \Drupal::getContainer();
 
-  // Remove all the unnecessary pages using the 'access administration pages'
-  // or whatever else permission the users may have.
-  foreach ([
-    'admin/compact',
-    'admin/config',
-    'admin/config/content',
-    'admin/config/development',
-    'admin/config/media',
-    'admin/config/regional',
-    'admin/config/search',
-    'admin/config/services',
-    'admin/config/system',
-    'admin/config/user-interface',
-    'admin/config/workflow',
-    'admin/index',
-    'admin/reports/status/rebuild',
-    'admin/structure',
-  ] as $path) {
-    $items[$path]['access arguments'] = ['non existing permission'];
+  if ($container->getParameter('udashboard.breadcrumb_alter', false)) {
+    // Remove all the unnecessary pages using the 'access administration pages'
+    // or whatever else permission the users may have.
+    foreach ([
+      'admin/compact',
+      'admin/config',
+      'admin/config/content',
+      'admin/config/development',
+      'admin/config/media',
+      'admin/config/regional',
+      'admin/config/search',
+      'admin/config/services',
+      'admin/config/system',
+      'admin/config/user-interface',
+      'admin/config/workflow',
+      'admin/index',
+      'admin/reports/status/rebuild',
+      'admin/structure',
+    ] as $path) {
+      $items[$path]['access arguments'] = ['non existing permission'];
+    }
+
+    // Single override where we change the 'admin' home page.
+    $items['admin'] = [
+      'title'             => "Administration",
+      'page callback'     => 'udashboard_admin_redirect',
+      'access arguments'  => ['access administration pages'],
+      'type'              => MENU_CALLBACK,
+      // Required to avoid file_scan_directory() calls when rebuilding menu.
+      'module'            => 'udashboard',
+    ];
   }
-
-  // Single override where we change the 'admin' home page.
-  $items['admin'] = [
-    'title'             => "Administration",
-    'page callback'     => 'udashboard_admin_redirect',
-    'access arguments'  => ['access administration pages'],
-    'type'              => MENU_CALLBACK,
-    // Required to avoid file_scan_directory() calls when rebuilding menu.
-    'module'            => 'udashboard',
-  ];
 }
 
 /**
  * Implements hook_menu_breadcrumb_alter().
  */
 function udashboard_menu_breadcrumb_alter(&$active_trail, $item) {
-  if (path_is_admin(current_path())) {
+  $container = \Drupal::getContainer();
+
+  if ($container->getParameter('udashboard.breadcrumb_alter', false) && path_is_admin(current_path())) {
 
     // Remove the useless 'Home' link. Using array_splice() will reset the
     // numerical indexes within the array allowing the rest of the function
@@ -429,7 +434,7 @@ function udashboard_user_login(&$edit, $account) {
   if (drupal_is_cli()) {
     return; // Make drush happy.
   }
-  if (ucms_site_manager()->hasContext()) {
+  if (module_exists('ucms_site') && ucms_site_manager()->hasContext()) {
     return; // Let sites handle their own frontpage.
   }
   $GLOBALS['udashboard_login_redirect'] = true;
@@ -562,9 +567,11 @@ function udashboard_theme() {
  * Implements hook_page_build().
  */
 function udashboard_page_build(&$page) {
+  $container = \Drupal::getContainer();
 
-  if (user_access(UDASHBOARD_PERM_USE_CONTEXT_PANE)) {
-
+  if ($container->getParameter('udashboard.context_pane_enable') &&
+      user_access(UDASHBOARD_PERM_USE_CONTEXT_PANE)
+  ) {
     /** @var \MakinaCorpus\Drupal\Dashboard\Context\ContextPane $context */
     $context = \Drupal::service('udashboard.context');
     $context->init();
@@ -604,7 +611,9 @@ function udashboard_page_build(&$page) {
     ];
   }
 
-  if (user_is_logged_in() || path_is_admin(current_path())) {
+  if ($container->getParameter('udashboard.toolbar_enable') &&
+      (user_is_logged_in() || path_is_admin(current_path()))
+  ) {
     $links = menu_navigation_links('main-menu');
     foreach ($links as $i => $link) {
       if ($link['href'] === 'user/logout' && user_access('access administration pages')) {
