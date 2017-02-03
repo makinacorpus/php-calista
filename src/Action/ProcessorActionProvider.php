@@ -11,7 +11,7 @@ class ProcessorActionProvider implements ActionProviderInterface
     /**
      * @var AbstractActionProcessor[]
      */
-    private $processors;
+    private $processors = [];
 
     /**
      * Register processor instance

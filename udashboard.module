@@ -694,6 +694,8 @@ function template_preprocess_udashboard_actions(&$variables) {
           return $a['priority'] - $b['priority'];
         });
       }
+    } else {
+      $variables[$target] = [];
     }
   }
 
