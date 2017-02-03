@@ -1,7 +1,7 @@
 {
     "name" : "makinacorpus/drupal-udashboard",
     "description" : "Advanced dashboard API for Drupal",
-    "type" : "library",
+    "type" : "drupal-module",
     "license" : "GPL-2",
     "authors" : [
         {
