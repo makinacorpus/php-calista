@@ -626,6 +626,13 @@ function udashboard_page_build(&$page) {
       ],
     ];
   }
+
+  if ('seven' === $GLOBALS['theme']) {
+    $path = drupal_get_path('module', 'udashboard');
+    drupal_add_css($path . '/seven/glyphicons.css');
+    drupal_add_css($path . '/seven/seven-fixes.css');
+    drupal_add_js($path . '/seven/seven-fixes.js');
+  }
 }
 
 /**
