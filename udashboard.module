@@ -526,7 +526,7 @@ function udashboard_theme() {
         'icon'        => null,
         'show_title'  => false,
       ],
-      'template'  => 'udashboard-actions',
+      'template'  => 'views/udashboard-actions',
     ],
     'udashboard_context' => [
       'variables' => [
@@ -534,7 +534,7 @@ function udashboard_theme() {
         'items'       => [],
         'actions'     => [],
       ],
-      'template' => 'udashboard-context',
+      'template' => 'views/udashboard-context',
     ],
     'udashboard_page' => [
       'variables' => ['portlets' => []],
@@ -550,15 +550,11 @@ function udashboard_theme() {
         'sort_field'  => null,
         'sort_order'  => null,
       ],
-      'template' => 'udashboard-page-list',
+      'template' => 'views/udashboard-page-list',
     ],
     'udashboard_top' => [
       'variables' => ['links' => []],
       'template'  => 'udashboard-top',
-    ],
-    'description_list' => [
-      'variables' => ['items' => []],
-      'template'  => 'templates/description-list',
     ],
   ];
 }
