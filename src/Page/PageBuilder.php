@@ -254,12 +254,15 @@ final class PageBuilder
         } else {
             $state->setRange(24, $query[$state->getPageParameter()]);
         }
-        // Same with search parameter and value
-        $searchParameter = $datasource->getSearchFormParamName();
-        $state->setSearchParameter($searchParameter);
-        $state->setCurrentSearch($request->get($searchParameter));
-        if (!empty($query[$searchParameter])) {
-            $state->setCurrentSearch($query[$searchParameter]);
+
+        if ($datasource->hasSearchForm()) {
+            // Same with search parameter and value
+            $searchParameter = $datasource->getSearchFormParamName();
+            $state->setSearchParameter($searchParameter);
+            $state->setCurrentSearch($request->get($searchParameter));
+            if (!empty($query[$searchParameter])) {
+                $state->setCurrentSearch($query[$searchParameter]);
+            }
         }
 
         $items = $datasource->getItems($query, $state);
