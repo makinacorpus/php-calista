@@ -34,6 +34,16 @@ trait PageControllerTrait
     }
 
     /**
+     * Create page builder without a page type
+     *
+     * @return PageBuilder
+     */
+    protected function createPageBuilder()
+    {
+        return $this->getWidgetFactory()->createPageBuilder();
+    }
+
+    /**
      * Render page
      */
     protected function renderPage(Request $request, DatasourceInterface $datasource, $templateName = null, array $arguments = [])

@@ -108,6 +108,16 @@ final class AdminWidgetFactory
     }
 
     /**
+     * Create a page builder without page type
+     *
+     * @return PageBuilder
+     */
+    public function createPageBuilder()
+    {
+        return new PageBuilder($this->twig);
+    }
+
+    /**
      * Get the page builder
      *
      * @param string $name
