@@ -15,6 +15,9 @@ final class PageBuilder
     private $twig;
     private $debug = false;
     private $defaultDisplay = 'table';
+    private $displayFilters = true;
+    private $displaySearch = true;
+    private $displaySort = true;
     private $datasource;
     private $templates = [];
     private $baseQuery = [];
@@ -129,6 +132,90 @@ final class PageBuilder
     public function addBaseQueryParameter($name, $value)
     {
         $this->baseQuery[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Enable user filter display
+     *
+     * This has no effect if datasource don't provide filters
+     *
+     * @return $this
+     */
+    public function showFilters()
+    {
+        $this->displayFilters = true;
+
+        return $this;
+    }
+
+    /**
+     * Disable user filter display
+     *
+     * Filters will remain enabled, at least for base query set ones
+     *
+     * @return $this
+     */
+    public function hideFilters()
+    {
+        $this->displayFilters = false;
+
+        return $this;
+    }
+
+    /**
+     * Enable user search
+     *
+     * This has no effect if datasource don't support search
+     *
+     * @return $this
+     */
+    public function showSearch()
+    {
+        $this->displaySearch = true;
+
+        return $this;
+    }
+
+    /**
+     * Disable user search
+     *
+     * This will completely disable search
+     *
+     * @return $this
+     */
+    public function hideSearch()
+    {
+        $this->displaySearch = false;
+
+        return $this;
+    }
+
+    /**
+     * Enable user sorting
+     *
+     * This has no effect if datasource don't support sorting
+     *
+     * @return $this
+     */
+    public function showSort()
+    {
+        $this->displaySort = true;
+
+        return $this;
+    }
+
+    /**
+     * Disable user sorting
+     *
+     * This will completely disable sorting, only default will act
+     *
+     * @return $this
+     */
+    public function hideSort()
+    {
+        $this->displaySort = false;
 
         return $this;
     }
@@ -255,7 +342,7 @@ final class PageBuilder
             $state->setRange(24, $query[$state->getPageParameter()]);
         }
 
-        if ($datasource->hasSearchForm()) {
+        if ($this->displaySearch && $datasource->hasSearchForm()) {
             // Same with search parameter and value
             $searchParameter = $datasource->getSearchFormParamName();
             $state->setSearchParameter($searchParameter);
@@ -326,7 +413,7 @@ final class PageBuilder
             'result'    => $result,
             'state'     => $state,
             'route'     => $result->getRoute(),
-            'filters'   => $result->getFilters(),
+            'filters'   => $this->displayFilters ? $result->getFilters() : [],
             'display'   => $display,
             'displays'  => $displayLinks,
             'query'     => $result->getQuery(),
