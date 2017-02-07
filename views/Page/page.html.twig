@@ -24,39 +24,37 @@
     items: mixed[] the items (in most cases, nodes)
  #}
 
-{% block display_mode_link %}
-  {% spaceless %}
-    <a class="{% if link.isActive %}active {% endif %}btn btn-default" href="{{ path(link.route, link.routeParams) }}" title="{{ link.title }}" data-page-link>
-      <span class="glyphicon glyphicon-{{ link.icon }}" aria-hidden="true"></span>
-      <span class="sr-only">{{ link.title }}</span>
-    </a>
-  {% endspaceless %}
-{% endblock %}
+{%- block display_mode_link -%}
+  <a class="{% if link.isActive %}active {% endif %}btn btn-default" href="{{ path(link.route, link.routeParams) }}" title="{{ link.title }}" data-page-link>
+    <span class="glyphicon glyphicon-{{ link.icon }}" aria-hidden="true"></span>
+    <span class="sr-only">{{ link.title }}</span>
+  </a>
+{%- endblock -%}
 
-{% block display_mode %}
-  <div class="clearfix">
-    <div class="btn-group">
-      {% for link in displays %}
-        {{ block('display_mode_link') }}
-      {% endfor %}
+{%- block display_mode -%}
+  {% if 1 < displays|length %}
+    <div class="clearfix">
+      <div class="btn-group">
+        {% for link in displays %}
+          {{ block('display_mode_link') }}
+        {% endfor %}
+      </div>
     </div>
+  {% endif %}
+{%- endblock -%}
+
+{%- block filter_link -%}
+  <div class="checkbox">
+    <label>
+      <a{% if link.isActive %} class="active"{% endif %} href="{{ path(link.route, link.routeParams) }}" data-page-link="{{ field.field }}">
+        <input type="checkbox"{% if link.isActive %} checked="checked"{% endif %}>
+        {{ link.title }} {% if link.count %}<span class="badge">{{ link.count }}</span>{% endif %}
+      </a>
+    </label>
   </div>
-{% endblock %}
+{%- endblock -%}
 
-{% block filter_link %}
-  {% spaceless %}
-    <div class="checkbox">
-      <label>
-        <a{% if link.isActive %} class="active"{% endif %} href="{{ path(link.route, link.routeParams) }}" data-page-link="{{ field.field }}">
-          <input type="checkbox"{% if link.isActive %} checked="checked"{% endif %}>
-          {{ link.title }} {% if link.count %}<span class="badge">{{ link.count }}</span>{% endif %}
-        </a>
-      </label>
-    </div>
-  {% endspaceless %}
-{% endblock %}
-
-{% block filter %}
+{%- block filter -%}
   <strong>{{ filter.title }}</strong>
   <ul class="list-unstyled">
     {% for link in filter.links %}
@@ -65,7 +63,7 @@
       <li>{{ "No values"|trans }}</li>
     {% endfor %}
   </ul>
-{% endblock %}
+{%- endblock -%}
 
 {% block search_form %}
   <form method="get" class="udashboard-search-form" accept-charset="UTF-8">
@@ -127,7 +125,7 @@
   </div>
 {% endblock %}
 
-{% block item %}
+{%- block item -%}
   <tr>
     <td>{{ item.type }}</td>
     <td class="ui-sortable"><span class="pull-right"></span>
@@ -143,7 +141,7 @@
       {{ udashboard_actions(item) }}
     </td>
   </tr>
-{% endblock %}
+{%- endblock -%}
 
 {% block item_list %}
   <table class="table table-striped table-condensed">
@@ -210,11 +208,11 @@
 {% block page_layout %}
   <div class="container-fluid">
     <div class="row">
-      {% if displays or filters %}
+      {% if 1 < displays|length or filters %}
         <div class="col-md-2">
           {% if displays %}
             <div data-page-block="display_mode">
-              {% if 1 < displays.length %}{# @todo does not work, fixme #}
+              {% if 1 < displays|length %}
                 {{ block('display_mode') }}
               {% endif %}
             </div>

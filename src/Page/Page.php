@@ -122,7 +122,7 @@ class Page
      */
     private function renderBlock($name, $context)
     {
-        return \Drupal::service('twig')->loadTemplate('module:udashboard:views/Page/page.html.twig')->renderBlock($name, $context);
+        return \Drupal::service('twig')->load('module:udashboard:views/Page/page.html.twig')->renderBlock($name, $context);
     }
 
     public function render($query = [], $route = '/')
