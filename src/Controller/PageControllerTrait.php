@@ -24,43 +24,6 @@ trait PageControllerTrait
     }
 
     /**
-     * Create page
-     *
-     * @param DatasourceInterface $datasource
-     * @param DisplayInterface $display
-     * @param string[] $suggestions
-     *
-     * @return Page
-     *
-     * @deprecated
-     *   Please use the PageBuilder object and service instead
-     */
-    protected function createPage(DatasourceInterface $datasource, DisplayInterface $display = null, $suggestions = null)
-    {
-        trigger_error("Please use the PageBuilder instead.", E_USER_DEPRECATED);
-
-        return $this->getWidgetFactory()->getPage($datasource, $display, $suggestions);
-    }
-
-    /**
-     * Create page from a template
-     *
-     * @param DatasourceInterface $datasource
-     * @param string $templateName
-     *
-     * @return Page
-     *
-     * @deprecated
-     *   Please use the PageBuilder object and service instead
-     */
-    protected function createTemplatePage(DatasourceInterface $datasource, $templateName)
-    {
-        trigger_error("Please use the PageBuilder instead.", E_USER_DEPRECATED);
-
-        return $this->getWidgetFactory()->getPageWithTemplate($datasource, $templateName);
-    }
-
-    /**
      * Get the page builder
      *
      * @param string $name

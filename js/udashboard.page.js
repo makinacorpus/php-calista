@@ -83,8 +83,14 @@
           console.log("Warning, block " + index + " exists more than once in page");
         }
 
-        var partialDom = $(value);
-        attachBehaviors(page, partialDom);
+        // Sometime when we have an empty rendering, we end up with " " as
+        // almost empty string, this will disturb jQuery, and we cannot
+        // attach behaviors there.
+        value = value.trim();
+        if (value.length) {
+          var partialDom = $(value);
+          attachBehaviors(page, partialDom);
+        }
 
         block.html(partialDom);
       });

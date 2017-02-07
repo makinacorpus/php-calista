@@ -130,40 +130,6 @@ final class AdminWidgetFactory
     }
 
     /**
-     * Get page
-     *
-     * @param DatasourceInterface $datasource
-     * @param DisplayInterface $display
-     * @param string[] $suggestions
-     *
-     * @return Page
-     *
-     * @deprecated
-     *   Please use the PageBuilder object and service instead
-     */
-    public function getPage(DatasourceInterface $datasource, DisplayInterface $display = null, $suggestions = null)
-    {
-        trigger_error("Please use the PageBuilder instead.", E_USER_DEPRECATED);
-
-        return new Page($this->formBuilder, $this->actionRegistry, $datasource, $display, $suggestions);
-    }
-
-    /**
-     * Get page using a template
-     *
-     * @param DatasourceInterface $datasource
-     *
-     * @deprecated
-     *   Please use the PageBuilder object and service instead
-     */
-    public function getPageWithTemplate(DatasourceInterface $datasource, $templateName)
-    {
-        trigger_error("Please use the PageBuilder instead.", E_USER_DEPRECATED);
-
-        return new Page($this->formBuilder, $this->actionRegistry, $datasource, new TemplateDisplay($this->twig, $templateName));
-    }
-
-    /**
      * Get a new admin table
      *
      * @param string $name
