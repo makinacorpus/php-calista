@@ -12,7 +12,7 @@
             <?php echo check_plain($link['title']); ?>
           <?php endif; ?>
         </a>
-      <?php endforeach;each; ?>
+      <?php endforeach; ?>
     <?php endforeach; ?>
   <?php endif; ?>
   <?php if ($secondary): ?>

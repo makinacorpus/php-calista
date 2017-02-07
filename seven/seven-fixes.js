@@ -12,7 +12,7 @@
       var opened = [];
 
       // Emulates bootstrap dropdowns.
-      $(context).find('a.dropdown-toggle').once('dropdown-toggle', function () {
+      $(context).find('.dropdown-toggle').once('dropdown-toggle', function () {
         var link = $(this);
         var parent = link.parent();
         var child = parent.find('> .dropdown-menu');
