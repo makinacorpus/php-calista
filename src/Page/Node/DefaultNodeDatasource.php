@@ -137,7 +137,7 @@ class DefaultNodeDatasource extends AbstractDatasource
         }
 
         // Also add a few joins,  that might be useful later
-        $select->leftJoin('history', 'h', "h.nid = n.nid");
+        $select->leftJoin('history', 'h', "h.nid = n.nid AND h.uid = :history_uid", [':history_uid' => $query['user_id']]);
 
         $this->applyFilters($select, $query, $pageState);
 
@@ -158,9 +158,7 @@ class DefaultNodeDatasource extends AbstractDatasource
     {
         if (empty($query['user_id'])) {
             // @todo fixme
-            $userId = $GLOBALS['user']->uid;
-        } else {
-            $userId = $query['user_id'];
+            $query['user_id'] = $GLOBALS['user']->uid;
         }
 
         $select = $this->getDatabase()->select('node', 'n');
@@ -169,8 +167,6 @@ class DefaultNodeDatasource extends AbstractDatasource
         // JOIN with {history} is actually done in the parent implementation
         $nodeIdList = $select
             ->fields('n', ['nid'])
-            ->isNotNull('h.uid')
-            ->condition('h.uid', $userId)
             ->execute()
             ->fetchCol()
         ;
