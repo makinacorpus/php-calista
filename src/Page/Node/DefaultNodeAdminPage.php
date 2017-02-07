@@ -35,6 +35,26 @@ class DefaultNodeAdminPage implements PageTypeInterface
     }
 
     /**
+     * Get datasource
+     *
+     * @return DatasourceInterface
+     */
+    final protected function getDatasource()
+    {
+        return $this->datasource;
+    }
+
+    /**
+     * Get default query filters
+     *
+     * @return array
+     */
+    final protected function getQueryFilters()
+    {
+        return $this->queryFilter ? $this->queryFilter : [];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function userIsGranted(AccountInterface $account)
@@ -63,13 +83,11 @@ class DefaultNodeAdminPage implements PageTypeInterface
                 'table' => 'module:udashboard:views/Page/page.html.twig',
             ])
             ->setDefaultDisplay('table')
-            ->setDatasource($this->datasource)
+            ->setDatasource($this->getDatasource())
         ;
 
-        if ($this->queryFilter) {
-            foreach ($this->queryFilter as $name => $value) {
-                $builder->addBaseQueryParameter($name, $value);
-            }
+        foreach ($this->getQueryFilters() as $name => $value) {
+            $builder->addBaseQueryParameter($name, $value);
         }
     }
 }
