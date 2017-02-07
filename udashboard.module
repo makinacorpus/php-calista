@@ -5,8 +5,6 @@
 
 use MakinaCorpus\Drupal\Dashboard\Controller\ActionProcessorController;
 use MakinaCorpus\Drupal\Dashboard\Controller\AjaxPageController;
-use MakinaCorpus\Drupal\Dashboard\Page\DisplayInterface;
-use MakinaCorpus\Drupal\Dashboard\Page\Page;
 use MakinaCorpus\Drupal\Dashboard\TransactionHandler;
 
 /**
@@ -490,18 +488,6 @@ function udashboard_theme() {
       'variables' => ['portlets' => []],
       'template'  => 'udashboard-page',
     ],
-    'udashboard_page_list' => [
-      'variables' => [
-        'display'     => null,
-        'filters'     => [],
-        'items'       => [],
-        'search'      => null,
-        'pager'       => null,
-        'sort_field'  => null,
-        'sort_order'  => null,
-      ],
-      'template' => 'views/udashboard-page-list',
-    ],
     'udashboard_top' => [
       'variables' => ['links' => []],
       'template'  => 'udashboard-top',
@@ -581,16 +567,6 @@ function udashboard_page_build(&$page) {
   if ('seven' === $GLOBALS['theme']) {
     drupal_add_library('udashboard', 'udashboard_seven');
   }
-}
-
-/**
- * Implements template_preprocess_HOOK().
- */
-function template_preprocess_udashboard_page_list(&$variables) {
-  /** @var $display \MakinaCorpus\Drupal\Dashboard\Page\DisplayInterface */
-  $display = $variables['display'];
-  $variables['displayView']   = $display->render($variables['items']);
-  $variables['displayLinks']  = $display->renderLinks(current_path());
 }
 
 /**

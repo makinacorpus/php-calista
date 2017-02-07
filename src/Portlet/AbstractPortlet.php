@@ -24,7 +24,7 @@ abstract class AbstractPortlet implements PortletInterface
      *
      * @return AccountInterface
      */
-    protected function getAccount()
+    final protected function getAccount()
     {
         return $this->account;
     }
@@ -35,23 +35,5 @@ abstract class AbstractPortlet implements PortletInterface
     public function getActions()
     {
         return [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function renderActions()
-    {
-        $actions = $this->getActions();
-
-        if (!$actions) {
-            return '';
-        }
-
-        return [
-            '#theme'      => 'udashboard_actions',
-            '#show_title' => true,
-            '#actions'    => $actions,
-        ];
     }
 }

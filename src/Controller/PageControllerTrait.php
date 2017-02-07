@@ -4,10 +4,8 @@ namespace MakinaCorpus\Drupal\Dashboard\Controller;
 
 use MakinaCorpus\Drupal\Dashboard\AdminWidgetFactory;
 use MakinaCorpus\Drupal\Dashboard\Page\DatasourceInterface;
-use MakinaCorpus\Drupal\Dashboard\Page\DisplayInterface;
-use MakinaCorpus\Drupal\Dashboard\Page\Page;
-use MakinaCorpus\Drupal\Dashboard\Table\AdminTable;
 use MakinaCorpus\Drupal\Dashboard\Page\PageBuilder;
+use MakinaCorpus\Drupal\Dashboard\Table\AdminTable;
 
 use Symfony\Component\HttpFoundation\Request;
 

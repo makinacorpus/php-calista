@@ -5,12 +5,8 @@ namespace MakinaCorpus\Drupal\Dashboard;
 use Drupal\Core\Form\FormBuilderInterface;
 
 use MakinaCorpus\Drupal\Dashboard\Action\ActionRegistry;
-use MakinaCorpus\Drupal\Dashboard\Page\DatasourceInterface;
-use MakinaCorpus\Drupal\Dashboard\Page\DisplayInterface;
-use MakinaCorpus\Drupal\Dashboard\Page\Page;
 use MakinaCorpus\Drupal\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Drupal\Dashboard\Page\PageTypeInterface;
-use MakinaCorpus\Drupal\Dashboard\Page\TemplateDisplay;
 use MakinaCorpus\Drupal\Dashboard\Table\AdminTable;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
