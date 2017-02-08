@@ -308,14 +308,20 @@ final class PageBuilder
 
         $query = Filter::fixQuery($query); // @todo this is ugly
 
-        // Check that there is no value out of bounds of the filter query to
-        // ensure we do override the incomming request query parameters, and
-        // avoid security issues
-        if ($this->baseQuery) {
-            foreach ($this->baseQuery as $name => $value) {
-                if (isset($query[$name])) {
-                    // unset($query[$name]);
+        // Ensure that query values are in base query bounds
+        // @todo find a more generic and proper way to do this
+        foreach ($this->baseQuery as $name => $allowed) {
+            if (isset($query[$name])) {
+                $input = $query[$name];
+                // Normalize
+                if (!is_array($allowed)) {
+                    $allowed = [$allowed];
                 }
+                if (!is_array($input)) {
+                    $input = [$input];
+                }
+                // Restrict to fixed bounds
+                $query[$name] = array_intersect($input, $allowed);
             }
         }
 
@@ -352,7 +358,7 @@ final class PageBuilder
             }
         }
 
-        $items = $datasource->getItems($query, $state);
+        $items = $datasource->getItems(array_merge($query, $this->baseQuery), $state);
 
         $filters = $datasource->getFilters($query);
         if ($filters) {

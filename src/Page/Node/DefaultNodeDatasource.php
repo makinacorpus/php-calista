@@ -64,7 +64,6 @@ class DefaultNodeDatasource extends AbstractDatasource
             'n.status'      => $this->t("status"),
             'n.uid'         => $this->t("owner"),
             'n.title.title' => $this->t("title"),
-            'n.is_flagged'  => $this->t("flag"),
         ];
     }
 

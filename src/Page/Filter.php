@@ -132,7 +132,11 @@ class Filter implements \Countable
     private function getParametersForLink($query, $value, $remove = false)
     {
         if (isset($query[$this->queryParameter])) {
-            $actual = explode(self::URL_VALUE_SEP, $query[$this->queryParameter]);
+            if (is_array($query[$this->queryParameter])) {
+                $actual = $query[$this->queryParameter];
+            } else {
+                $actual = explode(self::URL_VALUE_SEP, $query[$this->queryParameter]);
+            }
         } else {
             $actual = [];
         }
