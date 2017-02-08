@@ -441,6 +441,11 @@ function udashboard_user_login(&$edit, $account) {
   if (drupal_is_cli()) {
     return; // Make drush happy.
   }
+  // This infamous redirect is useful only when the module is asked
+  // to alter the dashboard.
+  if (!\Drupal::getContainer()->getParameter('udashboard.breadcrumb_alter', false)) {
+    return;
+  }
   if (module_exists('ucms_site') && ucms_site_manager()->hasContext()) {
     return; // Let sites handle their own frontpage.
   }
