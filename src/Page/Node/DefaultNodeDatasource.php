@@ -167,6 +167,7 @@ class DefaultNodeDatasource extends AbstractDatasource
         // JOIN with {history} is actually done in the parent implementation
         $nodeIdList = $select
             ->fields('n', ['nid'])
+            ->groupBy('n.nid')
             ->execute()
             ->fetchCol()
         ;
