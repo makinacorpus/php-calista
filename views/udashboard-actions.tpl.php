@@ -17,7 +17,7 @@
   <?php endif; ?>
   <?php if ($secondary): ?>
     <div class="btn-group" role="group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" name="actions">
+      <a type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" name="actions">
         <?php if (!$primary): ?>
           <?php if ($icon): ?>
             <span class="glyphicon glyphicon-<?php echo $icon; ?>" aria-hidden="true"></span>
@@ -33,7 +33,7 @@
           <span<?php if ($primary): ?> class="sr-only"<?php endif; ?>><?php echo t("More actions"); ?></span>
         <?php endif; ?>
         <span class="caret"></span>
-      </button>
+      </a>
       <ul class="dropdown-menu dropdown-menu-right">
         <?php $sep = false; ?>
         <?php foreach ($secondary as $group): ?>

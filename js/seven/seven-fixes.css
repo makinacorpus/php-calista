@@ -17,6 +17,14 @@
 
 /******************************************************************************
  *
+ * Fixes layout
+ *
+ ******************************************************************************/
+
+/* todo: filters must float */
+
+/******************************************************************************
+ *
  * Buttons
  *
  ******************************************************************************/
@@ -149,14 +157,12 @@ table .dropdown-menu > li > a {
   margin: 0;
 }
 .btn-group .btn:first-child {
-  -moz-border-radius: 20px 0 0 20px;
-  -webkit-border-radius: 20px 0 0 20px;
-  border-radius: 20px 0 0 20px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
 }
-.btn-group .btn:last-child {
-  -moz-border-radius: 0 20px 20px 0;
-  -webkit-border-radius: 0 20px 20px 0;
-  border-radius: 0 20px 20px 0;
+.btn-group > .btn:last-child, .btn-group > .btn-group > .btn:last-of-type {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 .btn-group .btn-group > .btn {
   -moz-border-radius: 0;

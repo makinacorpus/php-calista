@@ -336,6 +336,10 @@ final class PageBuilder
             if ($sortDefault = $datasource->getDefaultSort()) {
                 $sort->setDefault(...$sortDefault);
             }
+            // Enfore sorts not being displayed
+            if (!$this->displaySort) {
+                $sort->setFields([$sortDefault[0] => 'default']);
+            }
         }
 
         // Build the page state gracefully, this uglyfies the code but it does
