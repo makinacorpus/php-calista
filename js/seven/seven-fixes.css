@@ -25,7 +25,22 @@ ul.list-unstyled {
  *
  ******************************************************************************/
 
-/* todo: filters must float */
+.udashboard-page:after {
+  /* Apply clearfix */
+  clear: both;
+}
+
+.udashboard-page .col-md-2 {
+  /* Left */
+  width: 220px;
+  padding: 20px 15px 0;
+  float: left;
+}
+
+.udashboard-page .col-md-10 {
+  /* Right */
+  margin-left: 250px;
+}
 
 /******************************************************************************
  *
