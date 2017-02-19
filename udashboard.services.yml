@@ -34,6 +34,12 @@ services:
     arguments: ['@udashboard.action_provider_registry']
     tags: [{name: twig.extension}]
 
+  udashboard.empty_page_builder:
+    public: false
+    shared: false
+    class: MakinaCorpus\Drupal\Dashboard\Page\PageBuilder
+    factory: ['@udashboard.admin_widget_factory', createPageBuilder]
+
   # Default node datasource, this is registered as an example only, copy/paste
   # and adapt this to declare your datasources.
   udashboard.datasource.node_default:

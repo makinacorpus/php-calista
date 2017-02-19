@@ -3,7 +3,6 @@
 namespace MakinaCorpus\Drupal\Dashboard\Portlet;
 
 use Drupal\Core\Session\AccountInterface;
-
 use MakinaCorpus\Drupal\Dashboard\Action\Action;
 
 /**
