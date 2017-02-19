@@ -27,9 +27,9 @@ class PortletRegisterPass implements CompilerPassInterface
             $class = $container->getParameterBag()->resolveValue($portletDefinition->getClass());
             if (is_subclass_of($class, AbstractPortlet::class)) {
                 $portletDefinition->addMethodCall('setPageBuilder', [new Reference('udashboard.empty_page_builder')]);
-                $portletDefinition->addMethodCall('setAccount', [new Reference('current_user')]);
             }
 
+            $portletDefinition->addMethodCall('setAccount', [new Reference('current_user')]);
             $definition->addMethodCall('addPortlet', [new Reference($id), $id]);
         }
     }
