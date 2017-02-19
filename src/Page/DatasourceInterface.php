@@ -85,8 +85,6 @@ interface DatasourceInterface
     /**
      * Return the GET parameter name for the search form
      *
-     * If null is returned, SearchForm::DEFAULT_PARAM_NAME will be used
-     *
      * @return string
      */
     public function getSearchFormParamName();

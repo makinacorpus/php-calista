@@ -50,5 +50,6 @@ abstract class AbstractDatasource implements DatasourceInterface
      */
     public function getSearchFormParamName()
     {
+        return 's';
     }
 }

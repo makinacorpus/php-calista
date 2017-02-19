@@ -22,7 +22,7 @@
         </div>
         {% if portlet.actions %}
           <div class="panel-footer text-right">
-            {{ portlet.renderActions }}
+            {{ udashboard_actions_raw(portlet.actions) }}
           </div>
         {% endif %}
       </div>
