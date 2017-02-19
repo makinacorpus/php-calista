@@ -481,6 +481,13 @@ function udashboard_theme() {
       ],
       'template'  => 'views/udashboard-actions',
     ],
+    'udashboard_action_single' => [
+      'variables' => [
+        'action'      => null,
+        'show_title'  => false,
+      ],
+      'template'  => 'views/udashboard-action-single',
+    ],
     'udashboard_context' => [
       'variables' => [
         'tabs'        => [],
@@ -638,6 +645,37 @@ function template_preprocess_udashboard_actions(&$variables) {
   if ($variables['mode']) {
     $variables['mode'] === 'icon';
   }
+}
+
+/**
+ * Render a single item action.
+ *
+ * @param array $variables
+ */
+function template_preprocess_udashboard_action_single(&$variables) {
+  // Clean title that may be === 0
+  if (!isset($variables['show_title'])) {
+    $variables['show_title'] = empty($variables['icon']);
+  }
+
+  /** @var $action \MakinaCorpus\Drupal\Dashboard\Action\Action */
+  $action = $variables['action'];
+
+  $item = [];
+  $item['options'] = $action->getLinkOptions();
+  $item['options'] += ['attributes' => []];
+  if (isset($item['options']['attributes']['class'])) {
+    $item['options']['attributes']['class'] = implode(' ', $item['options']['attributes']['class']);
+  } else {
+    $item['options']['attributes']['class'] = '';
+  }
+  $item['options']['attributes']['class'] .= ' btn btn-default';
+  $item['title']    = $action->getTitle();
+  $item['href']     = $action->getURI();
+  $item['priority'] = $action->getPriority();
+  $item['icon']     = $action->getIcon();
+
+  $variables['link'] = $item;
 }
 
 /**

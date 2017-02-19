@@ -30,6 +30,7 @@ class ActionExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFunction('udashboard_primary', [$this, 'renderPrimaryActions'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('udashboard_button', [$this, 'renderSingleAction'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('udashboard_actions', [$this, 'renderActions'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('udashboard_actions_raw', [$this, 'renderActionsRaw'], ['is_safe' => ['html']]),
         ];
@@ -57,6 +58,24 @@ class ActionExtension extends \Twig_Extension
         }
 
         return $value;
+    }
+
+    /**
+     * Render a singe action
+     *
+     * @param array $options
+     *   Options that will be given to Action::create()
+     *
+     * @return string
+     */
+    public function renderSingleAction(array $options)
+    {
+        $output = [
+            '#theme'  => 'udashboard_action_single',
+            '#action' => Action::create($options),
+        ];
+
+        return drupal_render($output);
     }
 
     /**
