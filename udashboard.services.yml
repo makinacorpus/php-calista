@@ -1,8 +1,3 @@
-parameters:
-  udashboard.breadcrumb_alter: false
-  udashboard.context_pane_enable: false
-  udashboard.toolbar_enable: false
-
 services:
 
   udashboard.context:

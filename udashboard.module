@@ -93,9 +93,7 @@ function udashboard_menu() {
  * Implements hook_menu_alter().
  */
 function udashboard_menu_alter(&$items) {
-  $container = \Drupal::getContainer();
-
-  if ($container->getParameter('udashboard.breadcrumb_alter', false)) {
+  if (variable_get('udashboard.breadcrumb_alter', false)) {
     // Remove all the unnecessary pages using the 'access administration pages'
     // or whatever else permission the users may have.
     foreach ([
@@ -133,9 +131,7 @@ function udashboard_menu_alter(&$items) {
  * Implements hook_menu_breadcrumb_alter().
  */
 function udashboard_menu_breadcrumb_alter(&$active_trail, $item) {
-  $container = \Drupal::getContainer();
-
-  if ($container->getParameter('udashboard.breadcrumb_alter', false) && path_is_admin(current_path())) {
+  if (variable_get('udashboard.breadcrumb_alter', false) && path_is_admin(current_path())) {
 
     // Remove the useless 'Home' link. Using array_splice() will reset the
     // numerical indexes within the array allowing the rest of the function
@@ -443,7 +439,7 @@ function udashboard_user_login(&$edit, $account) {
   }
   // This infamous redirect is useful only when the module is asked
   // to alter the dashboard.
-  if (!\Drupal::getContainer()->getParameter('udashboard.breadcrumb_alter', false)) {
+  if (!variable_get('udashboard.breadcrumb_alter', false)) {
     return;
   }
   if (module_exists('ucms_site') && ucms_site_manager()->hasContext()) {
@@ -513,7 +509,7 @@ function udashboard_theme() {
 function udashboard_page_build(&$page) {
   $container = \Drupal::getContainer();
 
-  if ($container->getParameter('udashboard.context_pane_enable') &&
+  if (variable_get('udashboard.context_pane_enable') &&
       user_access(UDASHBOARD_PERM_USE_CONTEXT_PANE)
   ) {
     /** @var \MakinaCorpus\Drupal\Dashboard\Context\ContextPane $context */
@@ -555,7 +551,7 @@ function udashboard_page_build(&$page) {
     ];
   }
 
-  if ($container->getParameter('udashboard.toolbar_enable') &&
+  if (variable_get('udashboard.toolbar_enable') &&
       (user_is_logged_in() || path_is_admin(current_path()))
   ) {
     $links = menu_navigation_links('main-menu');
