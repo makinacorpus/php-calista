@@ -43,7 +43,7 @@ abstract class AbstractPortlet implements PortletInterface
     final public function setPageBuilder(PageBuilder $pageBuilder)
     {
         $this->pageBuilder = $pageBuilder;
-        $this->pageBuilder->hideFilters()->hideSearch()->hideSort();
+        $this->pageBuilder->hideFilters()->hideSearch()->hideSort()->hidePager();
     }
 
     /**

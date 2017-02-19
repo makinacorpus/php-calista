@@ -16,6 +16,7 @@ final class PageBuilder
     private $debug = false;
     private $defaultDisplay = 'table';
     private $displayFilters = true;
+    private $displayPager = true;
     private $displaySearch = true;
     private $displaySort = true;
     private $datasource;
@@ -160,6 +161,30 @@ final class PageBuilder
     public function hideFilters()
     {
         $this->displayFilters = false;
+
+        return $this;
+    }
+
+    /**
+     * Enable pagination
+     *
+     * @return $this
+     */
+    public function showPager()
+    {
+        $this->displayPager = true;
+
+        return $this;
+    }
+
+    /**
+     * Disable pagination
+     *
+     * @return $this
+     */
+    public function hidePager()
+    {
+        $this->displayPager = false;
 
         return $this;
     }
@@ -346,7 +371,7 @@ final class PageBuilder
         // help to reduce code within the datasources
         $state->setSortField($sort->getCurrentField($query));
         $state->setSortOrder($sort->getCurrentOrder($query));
-        if (empty($query[$state->getPageParameter()])) {
+        if (!$this->displayPager || empty($query[$state->getPageParameter()])) {
             $state->setRange(24);
         } else {
             $state->setRange(24, $query[$state->getPageParameter()]);
@@ -378,6 +403,11 @@ final class PageBuilder
 
         // Set current display
         $state->setCurrentDisplay($request->get('display'));
+
+        // Disable virtually the pager
+        if (!$this->displayPager) {
+            $state->setTotalItemCount(null);
+        }
 
         return new PageResult($route, $state, $items, $query, $filters, $sort);
     }
