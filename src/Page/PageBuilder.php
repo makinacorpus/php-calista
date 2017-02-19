@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final class PageBuilder
 {
+    const DEFAULT_LIMIT = 24;
+
     private $id;
     private $twig;
     private $debug = false;
@@ -372,9 +374,9 @@ final class PageBuilder
         $state->setSortField($sort->getCurrentField($query));
         $state->setSortOrder($sort->getCurrentOrder($query));
         if (!$this->displayPager || empty($query[$state->getPageParameter()])) {
-            $state->setRange(24);
+            $state->setRange(self::DEFAULT_LIMIT);
         } else {
-            $state->setRange(24, $query[$state->getPageParameter()]);
+            $state->setRange(self::DEFAULT_LIMIT, $query[$state->getPageParameter()]);
         }
 
         if ($this->displaySearch && $datasource->hasSearchForm()) {
