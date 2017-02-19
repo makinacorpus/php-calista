@@ -23,10 +23,11 @@ final class ActionRegistry
      * Get actions for item
      *
      * @param mixed $item
+     * @param bool $primaryOnly
      *
      * @return Action[]
      */
-    public function getActions($item)
+    public function getActions($item, $primaryOnly = false)
     {
         $ret = [];
 
@@ -34,6 +35,12 @@ final class ActionRegistry
             if ($provider->supports($item)) {
                 $ret = array_merge($ret, $provider->getActions($item));
             }
+        }
+
+        if ($primaryOnly) {
+            $ret = array_filter($ret, function (Action $action) {
+                return $action->isPrimary();
+            });
         }
 
         usort($ret, function (Action $a, Action $b) {
