@@ -3,9 +3,7 @@
 namespace MakinaCorpus\Drupal\Dashboard\Controller;
 
 use MakinaCorpus\Drupal\Sf\Controller;
-use MakinaCorpus\Drupal\Contrib\Page\NodeAdminPageInterface;
 use MakinaCorpus\Drupal\Dashboard\Page\PageBuilder;
-
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
