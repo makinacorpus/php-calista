@@ -23,23 +23,33 @@ final class ActionRegistry
      * Get actions for item
      *
      * @param mixed $item
+     *   Item to get actions for
      * @param bool $primaryOnly
+     *   If set to true, only primary actions are returned
+     * @param string[] $groups
+     *   If not empty, only given action groups are returned
      *
      * @return Action[]
      */
-    public function getActions($item, $primaryOnly = false)
+    public function getActions($item, $primaryOnly = false, array $groups = [])
     {
         $ret = [];
 
         foreach ($this->providers as $provider) {
             if ($provider->supports($item)) {
-                $ret = array_merge($ret, $provider->getActions($item));
+                $ret = array_merge($ret, $provider->getActions($item, $primaryOnly, $groups));
             }
         }
 
         if ($primaryOnly) {
             $ret = array_filter($ret, function (Action $action) {
                 return $action->isPrimary();
+            });
+        }
+
+        if ($groups) {
+            $ret = array_filter($ret, function (Action $action) use ($groups) {
+                return in_array($action->getGroup(), $groups);
             });
         }
 

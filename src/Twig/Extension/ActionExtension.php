@@ -97,7 +97,7 @@ class ActionExtension extends \Twig_Extension
      */
     public function renderActions($item, $icon = null, $mode = 'icon', $title = null, $showTitle = false)
     {
-        return $this->renderActionsRaw($this->actionRegistry->getActions($item), $icon, $mode, $title, $showTitle);
+        return $this->renderActionsRaw($this->actionRegistry->getActions($item, false), $icon, $mode, $title, $showTitle);
     }
 
     /**

@@ -38,20 +38,15 @@ class ProcessorActionProvider implements ActionProviderInterface
     }
 
     /**
-     * Get actions for item
-     *
-     * @param mixed $item
-     *   Object type is at the discretion of the implentor.
-     *
-     * @return Action[]
+     * {@inheritdoc}
      */
-    public function getActions($item)
+    public function getActions($item, $primaryOnly = false, array $groups = [])
     {
         $ret = [];
 
         foreach ($this->processors as $processor) {
             if ($processor->appliesTo($item)) {
-                $ret[$processor->getId()] = $processor->getAction($item);
+                $ret[$processor->getId()] = $processor->getAction($item, $primaryOnly, $groups);
             }
         }
 
@@ -59,11 +54,7 @@ class ProcessorActionProvider implements ActionProviderInterface
     }
 
     /**
-     * Does this provider supports the given item
-     *
-     * @param mixed $item
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
     public function supports($item)
     {

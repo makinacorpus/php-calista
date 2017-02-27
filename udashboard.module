@@ -507,8 +507,6 @@ function udashboard_theme() {
  * Implements hook_page_build().
  */
 function udashboard_page_build(&$page) {
-  $container = \Drupal::getContainer();
-
   if (variable_get('udashboard.context_pane_enable') &&
       user_access(UDASHBOARD_PERM_USE_CONTEXT_PANE)
   ) {
