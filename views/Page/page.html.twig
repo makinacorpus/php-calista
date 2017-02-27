@@ -20,6 +20,7 @@
     sort.fieldLinks: Link[]
     sort.orderLinks: Link[]
     sort.count: int (number of sort fields)
+    hasPager: should we show pager or not
     pager: string (an already rendered pager)
     items: mixed[] the items (in most cases, nodes)
  #}
@@ -165,7 +166,9 @@
 {% endblock %}
 
 {% block pager %}
-  {{ pager(state.limit, state.totalItemCount, state.pageNumber, state.pagerElement) }}
+  {% if hasPager %}
+    {{ pager(state.limit, state.totalCount, state.pageNumber, state.pagerElement) }}
+  {% endif %}
 {% endblock %}
 
 {% block page_content %}
@@ -189,7 +192,7 @@
         {{ block('item_list') }}
       </div>
     </div>
-    {% if state.limit < state.totalItemCount %}
+    {% if state.limit < state.totalCount %}
       <div class="row">
         <div class="col-md-12" data-page-block="pager">
           {{ block('pager') }}

@@ -421,11 +421,6 @@ final class PageBuilder
         // Set current display
         $state->setCurrentDisplay($request->get('display'));
 
-        // Disable virtually the pager
-        if (!$this->displayPager) {
-            $state->setTotalItemCount(null);
-        }
-
         return new PageResult($route, $state, $items, $query, $filters, $sort);
     }
 
@@ -476,6 +471,7 @@ final class PageBuilder
             'query'     => $result->getQuery(),
             'sort'      => $result->getSort(),
             'items'     => $result->getItems(),
+            'hasPager'  => $this->displayPager,
         ] + $arguments;
 
         return new PageView($this->twig, $this->getTemplateFor($arguments['display']), $arguments);

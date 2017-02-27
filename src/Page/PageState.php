@@ -62,6 +62,14 @@ class PageState
         return null !== $this->totalCount;
     }
 
+    public function getTotalCount()
+    {
+        return $this->totalCount;
+    }
+
+    /**
+     * @deprecated
+     */
     public function getTotalItemCount()
     {
         return $this->totalCount;
