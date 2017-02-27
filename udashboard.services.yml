@@ -29,6 +29,12 @@ services:
     arguments: ['@udashboard.action_provider_registry']
     tags: [{name: twig.extension}]
 
+  udashboard.twig.page_extension:
+    public: false
+    class: MakinaCorpus\Drupal\Dashboard\Twig\Extension\PageExtension
+    arguments: ['@request_stack']
+    tags: [{name: twig.extension}]
+
   udashboard.empty_page_builder:
     public: false
     shared: false
