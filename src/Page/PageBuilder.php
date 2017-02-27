@@ -13,17 +13,18 @@ final class PageBuilder
 {
     const DEFAULT_LIMIT = 24;
 
-    private $id;
-    private $twig;
+    private $baseQuery = [];
+    private $datasource;
     private $debug = false;
     private $defaultDisplay = 'table';
     private $displayFilters = true;
     private $displayPager = true;
     private $displaySearch = true;
     private $displaySort = true;
-    private $datasource;
+    private $id;
+    private $limit = self::DEFAULT_LIMIT;
     private $templates = [];
-    private $baseQuery = [];
+    private $twig;
 
     /**
      * Default constructor
@@ -248,6 +249,20 @@ final class PageBuilder
     }
 
     /**
+     * Get item per page
+     *
+     * @param int $limit
+     *
+     * @return $this
+     */
+    public function setLimit($limit)
+    {
+        $this->limit = (int)$limit;
+
+        return $this;
+    }
+
+    /**
      * Get default template
      *
      * @return string
@@ -374,9 +389,9 @@ final class PageBuilder
         $state->setSortField($sort->getCurrentField($query));
         $state->setSortOrder($sort->getCurrentOrder($query));
         if (!$this->displayPager || empty($query[$state->getPageParameter()])) {
-            $state->setRange(self::DEFAULT_LIMIT);
+            $state->setRange($this->limit);
         } else {
-            $state->setRange(self::DEFAULT_LIMIT, $query[$state->getPageParameter()]);
+            $state->setRange($this->limit, $query[$state->getPageParameter()]);
         }
 
         if ($this->displaySearch && $datasource->hasSearchForm()) {
