@@ -42,6 +42,11 @@ ul.list-unstyled {
   margin-left: 250px;
 }
 
+.udashboard-page ul.list-unstyled {
+  list-style-type: none;
+  margin: 10px 0;
+}
+
 /******************************************************************************
  *
  * Buttons
