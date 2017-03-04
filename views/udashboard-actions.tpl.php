@@ -1,4 +1,4 @@
-<div class="btn-group" role="group" aria-label="actions">
+<div class="btn-group udashboard-actions" role="group" aria-label="actions">
   <?php if ($primary): ?>
     <?php foreach ($primary as $group): ?>
       <?php foreach ($group as $link): ?>
