@@ -8,7 +8,7 @@
         <li>
           {% if is_granted('access administration pages') %}
             <a class="navbar-brand" href="{{ url('admin') }}">
-              <span aria-hidden="true" class="glyphicon glyphicon-home"></span>
+              <span aria-hidden="true" class="glyphicon glyphicon-th-large"></span>
               <span class="sr-only">{{ "Administration"|t }}</span>
             </a>
           {% else %}
@@ -17,6 +17,13 @@
             </span>
           {% endif %}
         </li>
+        {% if site %}
+          <li>
+            <a href="{{ url('') }}">
+              {{ site.title_admin }}
+            </a>
+          </li>
+        {% endif %}
       </ul>
     </div>
 
