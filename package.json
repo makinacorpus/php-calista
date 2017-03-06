@@ -1,0 +1,10 @@
+{
+    "name": "udashboard",
+    "version": "1.0.0-dev",
+    "private": true,
+    "devDependencies": {
+        "gulp": "latest",
+        "gulp-clean-css": "latest",
+        "gulp-less": "latest"
+    }
+}

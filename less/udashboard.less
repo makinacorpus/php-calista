@@ -1,0 +1,264 @@
+/*****************************************************************************
+ *
+ * VARIABLES
+ *
+ *****************************************************************************/
+
+// Few variables borrowed from Bootstrap
+@gray-base:                                 #000;
+@gray-light:                                lighten(@gray-base, 46.7%); // #777
+@font-size-base:                            14px;
+@brand-primary:                             darken(#428bca, 6.5%); // #337ab7
+@padding-base-horizontal:                   12px;
+
+// Custom uDashboard variables
+@udashboard-pane-zindex:                    110;
+@udashboard-border-radius:                  0;
+@udashboard-pane-width:                     330px;
+@udashboard-pane-height:                    330px;
+@udashboard-pane-color:                     lighten(@gray-light, 15%);
+@udashboard-pane-bg:                        #222;
+@udashboard-pane-border:                    darken(@udashboard-pane-bg, 10%);
+@udashboard-pane-link-color:                lighten(@gray-light, 15%);
+@udashboard-pane-link-hover-color:          #fff;
+@udashboard-pane-link-active-color:         @udashboard-pane-link-hover-color;
+@udashboard-pane-link-disabled-color:       #444;
+@udashboard-pane-toggle-font-size:          @font-size-base;
+@udashboard-pane-toggle-color:              @udashboard-pane-link-color;
+@udashboard-pane-toggle-hover-color:        @udashboard-pane-link-hover-color;
+@udashboard-pane-toggle-hover-bg:           darken(@brand-primary, 10%);
+@udashboard-pane-toggle-active-color:       @udashboard-pane-link-active-color;
+@udashboard-pane-toggle-active-bg:          @brand-primary;
+
+/*****************************************************************************
+ *
+ * CONTEXTUAL PANE
+ *
+ *****************************************************************************/
+
+#contextual-pane {
+  position: fixed;
+  z-index: @udashboard-pane-zindex;
+
+  a {
+    background: transparent;
+
+    &.active {
+      color: @udashboard-pane-link-active-color;
+    }
+    &.disabled, &[disabled=disabled] {
+      color: @udashboard-pane-link-disabled-color;
+    }
+
+    &:focus,
+    &:hover {
+      color: @udashboard-pane-link-hover-color;
+      text-decoration: none;
+    }
+  }
+
+  .inner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: @udashboard-pane-bg;
+    z-index: 2;
+    width: 100%;
+    padding-top: 10px;
+  }
+
+  &.pane-right {
+    top: 0;
+    right: 0;
+    width: @udashboard-pane-width;
+    height: 100%;
+
+    .inner {
+      padding-top: 50px;
+    }
+  }
+
+  &.pane-down {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: @udashboard-pane-height;
+  }
+}
+
+#contextual-pane .tabs {
+  position: relative;
+  color: @udashboard-pane-color;
+}
+#contextual-pane .tabs > div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+#contextual-pane .tabs > div.active {
+  display: block;
+}
+
+#contextual-pane-toggle {
+  position: absolute;
+  display: inline-block;
+  background: @udashboard-pane-bg;
+  font-size: @udashboard-pane-toggle-font-size;
+
+  a {
+    display: inline-block;
+    padding: @padding-base-horizontal;
+    color: @udashboard-pane-toggle-color;
+
+    &.active {
+      background-color: @udashboard-pane-toggle-active-bg;
+      color: @udashboard-pane-toggle-active-color;
+    }
+
+    &:focus,
+    &:hover {
+      background-color: @udashboard-pane-toggle-hover-bg;
+      color: @udashboard-pane-toggle-hover-color;
+      text-decoration: none;
+    }
+  }
+}
+
+#contextual-pane.pane-right #contextual-pane-toggle {
+  top: 50%;
+  right: 100%;
+  border-radius: @udashboard-border-radius 0 0 @udashboard-border-radius;
+}
+#contextual-pane.pane-down #contextual-pane-toggle {
+  bottom: 100%;
+  left: 50%;
+  border-radius: @udashboard-border-radius @udashboard-border-radius 0 0;
+}
+#contextual-pane.pane-right #contextual-pane-toggle a:first-child {
+  border-top: none;
+  border-radius: @udashboard-border-radius 0 0 0;
+}
+#contextual-pane.pane-right #contextual-pane-toggle a:last-child {
+  border-radius: 0 0 0 @udashboard-border-radius;
+}
+#contextual-pane.pane-right #contextual-pane-toggle a:only-child {
+  border-radius: @udashboard-border-radius 0 0 @udashboard-border-radius;
+}
+#contextual-pane.pane-down #contextual-pane-toggle a {
+  margin-left: -.25em;
+}
+#contextual-pane.pane-down #contextual-pane-toggle a:first-child {
+  border-left: none;
+  border-radius: @udashboard-border-radius 0 0 0;
+}
+#contextual-pane.pane-down #contextual-pane-toggle a:last-child {
+  border-radius: 0 @udashboard-border-radius 0 0;
+}
+#contextual-pane.pane-down #contextual-pane-toggle a:only-child {
+  border-radius: @udashboard-border-radius @udashboard-border-radius 0 0;
+}
+
+#contextual-pane #contextual-pane-toggle a.active {
+  color: #fff;
+}
+
+#contextual-pane-switch-position {
+  font-size: 110%;
+}
+
+#contextual-pane > .inner > .actions {
+  padding: 0 5px;
+}
+#contextual-pane > .inner > .actions > input {
+  margin-right: 5px;
+}
+#contextual-pane > .inner > .actions .btn {
+  margin-top: 5px;
+}
+
+#tab-notification {
+  overflow-y: auto;
+}
+
+/*****************************************************************************
+ *
+ * FORMS IN CONTEXT PANE
+ *
+ *****************************************************************************/
+
+#contextual-pane .inner input {
+  background: #2d2d2d;
+  border-color: #4d4d4d;
+  color: @udashboard-pane-color;
+}
+/* Minor fix for inputs in dropdowns */
+#contextual-pane .dropdown-menu input {
+  background: #fff;
+  color: @udashboard-pane-bg;
+}
+
+/*****************************************************************************
+ *
+ * ACTIONS
+ *
+ *****************************************************************************/
+
+/* In most projects, buttons are too big */
+.udashboard-actions > .btn, .udashboard-actions > a.btn, .udashboard-actions > .btn-group > button {
+  font-size: 0.8em;
+}
+.udashboard-actions > * > * {
+  font-size: inherit;
+}
+
+/*****************************************************************************
+ *
+ * DASHBOARD
+ *
+ *****************************************************************************/
+
+#dashboard .portlet {
+  min-width: 415px;
+}
+
+#dashboard .panel-body {
+  min-height: 280px
+}
+
+#dashboard .with-actions .panel-body {
+  min-height: 225px
+}
+
+#dashboard .with-actions .scrolling {
+  max-height: 195px;
+}
+
+#dashboard #porlet-ucms_site_sites_portlet table td:nth-of-type(2) {
+  white-space: nowrap
+}
+.dropdown-menu > input,
+.dropdown-menu > button {
+  display: block;
+  padding: 0 20px;
+  line-height: 1.42857143;
+  white-space: nowrap;
+  clear: both;
+  font-weight: 400;
+  color: @udashboard-pane-bg;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+.dropdown-menu > button:focus,
+.dropdown-menu > button:hover,
+.dropdown-menu > input:focus,
+.dropdown-menu > input:hover {
+  text-decoration: none;
+  color: #262626;
+  background-color: #f5f5f5;
+  border: none;
+}
