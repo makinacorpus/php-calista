@@ -4,6 +4,11 @@
  *
  *****************************************************************************/
 
+// Please note that this module IS taylored to run within a bootstrap theme
+// but you can run without, hence the variables here, in many cases, you DO
+// want to copy/paste this LESS file within your own custom theme, and share
+// it between the front and backend in order to ensure theming consistency.
+
 // Few variables borrowed from Bootstrap
 @gray-base:                                 #000;
 @gray-light:                                lighten(@gray-base, 46.7%); // #777
@@ -40,7 +45,7 @@
   position: fixed;
   z-index: @udashboard-pane-zindex;
 
-  a {
+  .tabs a {
     background: transparent;
 
     &.active {
@@ -165,10 +170,6 @@
   color: #fff;
 }
 
-#contextual-pane-switch-position {
-  font-size: 110%;
-}
-
 #contextual-pane > .inner > .actions {
   padding: 0 5px;
 }
@@ -234,6 +235,7 @@
 
 #dashboard .with-actions .scrolling {
   max-height: 195px;
+  overflow: scroll;
 }
 
 #dashboard #porlet-ucms_site_sites_portlet table td:nth-of-type(2) {

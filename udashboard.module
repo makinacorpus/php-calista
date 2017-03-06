@@ -570,7 +570,11 @@ function udashboard_page_build(&$page) {
   }
 
   drupal_add_library('udashboard', 'udashboard_page');
-  if ('seven' === $GLOBALS['theme']) {
+
+  $seven = variable_get('udashboard.seven_force');
+  if (null === $seven && 'seven' === $GLOBALS['theme']) {
+    drupal_add_library('udashboard', 'udashboard_seven');
+  } else if (true === $seven) {
     drupal_add_library('udashboard', 'udashboard_seven');
   }
 }
@@ -677,7 +681,8 @@ function template_preprocess_udashboard_action_single(&$variables) {
  */
 function udashboard_library() {
   $path = drupal_get_path('module', 'udashboard');
-  return [
+
+  $libraries = [
     'udashboard' => [
       'title' => 'µDashboard',
       'version' => '0.1',
@@ -709,4 +714,10 @@ function udashboard_library() {
       ],
     ],
   ];
+
+  if (variable_get('udashboard.disable_css')) {
+    $libraries['udashboard']['css'] = [];
+  }
+
+  return $libraries;
 }

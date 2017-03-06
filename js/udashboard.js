@@ -8,7 +8,9 @@
       $('#udashboard-facets', context).find('a input').click(function () {
         location.href = $(this).parents('a').attr('href');
       });
-      $('[data-toggle="tooltip"]').tooltip();
+      // @todo temporary deactivating them because they behave wrongly on
+      //   user actions: when you click in it, they remain, and it's ugly
+      // $('[data-toggle="tooltip"]').tooltip();
     }
   };
 

@@ -17,30 +17,37 @@
             </span>
           {% endif %}
         </li>
-        {% if user.authenticated %}
-          <li>
-            {% if is_granted('access administration pages') %}
-              <a href="{{ url('admin/dashboard') }}">
-                {{ "Welcome @user"|t({'@user':user.displayName}) }}
-              </a>
-            {% else %}
-              <span class="navbar-text">
-                {{ "Welcome @user"|t({'@user':user.displayName}) }}
-              </span>
-            {% endif %}
-          </li>
-          {% if site %}
-            <li>
-              <a href="{{ url('') }}">
-                {{ site.title_admin }}
-              </a>
-            </li>
-          {% endif %}
-        {% endif %}
       </ul>
     </div>
-    <div class="collapse navbar-collapse" id="nav-collapse">
-      {{ links }}
-    </div>
+
+    {%- if user.authenticated -%}
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            {{ user.displayName }}
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            {% if is_granted('access administration pages') %}
+              <li>
+                <a href="{{ path('admin/dashboard') }}">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                  {{ "Admin"|t }}
+                </a>
+              </li>
+            {% endif %}
+            <li>
+              <a href="{{ path('user/logout') }}">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                {{ "Logout"|t }}
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    {%- endif -%}
+
+    {{ links }}
   </div>
 </nav>

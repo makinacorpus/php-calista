@@ -40,9 +40,7 @@
           {% set sep = false %}
           {% for group in secondary %}
             {% if sep %}
-              <li class="separator">
-                <hr/>
-              </li>
+              <li role="separator" class="divider"></li>
             {% endif %}
             {% for link in group %}
               <li>

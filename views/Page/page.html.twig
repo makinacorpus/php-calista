@@ -97,7 +97,7 @@
   <a href="#" class="dropdown-toggle" title="{{ "Sort by:"|trans }}" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
     {{ sort.currentFieldTitle(query) }}&nbsp;<span class="caret"></span>
   </a>
-  <ul class="dropdown-menu">
+  <ul class="dropdown-menu dropdown-menu-right">
     {% for link in sort.fieldLinks %}
       <li>{{ block('sort_link') }}</li>
     {% endfor %}
@@ -108,7 +108,7 @@
   <a href="#" class="dropdown-toggle" title="{{ "Order by:"|trans }}" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
     {{ sort.currentOrderTitle(query) }}&nbsp;<span class="caret"></span>
   </a>
-  <ul class="dropdown-menu">
+  <ul class="dropdown-menu dropdown-menu-right">
     {% for link in sort.orderLinks %}
       <li>{{ block('sort_link') }}</li>
     {% endfor %}

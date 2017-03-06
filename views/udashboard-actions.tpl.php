@@ -38,9 +38,7 @@
         <?php $sep = false; ?>
         <?php foreach ($secondary as $group): ?>
           <?php if ($sep): ?>
-            <li class="separator">
-              <hr/>
-            </li>
+            <li role="separator" class="divider"></li>
           <?php endif; ?>
           <?php foreach($group as $link): ?>
             <li>
