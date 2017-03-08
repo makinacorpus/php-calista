@@ -168,7 +168,7 @@ class DefaultAccountDatasource extends AbstractDatasource
         // Remove anonymous user
         $accountIdList = $select
           ->fields('u', ['uid'])
-          ->condition('uid', 0, '>')
+          ->condition('u.uid', 0, '>')
           ->groupBy('u.uid')
           ->execute()
           ->fetchCol()
