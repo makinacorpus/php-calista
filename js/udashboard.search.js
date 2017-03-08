@@ -4,7 +4,7 @@
   Drupal.behaviors.udashboardSearch = {
     attach: function (context, settings) {
       $('.udashboard-search-form', context).once('udashboard-search', function () {
-        if(!settings.udashboard || settings.udashboard.search) return;
+        if(!settings.udashboard || !settings.udashboard.search) return;
 
         // Hide default search and fix size
         $(this).find('input').hide();

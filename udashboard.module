@@ -570,18 +570,6 @@ function udashboard_page_build(&$page) {
       ],
     ];
   }
-
-  // @TODO dispatch an event from page builder to include these
-  // This is OUTRAGEOUS, it should really not be included everywhere
-  drupal_add_library('udashboard', 'udashboard_page');
-  drupal_add_library('udashboard', 'udashboard_search');
-
-  $seven = variable_get('udashboard.seven_force');
-  if (null === $seven && 'seven' === $GLOBALS['theme']) {
-    drupal_add_library('udashboard', 'udashboard_seven');
-  } else if (true === $seven) {
-    drupal_add_library('udashboard', 'udashboard_seven');
-  }
 }
 
 /**

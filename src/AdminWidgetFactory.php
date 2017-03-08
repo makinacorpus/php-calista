@@ -3,12 +3,10 @@
 namespace MakinaCorpus\Drupal\Dashboard;
 
 use Drupal\Core\Form\FormBuilderInterface;
-
 use MakinaCorpus\Drupal\Dashboard\Action\ActionRegistry;
 use MakinaCorpus\Drupal\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Drupal\Dashboard\Page\PageTypeInterface;
 use MakinaCorpus\Drupal\Dashboard\Table\AdminTable;
-
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -35,7 +33,6 @@ final class AdminWidgetFactory
      *
      * @param ContainerInterface $container
      * @param FormBuilderInterface $formBuilder
-     * @param PageBuilder $defaultPageBuilder,
      * @param ActionRegistry $actionRegistry
      * @param \Twig_Environment $twig
      * @param EventDispatcherInterface $eventDispatcher
@@ -114,20 +111,20 @@ final class AdminWidgetFactory
      */
     public function createPageBuilder()
     {
-        return new PageBuilder($this->twig);
+        return new PageBuilder($this->twig, $this->eventDispatcher);
     }
 
     /**
      * Get the page builder
      *
      * @param string $name
-     *
-     * @return PageBuilder
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \MakinaCorpus\Drupal\Dashboard\Page\PageBuilder
      */
     public function getPageBuilder($name, Request $request)
     {
         $type = $this->getPageType($name);
-        $builder = new PageBuilder($this->twig);
+        $builder = new PageBuilder($this->twig, $this->eventDispatcher);
 
         $type->build($builder, $request);
         $builder->setId($name);
@@ -139,7 +136,8 @@ final class AdminWidgetFactory
      * Get a new admin table
      *
      * @param string $name
-     * @param mixed $attributes
+     * @param array $attributes
+     * @return \MakinaCorpus\Drupal\Dashboard\Table\AdminTable
      */
     public function getTable($name, $attributes = [])
     {

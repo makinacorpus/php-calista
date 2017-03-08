@@ -54,3 +54,7 @@ services:
     class: MakinaCorpus\Drupal\Dashboard\Page\Node\DefaultNodeAdminPage
     arguments: ['@udashboard.datasource.node_default', false]
     tags: [{name: udashboard.page_type, id: 'node.default'}]
+
+  udashboard.pagebuilder_event_subscriber:
+    class: MakinaCorpus\Drupal\Dashboard\Event\PageBuilderEventSubscriber
+    tags: [{name: event_subscriber}]

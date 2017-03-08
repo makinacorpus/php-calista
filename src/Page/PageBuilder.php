@@ -2,6 +2,8 @@
 
 namespace MakinaCorpus\Drupal\Dashboard\Page;
 
+use MakinaCorpus\Drupal\Dashboard\Event\PageBuilderEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -12,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 final class PageBuilder
 {
     const DEFAULT_LIMIT = 24;
+    const EVENT_VIEW = 'pagebuilder:view';
 
     private $baseQuery = [];
     private $datasource;
@@ -21,24 +24,25 @@ final class PageBuilder
     private $displayPager = true;
     private $displaySearch = true;
     private $displaySort = true;
+    private $displayVisualSearch = false;
     private $formName = null;
     private $id;
     private $limit = self::DEFAULT_LIMIT;
     private $templates = [];
     private $twig;
+    private $dispatcher;
 
     /**
      * Default constructor
      *
      * @param \Twig_Environment $twig
-     * @param string[] $displays
-     * @param string $defaultDisplay
-     *   Default template
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher
      */
-    public function __construct(\Twig_Environment $twig)
+    public function __construct(\Twig_Environment $twig, EventDispatcherInterface $dispatcher)
     {
         $this->twig = $twig;
         $this->debug = $twig->isDebug();
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -94,7 +98,7 @@ final class PageBuilder
      * the 'form_name' variable. It is YOUR job to create the associated
      * inputs in the final template.
      *
-     * @param string $formName
+     * @param string $name
      *   Form parameter name.
      *
      * @return $this
@@ -109,7 +113,7 @@ final class PageBuilder
     /**
      * Set default display
      *
-     * @param string $defaultDisplay
+     * @param string $display
      *   Display identifier
      *
      * @return $this
@@ -245,6 +249,38 @@ final class PageBuilder
     }
 
     /**
+     * Set the display of visual search filter.
+     *
+     * @return PageBuilder
+     */
+    public function showVisualSearch()
+    {
+        $this->displayVisualSearch = true;
+
+        return $this;
+    }
+
+    /**
+     * Set the display of visual search filter.
+     *
+     * @return PageBuilder
+     */
+    public function hideVisualSearch()
+    {
+        $this->displayVisualSearch = false;
+
+        return $this;
+    }
+
+    /**
+     * Is visual search filter enabled?
+     */
+    public function visualSearchIsEnabled()
+    {
+        return $this->displayVisualSearch;
+    }
+
+    /**
      * Enable user sorting
      *
      * This has no effect if datasource don't support sorting
@@ -312,6 +348,7 @@ final class PageBuilder
      * Get template for given display name
      *
      * @param string $displayName
+     * @param null|string $fallback
      *
      * @return string
      */
@@ -407,7 +444,7 @@ final class PageBuilder
     {
         $query = array_merge($this->prepareQueryFromRequest($request), $this->baseQuery);
 
-        return $this->datasource->validateItems($query, $idList);
+        return $this->getDatasource()->validateItems($query, $idList);
     }
 
     /**
@@ -536,9 +573,11 @@ final class PageBuilder
             'hasPager'  => $this->displayPager,
         ] + $arguments;
 
+        $event = new PageBuilderEvent($this);
+        $this->dispatcher->dispatch(PageBuilder::EVENT_VIEW, $event);
+
         return new PageView($this->twig, $this->getTemplateFor($arguments['display']), $arguments);
     }
-
     /**
      * Shortcut for controllers
      *
