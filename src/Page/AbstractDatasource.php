@@ -40,7 +40,7 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * {@inheritdoc}
      */
-    public function validateItems($query, array $idList)
+    public function validateItems(array $query, array $idList)
     {
         return false;
     }

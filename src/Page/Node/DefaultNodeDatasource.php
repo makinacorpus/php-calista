@@ -114,6 +114,30 @@ class DefaultNodeDatasource extends AbstractDatasource
     }
 
     /**
+     * Create node select query, override this to change it
+     *
+     * @param array $query
+     *   Incoming query, might be modified for business purposes
+     *
+     * @return \SelectQuery
+     */
+    protected function createSelectQuery(array &$query)
+    {
+        if (empty($query['user_id'])) {
+            // @todo fixme
+            $query['user_id'] = $GLOBALS['user']->uid;
+        }
+
+        return $this
+            ->getDatabase()
+            ->select('node', 'n')
+            ->fields('n', ['nid'])
+            ->groupBy('n.nid')
+            ->addTag('node_access')
+        ;
+    }
+
+    /**
      * Implementors must set the node table with 'n' as alias, and call this
      * method for the datasource to work correctly.
      *
@@ -141,39 +165,47 @@ class DefaultNodeDatasource extends AbstractDatasource
 
         $this->applyFilters($select, $query, $pageState);
 
-        return $select
-            ->addTag('node_access')
-            //->groupBy('n.nid')
-            ->extend(DrupalPager::class)
-            ->setPageState($pageState)
-        ;
+        return $select->extend(DrupalPager::class)->setPageState($pageState);
     }
 
     /**
      * {@inheritdoc}
      *
-     * Override this method to change fitlers
+     * In order to validate, we don't need sort etc...
      */
-    public function getItems($query, PageState $pageState)
+    final public function validateItems(array $query, array $idList)
     {
-        if (empty($query['user_id'])) {
-            // @todo fixme
-            $query['user_id'] = $GLOBALS['user']->uid;
-        }
+        $select = $this->createSelectQuery($query);
 
-        $select = $this->getDatabase()->select('node', 'n');
+        // This is mandatory, else some query conditions could attempt to use
+        // table and it would fail with sql exceptions
+        $select->leftJoin('history', 'h', "h.nid = n.nid AND h.uid = :history_uid", [':history_uid' => $query['user_id']]);
+
+        // Give it an empty page state, we don't care about it
+        $this->applyFilters($select, $query, new PageState());
+
+        // Do an except (interjection) to determine if some identifiers from
+        // the input set are not in the dataset returned by the query, but SQL
+        // even standard does not allow us to do that easily, hence the
+        // array_diff() call after fetching the col.
+        // @todo this is unperformant, comparing count result would be better
+        //   but more dangerous SQL-wise (we must be absolutely sure that nid
+        //   colum is deduplicated)
+        $col = $select->condition('n.nid', $idList)->execute()->fetchCol();
+
+        return array_diff($idList, $col) ? false : true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function getItems($query, PageState $pageState)
+    {
+        $select = $this->createSelectQuery($query);
         $select = $this->process($select, $query, $pageState);
 
-        // JOIN with {history} is actually done in the parent implementation
-        $nodeIdList = $select
-            ->fields('n', ['nid'])
-            ->groupBy('n.nid')
-            ->execute()
-            ->fetchCol()
-        ;
-
         // Preload and set nodes at once
-        return $this->preloadDependencies($nodeIdList);
+        return $this->preloadDependencies($select->execute()->fetchCol());
     }
 
     /**

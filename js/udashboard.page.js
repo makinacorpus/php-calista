@@ -204,6 +204,20 @@
       }
     }
 
+    // Ensure there are checkboxes
+    var master = page.selector.find('[data-page-checkbox="all"]');
+    var checkboxes = page.selector.find('[data-page-checkbox="item"]');
+    if (master.length && checkboxes.length) {
+      master.on("click", function (event) {
+        event.stopPropagation();
+        if (master.is(':checked')) {
+          checkboxes.attr({checked: true});
+        } else {
+          checkboxes.attr({checked: false});
+        }
+      });
+    }
+
     Drupal.attachBehaviors(context);
   }
 

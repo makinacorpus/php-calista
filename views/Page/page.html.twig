@@ -126,8 +126,27 @@
   </div>
 {% endblock %}
 
+{%- block item_checkbox_all -%}
+  <input type="checkbox" data-page-checkbox="all" title="{{ "(Un)check all"|t }}"/>
+{%- endblock -%}
+
+{#
+ # Checkbox for a single item - please note that if you are not working
+ # on Drupal nodes, you have to override this block into your page to
+ # provide the right item identifier.
+ #}
+{%- block item_checkbox -%}
+  {% set name = form_name ~ "[]" %}
+  <label for="{{ name }}">
+    <input type="checkbox" data-page-checkbox="item" name="{{ name }}" value="{{ item.nid }}" title="{{ "Select this row"|t }}"/>
+  </label>
+{%- endblock -%}
+
 {%- block item -%}
   <tr>
+    {% if form_name %}
+      <td>{{ block('item_checkbox') }}</td>
+    {% endif %}
     <td>{{ item.type }}</td>
     <td class="ui-sortable"><span class="pull-right"></span>
       <div class="udashboard-result" data-nid="{{ item.id }}">
@@ -148,6 +167,9 @@
   <table class="table table-condensed">
     <thead>
       <tr>
+        {% if form_name %}
+          <th>{{ block('item_checkbox_all') }}</th>
+        {% endif %}
         <th>{{ "Type"|trans }}</th>
         <th>{{ "Title"|trans }}</th>
         <th>{{ "Status"|trans }}</th>

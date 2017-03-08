@@ -21,6 +21,7 @@ final class PageBuilder
     private $displayPager = true;
     private $displaySearch = true;
     private $displaySort = true;
+    private $formName = null;
     private $id;
     private $limit = self::DEFAULT_LIMIT;
     private $templates = [];
@@ -80,6 +81,29 @@ final class PageBuilder
         }
 
         return $this->datasource;
+    }
+
+    /**
+     * If the page is to be inserted as a form widget, set the element name
+     *
+     * Please notice that in all cases, only the template can materialize the
+     * form element, this API is agnostic from any kind of form API and cannot
+     * do it automatically.
+     *
+     * This parameter will only be carried along to the twig template under
+     * the 'form_name' variable. It is YOUR job to create the associated
+     * inputs in the final template.
+     *
+     * @param string $formName
+     *   Form parameter name.
+     *
+     * @return $this
+     */
+    public function setFormName($name)
+    {
+        $this->formName = $name;
+
+        return $this;
     }
 
     /**
@@ -381,7 +405,9 @@ final class PageBuilder
      */
     public function validateItems(Request $request, array $idList)
     {
-        return $this->datasource->validateItems($this->prepareQueryFromRequest($request), $idList);
+        $query = array_merge($this->prepareQueryFromRequest($request), $this->baseQuery);
+
+        return $this->datasource->validateItems($query, $idList);
     }
 
     /**
@@ -443,6 +469,8 @@ final class PageBuilder
         if ($filters) {
             foreach ($filters as $index => $filter) {
                 if (isset($this->baseQuery[$filter->getField()])) {
+                    // @todo figure out why I commented this out, it actually
+                    //   works very nice without this unset()...
                     //unset($filters[$index]);
                 }
                 $filter->prepare($route, $query);
@@ -495,6 +523,7 @@ final class PageBuilder
 
         $arguments = [
             'pageId'    => $this->computeId(),
+            'form_name' => $this->formName,
             'result'    => $result,
             'state'     => $state,
             'route'     => $result->getRoute(),

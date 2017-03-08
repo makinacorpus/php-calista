@@ -94,7 +94,7 @@ interface DatasourceInterface
      *
      * @return bool
      */
-    public function validateItems($query, array $idList);
+    public function validateItems(array $query, array $idList);
 
     /**
      * Does this connector implements a full text search form
