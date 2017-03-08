@@ -40,6 +40,14 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * {@inheritdoc}
      */
+    public function validateItems($query, array $idList)
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hasSearchForm()
     {
         return false;

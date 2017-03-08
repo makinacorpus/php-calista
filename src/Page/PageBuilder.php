@@ -323,20 +323,16 @@ final class PageBuilder
     }
 
     /**
-     * Proceed to search and fetch state
+     * From the incoming query, prepare the $query array for datasource
      *
      * @param Request $request
-     *   Incomming request
+     *   Incoming request
      *
-     * @return PageResult
+     * @return string[]
+     *   Prepare query parameters, using base query and filters
      */
-    public function search(Request $request)
+    private function prepareQueryFromRequest(Request $request)
     {
-        $datasource = $this->getDatasource();
-
-        $route = $request->attributes->get('_route');
-        $state = new PageState();
-
         $query = array_merge(
             $request->query->all(),
             $request->attributes->get('_route_params', [])
@@ -366,6 +362,43 @@ final class PageBuilder
                 $query[$name] = array_intersect($input, $allowed);
             }
         }
+
+        return $query;
+    }
+
+    /**
+     * Shortcut to this internal datasource validateItems() method that will
+     * take care of the incoming query.
+     *
+     * @param Request $request
+     *   Incoming request
+     * @param string[] $idList
+     *   Arbitrary item identifier list
+     *
+     * @return bool
+     *
+     * @see DatasourceInterface::validateItems()
+     */
+    public function validateItems(Request $request, array $idList)
+    {
+        return $this->datasource->validateItems($this->prepareQueryFromRequest($request), $idList);
+    }
+
+    /**
+     * Proceed to search and fetch state
+     *
+     * @param Request $request
+     *   Incoming request
+     *
+     * @return PageResult
+     */
+    public function search(Request $request)
+    {
+        $datasource = $this->getDatasource();
+
+        $route = $request->attributes->get('_route');
+        $state = new PageState();
+        $query = $this->prepareQueryFromRequest($request);
 
         $datasource->init($query, $this->baseQuery);
 

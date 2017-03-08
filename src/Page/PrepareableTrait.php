@@ -19,7 +19,7 @@ trait PrepareableTrait
      * @param string $route
      *   Current route
      * @param string[] $query
-     *   Current incomming query
+     *   Current incoming query
      */
     public function prepare($route, array $query = [])
     {

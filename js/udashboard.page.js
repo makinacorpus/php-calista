@@ -122,7 +122,7 @@
         data[index] = value;
       });
     }
-    // Then override using the incomming one.
+    // Then override using the incoming one.
     if (query) {
       $.each(query, function(index, value) {
         data[index] = value;

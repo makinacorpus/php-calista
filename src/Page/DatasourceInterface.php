@@ -8,7 +8,7 @@ namespace MakinaCorpus\Drupal\Dashboard\Page;
  * You won't need to care about rendering or layout, just implement this in
  * order to expose your data.
  *
- * @see \MakinaCorpus\Drupal\Contrib\NodeDatasource
+ * @see \MakinaCorpus\Drupal\Dashboard\Page\Node\DefaultNodeDatasource
  *   For a complete working exemple (which was the original prototype)
  */
 interface DatasourceInterface
@@ -17,7 +17,7 @@ interface DatasourceInterface
      * Get ready to display filters
      *
      * @param string[] $query
-     *   Incomming query parameters
+     *   Incoming query parameters
      *
      * @return Filter[]
      *   Keys does not matter, while values should be render arrays
@@ -28,7 +28,7 @@ interface DatasourceInterface
      * Get sort fields
      *
      * @param string[] $query
-     *   Incomming query parameters
+     *   Incoming query parameters
      *
      * @return string[]
      *   Keys are field names, values are human readable labels
@@ -52,7 +52,7 @@ interface DatasourceInterface
      * where you should probably do it
      *
      * @param string[] $query
-     *   Incomming query parameters
+     *   Incoming query parameters
      * @param string[] $filter
      *   Base query (filtering query) set by the caller
      */
@@ -67,13 +67,34 @@ interface DatasourceInterface
      * depending upon current context
      *
      * @param string[] $query
-     *   Incomming query parameters
+     *   Incoming query parameters
      * @param PageState $pageState
      *   Current page state
      *
      * @return mixed[]
      */
     public function getItems($query, PageState $pageState);
+
+    /**
+     * Given an arbitrary list of identifiers that this datasource should
+     * understand, return false if any of the given item identifiers are part
+     * of this datasource data set.
+     *
+     * Item identifiers are given in an arbitrary fashion, the datasource might
+     * not even understand the concept of identifiers.
+     *
+     * This can be used by external code to implement complex form widget using
+     * administration screens as item selectors, for example, but this module
+     * does not care about it.
+     *
+     * @param string[] $query
+     *   Incoming query parameters
+     * @param string[] $idList
+     *   Arbitrary item identifier list
+     *
+     * @return bool
+     */
+    public function validateItems($query, array $idList);
 
     /**
      * Does this connector implements a full text search form
