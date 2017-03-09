@@ -62,6 +62,7 @@ class Action
      *   Link options, see the l() and url() functions altogether
      *   It can be one of those values:
      *     'dialog' : load the page in a dialog
+     *     'blank' : load with target=blank
      * @param string $icon
      *   Something that is a bootstrap glyphicon name (easiest way of theming
      *   this, sorry)
@@ -92,6 +93,12 @@ class Action
             $this->linkOptions = $options;
         } else {
             switch ($options) {
+
+              case 'blank':
+                  $this->linkOptions = [
+                      'attributes' => ['target' => '_blank'],
+                  ];
+                  break;
 
               case 'ajax':
                   $this->linkOptions = [
