@@ -40,14 +40,11 @@ class Filter implements \Countable
      *   Query parameter name
      * @param string $title
      *   Filter title
-     * @param boolean $isSafe
-     *   Filter title is safe (does not need escaping)
      */
-    public function __construct($queryParameter, $title = null, $isSafe = false)
+    public function __construct($queryParameter, $title = null)
     {
         $this->queryParameter = $queryParameter;
         $this->title = $title;
-        $this->isSafe = $isSafe;
     }
 
     /**
@@ -64,6 +61,7 @@ class Filter implements \Countable
      */
     public function setChoicesMap($choicesMap)
     {
+        $this->isSafe = true;
         $this->choicesMap = $choicesMap;
 
         return $this;
@@ -196,6 +194,22 @@ class Filter implements \Countable
     public function count()
     {
         return count($this->choicesMap);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSafe()
+    {
+        return $this->isSafe;
+    }
+
+    /**
+     * @return array
+     */
+    public function getChoicesMap()
+    {
+        return $this->choicesMap;
     }
 }
 

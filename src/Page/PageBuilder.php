@@ -15,16 +15,19 @@ final class PageBuilder
 {
     const DEFAULT_LIMIT = 24;
     const EVENT_VIEW = 'pagebuilder:view';
+    const EVENT_SEARCH = 'pagebuilder:search';
 
     private $baseQuery = [];
     private $datasource;
     private $debug = false;
     private $defaultDisplay = 'table';
     private $displayFilters = true;
+    private $enabledFilters = [];
     private $displayPager = true;
     private $displaySearch = true;
     private $displaySort = true;
     private $displayVisualSearch = false;
+    private $enabledVisualFilters = [];
     private $formName = null;
     private $id;
     private $limit = self::DEFAULT_LIMIT;
@@ -197,6 +200,32 @@ final class PageBuilder
     }
 
     /**
+     * Add filter from datasource
+     *
+     * @param string $filter The field from filter
+     * @return PageBuilder
+     */
+    public function enableFilter($filter)
+    {
+        $this->enabledFilters[$filter] = true;
+
+        return $this;
+    }
+
+    /**
+     * Remove filter from datasource
+     *
+     * @param string $filter The field from filter
+     * @return PageBuilder
+     */
+    public function disableFilter($filter)
+    {
+        unset($this->enabledFilters[$filter]);
+
+        return $this;
+    }
+
+    /**
      * Enable pagination
      *
      * @return $this
@@ -278,6 +307,32 @@ final class PageBuilder
     public function visualSearchIsEnabled()
     {
         return $this->displayVisualSearch;
+    }
+
+    /**
+     * Add visual filter from datasource
+     *
+     * @param string $filter The field from filter
+     * @return PageBuilder
+     */
+    public function enableVisualFilter($filter)
+    {
+        $this->enabledVisualFilters[$filter] = true;
+
+        return $this;
+    }
+
+    /**
+     * Remove visual filter from datasource
+     *
+     * @param string $filter The field from filter
+     * @return PageBuilder
+     */
+    public function disableVisualFilter($filter)
+    {
+        unset($this->enabledVisualFilters[$filter]);
+
+        return $this;
     }
 
     /**
@@ -457,6 +512,9 @@ final class PageBuilder
      */
     public function search(Request $request)
     {
+        $event = new PageBuilderEvent($this);
+        $this->dispatcher->dispatch(PageBuilder::EVENT_SEARCH, $event);
+
         $datasource = $this->getDatasource();
 
         $route = $request->attributes->get('_route');
@@ -502,26 +560,32 @@ final class PageBuilder
 
         $items = $datasource->getItems(array_merge($query, $this->baseQuery), $state);
 
-        $filters = $datasource->getFilters($query);
-        if ($filters) {
-            foreach ($filters as $index => $filter) {
+        $baseFilters = $datasource->getFilters($query);
+        $filters = [];
+        $visualFilters = [];
+        if ($baseFilters) {
+            foreach ($baseFilters as $index => $filter) {
                 if (isset($this->baseQuery[$filter->getField()])) {
                     // @todo figure out why I commented this out, it actually
                     //   works very nice without this unset()...
                     //unset($filters[$index]);
                 }
                 $filter->prepare($route, $query);
+
+                if (array_key_exists($filter->getField(), $this->enabledFilters)) {
+                    $filters[] = $filter;
+                }
+                if (array_key_exists($filter->getField(), $this->enabledVisualFilters)) {
+                    $visualFilters[] = $filter;
+                }
             }
-        } else { // Avoid possibly broken implementations
-            $filters = [];
         }
 
         // Set current display
         $state->setCurrentDisplay($request->get('display'));
 
-        return new PageResult($route, $state, $items, $query, $filters, $sort);
+        return new PageResult($route, $state, $items, $query, $filters, $visualFilters, $sort);
     }
-
     /**
      * Create the page view
      *
@@ -559,18 +623,19 @@ final class PageBuilder
         }
 
         $arguments = [
-            'pageId'    => $this->computeId(),
-            'form_name' => $this->formName,
-            'result'    => $result,
-            'state'     => $state,
-            'route'     => $result->getRoute(),
-            'filters'   => $this->displayFilters ? $result->getFilters() : [],
-            'display'   => $display,
-            'displays'  => $displayLinks,
-            'query'     => $result->getQuery(),
-            'sort'      => $result->getSort(),
-            'items'     => $result->getItems(),
-            'hasPager'  => $this->displayPager,
+            'pageId'        => $this->computeId(),
+            'form_name'     => $this->formName,
+            'result'        => $result,
+            'state'         => $state,
+            'route'         => $result->getRoute(),
+            'filters'       => $this->displayFilters ? $result->getFilters() : [],
+            'visualFilters' => $this->displayVisualSearch ? $result->getVisualFilters() : [],
+            'display'       => $display,
+            'displays'      => $displayLinks,
+            'query'         => $result->getQuery(),
+            'sort'          => $result->getSort(),
+            'items'         => $result->getItems(),
+            'hasPager'      => $this->displayPager,
         ] + $arguments;
 
         $event = new PageBuilderEvent($this);
@@ -578,6 +643,7 @@ final class PageBuilder
 
         return new PageView($this->twig, $this->getTemplateFor($arguments['display']), $arguments);
     }
+
     /**
      * Shortcut for controllers
      *

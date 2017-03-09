@@ -9,6 +9,7 @@ class PageResult
     private $items;
     private $query;
     private $filters = [];
+    private $visualFilters = [];
     private $sort;
 
     /**
@@ -18,19 +19,24 @@ class PageResult
      * @param PageState $state
      * @param mixed[] $items
      * @param string[] $query
-     * @param Filter[] $facets
+     * @param Filter[] $filters
+     * @param Filter[] $visualFilters
      * @param SortManager $sort
      */
-    public function __construct($route, PageState $state, array $items, array $query = [], array $filters = [], SortManager $sort = null)
+    public function __construct($route, PageState $state, array $items, array $query = [], array $filters = [], array $visualFilters = [], SortManager $sort = null)
     {
         $this->route = $route;
         $this->state = $state;
         $this->items = $items;
         $this->query = $query;
         $this->filters = $filters;
+        $this->visualFilters = $visualFilters;
         $this->sort = $sort;
     }
 
+    /**
+     * @return string
+     */
     public function getRoute()
     {
         return $this->route;
@@ -44,11 +50,17 @@ class PageResult
         return $this->state;
     }
 
+    /**
+     * @return \mixed[]
+     */
     public function getItems()
     {
         return $this->items;
     }
 
+    /**
+     * @return \string[]
+     */
     public function getQuery()
     {
         return $this->query;
@@ -63,6 +75,14 @@ class PageResult
     }
 
     /**
+     * @return Filter[]
+     */
+    public function getVisualFilters()
+    {
+        return $this->visualFilters;
+    }
+
+    /**
      * @return SortManager
      */
     public function getSort()
@@ -72,8 +92,6 @@ class PageResult
 
     /**
      * Serialize page state
-     *
-     * @param PageResult $result
      *
      * @return mixed[]
      *   Suitable for JSON
@@ -94,9 +112,7 @@ class PageResult
     /**
      * Serialize page state
      *
-     * @param PageResult $result
-     *
-     * @return mixed[]
+     * @return string
      *   Suitable for JSON
      */
     public function queryToJson()

@@ -83,13 +83,13 @@ Source: http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
 .VS-search .VS-search-box {
   cursor: text;
   position: relative;
-  background: transparent;
+  /*background: transparent;*/
   border: 2px solid #ccc;
-  border-radius: 16px; -webkit-border-radius: 16px; -moz-border-radius: 16px;
-  background-color: #fafafa;
-  -webkit-box-shadow: inset 0px 0px 3px #ccc;
-  -moz-box-shadow: inset 0px 0px 3px #ccc;
-  box-shadow: inset 0px 0px 3px #ccc;
+  /*border-radius: 16px; -webkit-border-radius: 16px; -moz-border-radius: 16px;*/
+  /*background-color: #fafafa;*/
+  /*-webkit-box-shadow: inset 0px 0px 3px #ccc;*/
+  /*-moz-box-shadow: inset 0px 0px 3px #ccc;*/
+  /*box-shadow: inset 0px 0px 3px #ccc;*/
   min-height: 28px;
   height: auto;
 }
@@ -98,9 +98,9 @@ Source: http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
   }
   .VS-search .VS-search-box.VS-focus {
     border-color: #acf;
-    -webkit-box-shadow: inset 0px 0px 3px #acf;
-    -moz-box-shadow: inset 0px 0px 3px #acf;
-    box-shadow: inset 0px 0px 3px #acf;
+    /*-webkit-box-shadow: inset 0px 0px 3px #acf;*/
+    /*-moz-box-shadow: inset 0px 0px 3px #acf;*/
+    /*box-shadow: inset 0px 0px 3px #acf;*/
   }
   .VS-search .VS-placeholder {
       position: absolute;

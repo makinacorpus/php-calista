@@ -5,6 +5,7 @@ namespace MakinaCorpus\Drupal\Dashboard\Page\Account;
 use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use MakinaCorpus\Drupal\Dashboard\Page\AbstractDatasource;
+use MakinaCorpus\Drupal\Dashboard\Page\Filter;
 use MakinaCorpus\Drupal\Dashboard\Page\PageState;
 use MakinaCorpus\Drupal\Dashboard\Page\QueryExtender\DrupalPager;
 use MakinaCorpus\Drupal\Dashboard\Page\SortManager;
@@ -38,8 +39,19 @@ class DefaultAccountDatasource extends AbstractDatasource
      */
     public function getFilters($query)
     {
-        // @todo build commong database filters for account datasource
-        return [];
+        $roles = user_roles(true);
+        unset($roles[DRUPAL_AUTHENTICATED_RID]);
+
+        return [
+            (new Filter('status', $this->t("Active")))->setChoicesMap(
+                [
+                    0 => $this->t("No"),
+                    1 => $this->t("Yes"),
+                ]
+            ),
+            (new Filter('role', $this->t("Role")))->setChoicesMap($roles),
+            (new Filter('name', $this->t("Name"))),
+        ];
     }
 
     /**
@@ -102,6 +114,21 @@ class DefaultAccountDatasource extends AbstractDatasource
      */
     protected function applyFilters(\SelectQueryInterface $select, $query, PageState $pageState)
     {
+        if (isset($query['name'])) {
+            $select->condition('name', '%'.db_like($query['nom']).'%', 'LIKE');
+        }
+
+        if (isset($query['roles'])) {
+            $select->leftJoin(
+                'users_roles',
+                'ur',
+                'ur.uid = u.uid'
+            );
+            $select->condition('ur.rid', $query['roles']);
+        }
+        if (isset($query['status'])) {
+            $select->condition('u.status', $query['status']);
+        }
     }
 
     /**

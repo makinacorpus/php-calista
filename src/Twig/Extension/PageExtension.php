@@ -40,6 +40,14 @@ class PageExtension extends \Twig_Extension
         ];
     }
 
+    public function getFilters()
+    {
+        return [
+            new \Twig_SimpleFilter('udashboardFilterDefinition', [$this, 'filterDefinition'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter('udashboardFilterQuery', [$this, 'filterQuery'], ['is_safe' => ['html']]),
+        ];
+    }
+
     /**
      * Render page builder
      *
@@ -83,6 +91,47 @@ class PageExtension extends \Twig_Extension
         } else {
             return '';
         }
+    }
+
+    /**
+     * Return a JSON encoded representing the filter definition
+     *
+     * @param \MakinaCorpus\Drupal\Dashboard\Page\Filter[] $filters
+     * @return string
+     */
+    public function filterDefinition($filters)
+    {
+        $definition = [];
+
+        foreach ($filters as $filter) {
+            $definition[] = [
+                'value'   => $filter->getField(),
+                'label'   => $filter->getTitle(),
+                'options' => !$filter->isSafe() ?: $filter->getChoicesMap(),
+            ];
+        }
+
+        return json_encode($definition);
+    }
+
+    /**
+     * Return a JSON encoded representing the initial filter query
+     *
+     * @param \MakinaCorpus\Drupal\Dashboard\Page\Filter[] $filters
+     * @param string[] $query
+     * @return string
+     */
+    public function filterQuery($filters, $query)
+    {
+        $filterQuery = [];
+
+        foreach ($filters as $filter) {
+            if (isset($query[$filter->getField()])) {
+                $filterQuery[$filter->getField()] = $query[$filter->getField()];
+            }
+        }
+
+        return json_encode($filterQuery);
     }
 
     /**

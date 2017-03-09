@@ -69,12 +69,19 @@
 {% block search_form %}
   <form method="get" class="udashboard-search-form" accept-charset="UTF-8">
     <div class="input-group">
-      <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ state.searchParameter }}" value="{{ state.currentSearch|escape }}" maxlength="128" type="text">
-      {% for name, value in query %}
-        {% if name != state.searchParameter %}
-          <input type="hidden" name="{{ name }}" value="{{ value|udashboard_query_param }}"/>
-        {% endif %}
-      {% endfor %}
+      {% if visualFilters %}
+        <div class="form-control udashboard-visual-search"
+             data-definition="{{ visualFilters|udashboardFilterDefinition()|e }}"
+             data-query="{{ visualFilters|udashboardFilterQuery(query)|e }}"></div>
+      {% else %}
+        <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ state.searchParameter }}"
+               value="{{ state.currentSearch|escape }}" maxlength="128" type="text">
+        {% for name, value in query %}
+          {% if name != state.searchParameter %}
+            <input type="hidden" name="{{ name }}" value="{{ value|udashboard_query_param }}"/>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
       <span class="input-group-btn">
         <button type="submit" title="{{ "Search"|trans }}" class="btn btn-primary">
           <span class="glyphicon glyphicon-search"></span>
@@ -195,7 +202,7 @@
 
 {% block page_content %}
   <div class="container-fluid">
-    {% if state.searchParameter %}
+    {% if state.searchParameter or visualFilters %}
       <div class="row">
         <div class="col-md-12" data-page-block="search_form">
           {{ block('search_form') }}

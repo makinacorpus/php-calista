@@ -4,25 +4,27 @@
   Drupal.behaviors.udashboardSearch = {
     attach: function (context, settings) {
       $('.udashboard-search-form', context).once('udashboard-search', function () {
-        if(!settings.udashboard || !settings.udashboard.search) return;
-
-        // Hide default search and fix size
-        $(this).find('input').hide();
-        $(this).prepend('<div class="vs"/>');
+        var $form = $(this);
+        var $container = $form.find('.udashboard-visual-search');
+        var query = $container.data('query');
+        var definition = $container.data('definition');
+        // query must be an object
+        query = !$.isArray(query) ? query : {};
 
         var search = VS.init({
-          container: $(this).find('.vs'),
+          container: $container,
           remainder: false,
           autosearch: false,
           callbacks: {
             search: function (query, searchCollection) {
+              $form.submit();
             },
             facetMatches: function (callback) {
-              callback(settings.udashboard.search);
+              callback(definition);
             },
             valueMatches: function (facet, searchTerm, callback) {
               // First find the corresponding setting
-              var filter = _.findWhere(settings.udashboard.search, {value: facet});
+              var filter = _.findWhere(definition, {value: facet});
 
               // Process options
               if (typeof filter.options === "object") {
@@ -36,16 +38,15 @@
         });
 
         // Some integration tweaks
-        var width = $(this).find('.vs').width();
-        $(this).find('> div').css('float', 'left');
-        var inputWidth = $(this).find('> div.input-group').width();
-        $(this).find('.vs').width(width - inputWidth);
+        var width = $container.width();
+        $container.css('float', 'left');
+        var inputWidth = $container.next().width();
+        $container.width(width - inputWidth - 1);
 
         // Initialize query from filters from our query string
-        var urlParams = Drupal.behaviors.udashboardSearch.urlParams();
         var facets = [];
-        _.each(urlParams, function (val, category) {
-          if (_.findWhere(settings.udashboard.search, {value: category})) {
+        _.each(query, function (val, category) {
+          if (_.findWhere(definition, {value: category})) {
             facets.push(new VS.model.SearchFacet({
               category: category,
               value: VS.utils.inflector.trim(val),
@@ -56,12 +57,10 @@
         search.searchQuery.reset(facets);
 
         // Submission handling
-        $(this).submit(function () {
-          var query = Drupal.behaviors.udashboardSearch.urlParams();
-
+        $form.submit(function () {
           // First remove all filters from our query string
           _.each(query, function (val, filter) {
-            if (_.findWhere(settings.udashboard.search, {value: filter})) {
+            if (_.findWhere(definition, {value: filter})) {
               delete query[filter];
             }
           });
@@ -74,22 +73,6 @@
           return false;
         });
       });
-    },
-
-    urlParams: function () {
-      var urlParams;
-      var match,
-        pl = /\+/g,  // Regex for replacing addition symbol with a space
-        search = /([^&=]+)=?([^&]*)/g,
-        decode = function (s) {
-          return decodeURIComponent(s.replace(pl, " "));
-        },
-        query = window.location.search.substring(1);
-
-      urlParams = {};
-      while (match = search.exec(query))
-        urlParams[decode(match[1])] = decode(match[2]);
-      return urlParams;
     }
   };
 
