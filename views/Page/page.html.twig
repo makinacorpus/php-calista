@@ -17,8 +17,9 @@
     sort: SortManager
     sort.currentField: string (current sort field)
     sort.currentOrder: string (current sort order)
-    sort.fieldLinks: Link[]
+    sort.fieldLinks: Link[] (keyed with field names)
     sort.orderLinks: Link[]
+    sort.getLink(NAME): Link
     sort.count: int (number of sort fields)
     hasPager: should we show pager or not
     pager: string (an already rendered pager)
@@ -91,6 +92,52 @@
   </form>
 {% endblock %}
 
+{% block sort_link_active_asc %}
+  <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+{% endblock %}
+
+{% block sort_link_active_desc %}
+  <span class="glyphicon glyphicon-search-up" aria-hidden="true"></span>
+{% endblock %}
+
+{#
+ # A table-header style sort link - unused per default.
+ #
+ # Use this to implement clickable table sort headers, use it the
+ # following way:
+ #
+ # <th>
+ #   {% with {sort: sort, title: "Référence", field: 'h.timestamp'} %}
+ #     {{ block('sort_link_shortcut') }}
+ #   {% endwith %}
+ # </th>
+ #
+ # Please note that with latest twig, with context is supposed to be
+ # merged to current context, but if you use TFD7, it overrides the With
+ # token parser and drops this feature, hence the 'sort: sort' in the
+ # example. For more information see https://github.com/TFD7/TFD7/issues/43
+ #}
+{% block sort_link_shortcut %}
+  {% set param = sort.orderParameter %}
+  {% set link = sort.getLink(field) %}
+  {% set suffix = '' %}
+  {% spaceless %}
+    {% if link.isActive %}
+      {% if 'asc' == sort.currentOrder %}
+        {% set href = path(link.route, link.routeParams|merge({(sort.orderParameter): 'desc'})) %}
+        {% set suffix = block('sort_link_active_asc') %}
+      {% else %}
+        {% set href = path(link.route, link.routeParams|merge({(sort.orderParameter): 'asc'})) %}
+        {% set suffix = block('sort_link_active_desc') %}
+      {% endif %}
+    {% else %}
+      {% set href = path(link.route, link.routeParams) %}
+    {% endif %}
+    <a href="{{ href }}" data-page-link>{{ title }}</a>
+  {% endspaceless %}
+{% endblock %}
+
+{# A normal sort link #}
 {% block sort_link %}
   {% spaceless %}
     <a href="{{ path(link.route, link.routeParams) }}" data-page-link>

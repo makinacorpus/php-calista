@@ -50,6 +50,11 @@ class SortManager implements \Countable
     private $allowed = [];
 
     /**
+     * @var Link[]
+     */
+    private $links;
+
+    /**
      * Default constructor
      *
      * @param string $paramField
@@ -65,6 +70,26 @@ class SortManager implements \Countable
         if ($paramOrder) {
             $this->paramOrder = $paramOrder;
         }
+    }
+
+    /**
+     * Get sort field parameter name
+     *
+     * @return string
+     */
+    public function getFieldParameter()
+    {
+        return $this->paramField;
+    }
+
+    /**
+     * Get sort order parameter name
+     *
+     * @return string
+     */
+    public function getOrderParameter()
+    {
+        return $this->paramOrder;
     }
 
     /**
@@ -86,6 +111,7 @@ class SortManager implements \Countable
 
         $this->defaultField = $field;
         $this->defaultOrder = $order;
+        $this->links = null;
     }
 
     /**
@@ -101,6 +127,8 @@ class SortManager implements \Countable
         if (!$this->defaultField) {
             $this->defaultField = key($this->allowed);
         }
+
+        $this->links = null;
     }
 
     /**
@@ -118,6 +146,7 @@ class SortManager implements \Countable
                 return $field;
             }
         }
+
         return $this->defaultField;
     }
 
@@ -184,13 +213,37 @@ class SortManager implements \Countable
     }
 
     /**
+     * Get link for field
+     *
+     * @param string $field
+     *
+     * @return Link
+     */
+    public function getLink($field)
+    {
+        if (!isset($this->allowed[$field])) {
+            throw new \InvalidArgumentException(sprintf("%s: is not a valid search field", $field));
+        }
+
+        if (null === $this->links) {
+            $this->getFieldLinks();
+        }
+
+        return $this->links[$field];
+    }
+
+    /**
      * Get sort field links
      *
      * @return Link[]
      */
     public function getFieldLinks()
     {
-        $ret = [];
+        if (null !== $this->links) {
+            return $this->links;
+        }
+
+        $this->links = [];
 
         $route = $this->getRoute();
         $query = $this->getRouteParamaters();
@@ -198,10 +251,10 @@ class SortManager implements \Countable
         $current = $this->getCurrentField($query);
 
         foreach ($this->allowed as $value => $label) {
-            $ret[$value] = $this->buildLink($query, $route, $this->paramField, $value, $label, $current, $this->defaultField);
+            $this->links[$value] = $this->buildLink($query, $route, $this->paramField, $value, $label, $current, $this->defaultField);
         }
 
-        return $ret;
+        return $this->links;
     }
 
     /**
