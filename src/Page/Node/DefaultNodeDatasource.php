@@ -34,11 +34,21 @@ class DefaultNodeDatasource extends AbstractDatasource
     /**
      * Get Drupal database connection
      *
-     * @return \\DatabaseConnection
+     * @return \DatabaseConnection
      */
     final protected function getDatabase()
     {
         return $this->database;
+    }
+
+    /**
+     * Get Drupal database connection
+     *
+     * @return EntityManager
+     */
+    final protected function getEntityManager()
+    {
+        return $this->entityManager;
     }
 
     /**
@@ -86,7 +96,7 @@ class DefaultNodeDatasource extends AbstractDatasource
      * @return NodeInterface[]
      *   The loaded nodes
      */
-    final protected function preloadDependencies(array $nodeIdList)
+    protected function preloadDependencies(array $nodeIdList)
     {
         $userIdList = [];
         $nodeList = $this->entityManager->getStorage('node')->loadMultiple($nodeIdList);
@@ -111,6 +121,18 @@ class DefaultNodeDatasource extends AbstractDatasource
      */
     protected function applyFilters(\SelectQuery $select, $query, PageState $pageState)
     {
+    }
+
+    /**
+     * Returns a column on which an arbitrary sort will be added in order to
+     * ensure that besides user selected sort order, it will be  predictible
+     * and avoid sort glitches.
+     *
+     * @return string
+     */
+    protected function getPredictibleOrderColumn()
+    {
+        return 'n.nid';
     }
 
     /**
@@ -148,12 +170,13 @@ class DefaultNodeDatasource extends AbstractDatasource
      * @return \SelectQuery
      *   It can be an extended query, so use this object.
      */
-    final protected function process(\SelectQuery $select, $query, PageState $pageState)
+    protected function process(\SelectQuery $select, $query, PageState $pageState)
     {
+        $sortOrder = SortManager::DESC === $pageState->getSortOrder() ? 'desc' : 'asc';
         if ($pageState->hasSortField()) {
-            $select->orderBy($pageState->getSortField(), SortManager::DESC === $pageState->getSortOrder() ? 'desc' : 'asc');
+            $select->orderBy($pageState->getSortField(), $sortOrder);
         }
-        $select->orderBy('n.nid', SortManager::DESC === $pageState->getSortOrder() ? 'desc' : 'asc');
+        $select->orderBy($this->getPredictibleOrderColumn(), $sortOrder);
 
         $sParam = $pageState->getSearchParameter();
         if (!empty($query[$sParam])) {
@@ -173,7 +196,7 @@ class DefaultNodeDatasource extends AbstractDatasource
      *
      * In order to validate, we don't need sort etc...
      */
-    final public function validateItems(array $query, array $idList)
+    public function validateItems(array $query, array $idList)
     {
         $select = $this->createSelectQuery($query);
 
@@ -199,7 +222,7 @@ class DefaultNodeDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    final public function getItems($query, PageState $pageState)
+    public function getItems($query, PageState $pageState)
     {
         $select = $this->createSelectQuery($query);
         $select = $this->process($select, $query, $pageState);
