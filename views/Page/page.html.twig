@@ -16,7 +16,7 @@
     query: string[] (current get query)
     sort: SortManager
     sort.currentField: string (current sort field)
-    sort.currentOrder: string (current sort order)
+    sort.currentOrder(query): string (current sort order)
     sort.fieldLinks: Link[] (keyed with field names)
     sort.orderLinks: Link[]
     sort.getLink(NAME): Link
@@ -123,7 +123,7 @@
   {% set suffix = '' %}
   {% spaceless %}
     {% if link.isActive %}
-      {% if 'asc' == sort.currentOrder %}
+      {% if 'asc' == sort.currentOrder(query) %}
         {% set href = path(link.route, link.routeParams|merge({(sort.orderParameter): 'desc'})) %}
         {% set suffix = block('sort_link_active_asc') %}
       {% else %}

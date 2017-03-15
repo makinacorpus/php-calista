@@ -74,7 +74,7 @@ class DefaultNodeDatasource extends AbstractDatasource
             'h.timestamp'   => $this->t('most recently viewed'),
             'n.status'      => $this->t("status"),
             'n.uid'         => $this->t("owner"),
-            'n.title.title' => $this->t("title"),
+            'n.title'       => $this->t("title"),
         ];
     }
 
