@@ -1,3 +1,18 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2017-03-16 15:21+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
 #: sites/all/modules/composer/drupal-udashboard/src/Form/ActionProcessForm.php:58
 msgid "Action was done"
 msgstr "L'action a été effectuée"
@@ -25,7 +40,7 @@ msgstr "Nom"
 #: sites/all/modules/composer/drupal-udashboard/src/Page/Account/DefaultAccountDatasource.php:65
 #: sites/all/modules/composer/drupal-udashboard/src/Page/Node/DefaultNodeDatasource.php:72
 msgid "creation date"
-msgstr "date de créatuib"
+msgstr "date de création"
 
 #: sites/all/modules/composer/drupal-udashboard/src/Page/Account/DefaultAccountDatasource.php:66
 msgid "most recently access"
@@ -139,11 +154,11 @@ msgstr "Propriétaire"
 
 #: sites/all/modules/composer/drupal-udashboard/views/Page/page.html.twig:150;151
 msgid "Sort by:"
-msgstr "Tri"
+msgstr "Trier par:"
 
 #: sites/all/modules/composer/drupal-udashboard/views/Page/page.html.twig:150;151
 msgid "Sort by"
-msgstr "Tri"
+msgstr "Trier par"
 
 #: sites/all/modules/composer/drupal-udashboard/views/Page/page.html.twig:78;87
 msgid "Search"
