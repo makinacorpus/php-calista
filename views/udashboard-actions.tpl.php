@@ -7,9 +7,9 @@
             <span class="glyphicon glyphicon-<?php echo $link['icon']; ?>" aria-hidden="true"></span>
           <?php endif; ?>
           <?php if ($link['icon'] && !$show_title): ?>
-            <span class="sr-only"><?php echo check_plain($link['title']); ?></span>
+            <span class="sr-only"><?php echo $link['title']; ?></span>
           <?php else: ?>
-            <?php echo check_plain($link['title']); ?>
+            <?php echo $link['title']; ?>
           <?php endif; ?>
         </a>
       <?php endforeach; ?>
@@ -24,9 +24,9 @@
           <?php endif; ?>
           <?php if ($title): ?>
             <?php if ($show_title): ?>
-              <?php echo check_plain($title); ?>
+              <?php echo $title; ?>
             <?php else: ?>
-              <span class="sr-only"><?php echo check_plain($title); ?></span>
+              <span class="sr-only"><?php echo $title; ?></span>
             <?php endif; ?>
           <?php endif; ?>
         <?php else: ?>
@@ -46,7 +46,7 @@
                 <?php if ($link['icon']): ?>
                   <span class="glyphicon glyphicon-<?php echo $link['icon']; ?>" aria-hidden="true"></span>
                 <?php endif; ?>
-                <?php echo check_plain($link['title']); ?>
+                <?php echo $link['title']; ?>
               </a>
             </li>
           <?php endforeach; ?>

@@ -9,9 +9,9 @@
               <span class="glyphicon glyphicon-{{ link.icon }}" aria-hidden="true"></span>
             {% endif %}
             {% if link.icon and not show_title %}
-              <span class="sr-only">{{ link.title|check_plain }}</span>
+              <span class="sr-only">{{ link.title }}</span>
             {% else %}
-              {{ link.title|check_plain }}
+              {{ link.title }}
             {% endif %}
           </a>
         {% endfor %}
@@ -26,9 +26,9 @@
             {% endif %}
             {% if title %}
               {% if show_title %}
-                {{ title|check_plain }}
+                {{ title }}
               {% else %}
-                <span class="sr-only">{{ title|check_plain }}</span>
+                <span class="sr-only">{{ title }}</span>
               {% endif %}
             {% endif %}
           {% else %}
@@ -48,7 +48,7 @@
                   {% if link.icon %}
                     <span class="glyphicon glyphicon-{{ link.icon }}" aria-hidden="true"></span>
                   {% endif %}
-                  {{ link.title|check_plain }}
+                  {{ link.title }}
                 </a>
               </li>
             {% endfor %}
