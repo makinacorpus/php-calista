@@ -530,7 +530,8 @@ final class PageBuilder
             $sort->setFields($sortFields);
             // Do not set the sort order links if there is no field to sort on
             if ($sortDefault = $datasource->getDefaultSort()) {
-                $sort->setDefault(...$sortDefault);
+                // @todo PHP 5.6 $sort->setDefault(...$sortDefault);
+                $sort->setDefault($sortDefault[0], $sortDefault[1]);
             }
             // Enfore sorts not being displayed
             if (!$this->displaySort) {
