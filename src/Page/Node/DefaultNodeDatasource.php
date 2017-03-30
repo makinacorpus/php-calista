@@ -136,6 +136,19 @@ class DefaultNodeDatasource extends AbstractDatasource
     }
 
     /**
+     * Should the implementation add group by n.nid clause or not
+     *
+     * It happens that some complex implementation will add their own groups,
+     * case in which we should not interfer.
+     *
+     * @return bool
+     */
+    protected function addGroupby()
+    {
+        return true;
+    }
+
+    /**
      * Create node select query, override this to change it
      *
      * @param array $query
@@ -150,13 +163,13 @@ class DefaultNodeDatasource extends AbstractDatasource
             $query['user_id'] = $GLOBALS['user']->uid;
         }
 
-        return $this
-            ->getDatabase()
-            ->select('node', 'n')
-            ->fields('n', ['nid'])
-            ->groupBy('n.nid')
-            ->addTag('node_access')
-        ;
+        $select = $this->getDatabase()->select('node', 'n')->fields('n', ['nid'])->addTag('node_access');
+
+        if ($this->addGroupby()) {
+            $select->groupBy('n.nid');
+        }
+
+        return $select;
     }
 
     /**
