@@ -140,4 +140,26 @@ class PageState
     {
         return $this->page;
     }
+
+    public function getPageCount()
+    {
+        return ceil($this->totalCount / $this->limit);
+    }
+
+    public function getPageRange()
+    {
+        $num = $this->getPageCount();
+        $min = max([$this->page - 2, 1]);
+        $max = min([$this->page + 2, $num]);
+
+        if ($max - $min < 4) {
+            if (1 == $min) {
+                return range(1, min([5, $num]));
+            } else {
+                return range(max([$num - 4, 1]), $num);
+            }
+        } else {
+            return range($min, $max);
+        }
+    }
 }

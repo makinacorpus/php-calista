@@ -1,29 +1,29 @@
 {#
-  Please note that items variable items type will vary depending on what you
-  are currently displaying, this template hanles nodes.
-
-  Variables:
-    pageId: page uuid, for security and ajax queries
-    result: PageResult
-    state: PageState
-    route: string (current route)
-    filters: Filter[]
-    filters.ID.title: string (title)
-    filters.ID.links: Link[]
-    displays: Link[]
-    state.searchParam: string
-    state.currentSearch: string (raw user input)
-    query: string[] (current get query)
-    sort: SortManager
-    sort.currentField: string (current sort field)
-    sort.currentOrder(query): string (current sort order)
-    sort.fieldLinks: Link[] (keyed with field names)
-    sort.orderLinks: Link[]
-    sort.getLink(NAME): Link
-    sort.count: int (number of sort fields)
-    hasPager: should we show pager or not
-    pager: string (an already rendered pager)
-    items: mixed[] the items (in most cases, nodes)
+ # Please note that items variable items type will vary depending on what you
+ #  are currently displaying, this template hanles nodes.
+ #
+ #  Variables:
+ #    pageId: page uuid, for security and ajax queries
+ #    result: PageResult
+ #    state: PageState
+ #    route: string (current route)
+ #    filters: Filter[]
+ #    filters.ID.title: string (title)
+ #    filters.ID.links: Link[]
+ #    displays: Link[]
+ #    state.searchParam: string
+ #    state.currentSearch: string (raw user input)
+ #    query: string[] (current get query)
+ #    sort: SortManager
+ #    sort.currentField: string (current sort field)
+ #    sort.currentOrder: string (current sort order)
+ #    sort.fieldLinks: Link[] (keyed with field names)
+ #    sort.orderLinks: Link[]
+ #    sort.getLink(NAME): Link
+ #    sort.count: int (number of sort fields)
+ #    hasPager: should we show pager or not
+ #    pager: string (an already rendered pager)
+ #    items: mixed[] the items (in most cases, nodes)
  #}
 
 {%- block display_mode_link -%}
@@ -180,6 +180,10 @@
   </div>
 {% endblock %}
 
+{#
+ # Place it or not into your custom templates, but never forget the
+ # data-page-checkbox="all" attribute on which the javascript will match.
+ #}
 {%- block item_checkbox_all -%}
   <input type="checkbox" data-page-checkbox="all" title="{{ "(Un)check all"|t }}"/>
 {%- endblock -%}
@@ -191,8 +195,9 @@
  #}
 {%- block item_checkbox -%}
   {% set name = form_name ~ "[]" %}
-  <label for="{{ name }}">
-    <input type="checkbox" data-page-checkbox="item" name="{{ name }}" value="{{ item.nid }}" title="{{ "Select this row"|t }}"/>
+  {% set id = pageId ~ '_' ~ form_name ~ '_' ~ item.nid %}
+  <label for="{{ id }}">
+    <input type="checkbox" data-page-checkbox="item" id={{ id }} name="{{ name }}" value="{{ item.nid }}" title="{{ "Select this row"|t }}"/>
   </label>
 {%- endblock -%}
 
@@ -241,11 +246,61 @@
   </table>
 {% endblock %}
 
-{% block pager %}
-  {% if hasPager %}
-    {{ pager(state.limit, state.totalCount, state.pageNumber, state.pagerElement) }}
+{#
+ # Single pager link href
+ #}
+{%- block pager_href -%}
+  {% if index is defined %}
+    {{ path(result.route, result.query|merge({(state.pageParameter): index})) }}
+  {% else %}
+    #
   {% endif %}
-{% endblock %}
+{%- endblock -%}
+
+{#
+ # Single pager link
+ #}
+{%- block pager_link -%}
+  {% if index is defined %}
+    <a href="{{ block('pager_href') }}" data-page-link>
+      {{ index }}
+    </a>
+  {% endif %}
+{%- endblock -%}
+
+{#
+ # Custom pager, built with Bootstrap component. We dissociated it from any
+ # framework because we need to have control on the links for AJAX page
+ # refresh.
+ #}
+{%- block pager -%}
+  {% if hasPager %}
+    {% set page = state.pageNumber %}
+    <nav aria-label="{{ "Navigation"|trans }}">
+      <ul class="pagination">
+        {% if 1 < page %}
+          <li>
+            <a href="{% with {index: (page - 1)} %}{{ block('pager_href') }}{% endwith %}" aria-label="{{ "Previous"|trans }}" data-page-link>
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% endif %}
+        {% for index in state.pageRange %}
+          <li>
+            {{ block('pager_link') }}
+          </li>
+        {% endfor %}
+        {% if page < state.pageCount %}
+          <li>
+            <a href="{% with {index: (page + 1)} %}{{ block('pager_href') }}{% endwith %}" aria-label="{{ "Next"|trans }}" data-page-link>
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+{%- endblock -%}
 
 {% block page_content %}
   <div class="container-fluid">

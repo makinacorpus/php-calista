@@ -45,9 +45,8 @@ class DrupalPager extends \SelectQueryExtender
         // offset instead of going to page 0.
         // Note that this makes those datasources not compatible with a custom
         // user-forged request as input...
-        $page   = isset($_GET['page']) ? $this->pageState->getPageNumber() : 0;
         $limit  = $this->pageState->getLimit();
-        $offset = $limit * max([0, $page]);
+        $offset = $this->pageState->getOffset();
 
         $this->pageState->setTotalItemCount($this->getCountQuery()->execute()->fetchField());
         $this->range($offset, $limit);
