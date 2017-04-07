@@ -254,7 +254,7 @@
  #}
 {%- block pager_href -%}
   {% if index is defined %}
-    {{ path(result.route, result.query|merge({(state.pageParameter): index})) }}
+    {{ path(result.route, routeParams|merge({(state.pageParameter): index})) }}
   {% else %}
     #
   {% endif %}
