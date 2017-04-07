@@ -4,6 +4,8 @@ namespace MakinaCorpus\Drupal\Dashboard\Page;
 
 /**
  * Base implementation which leaves null a few mathods
+ *
+ * @codeCoverageIgnore
  */
 abstract class AbstractDatasource implements DatasourceInterface
 {
@@ -43,21 +45,5 @@ abstract class AbstractDatasource implements DatasourceInterface
     public function validateItems(array $query, array $idList)
     {
         return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasSearchForm()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSearchFormParamName()
-    {
-        return 's';
     }
 }

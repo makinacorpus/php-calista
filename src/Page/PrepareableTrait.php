@@ -9,9 +9,20 @@ namespace MakinaCorpus\Drupal\Dashboard\Page;
  */
 trait PrepareableTrait
 {
+    /**
+     * @var bool
+     */
     private $prepared = false;
+
+    /**
+     * @var string
+     */
     private $route;
-    private $query = [];
+
+    /**
+     * @var PageQuery
+     */
+    private $query;
 
     /**
      * Set route
@@ -21,7 +32,7 @@ trait PrepareableTrait
      * @param string[] $query
      *   Current incoming query
      */
-    public function prepare($route, array $query = [])
+    public function prepare($route, PageQuery $query)
     {
         $this->route = $route;
         $this->query = $query;
@@ -45,7 +56,7 @@ trait PrepareableTrait
     /**
      * Get route parameters
      *
-     * @return string[)
+     * @return PageQuery
      */
     public function getQuery()
     {
@@ -61,9 +72,9 @@ trait PrepareableTrait
      *
      * @return string[)
      */
-    public function getRouteParamaters()
+    public function getRouteParameters()
     {
-        return $this->getQuery();
+        return $this->getQuery()->getRouteParameters();
     }
 }
 

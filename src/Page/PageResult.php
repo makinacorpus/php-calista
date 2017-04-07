@@ -2,6 +2,9 @@
 
 namespace MakinaCorpus\Drupal\Dashboard\Page;
 
+/**
+ * @codeCoverageIgnore
+ */
 class PageResult
 {
     private $route;
@@ -23,7 +26,7 @@ class PageResult
      * @param Filter[] $visualFilters
      * @param SortManager $sort
      */
-    public function __construct($route, PageState $state, array $items, array $query = [], array $filters = [], array $visualFilters = [], SortManager $sort = null)
+    public function __construct($route, PageState $state, PageQuery $query, array $items, array $filters = [], array $visualFilters = [], SortManager $sort = null)
     {
         $this->route = $route;
         $this->state = $state;
@@ -59,7 +62,7 @@ class PageResult
     }
 
     /**
-     * @return \string[]
+     * @return PageQuery
      */
     public function getQuery()
     {
@@ -98,7 +101,7 @@ class PageResult
      */
     public function queryToArray()
     {
-        $query = $this->query;
+        $query = $this->query->getRouteParameters();
 
         foreach ($query as $index => $value) {
             if ($value === null || $value === '') {

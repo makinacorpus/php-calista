@@ -7,6 +7,8 @@ use MakinaCorpus\Drupal\Dashboard\Page\PageState;
 /**
  * Query extender for Drupal paging that will override the element using
  * the one you have in the page state object.
+ *
+ * @codeCoverageIgnore
  */
 class DrupalPager extends \SelectQueryExtender
 {

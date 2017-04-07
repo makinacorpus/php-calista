@@ -95,18 +95,4 @@ interface DatasourceInterface
      * @return bool
      */
     public function validateItems(array $query, array $idList);
-
-    /**
-     * Does this connector implements a full text search form
-     *
-     * @return boolean
-     */
-    public function hasSearchForm();
-
-    /**
-     * Return the GET parameter name for the search form
-     *
-     * @return string
-     */
-    public function getSearchFormParamName();
 }

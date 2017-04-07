@@ -1,4 +1,5 @@
 composer.lock
+coverage
 node_modules
 phpunit.xml
 vendor

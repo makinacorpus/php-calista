@@ -146,21 +146,21 @@ class DefaultAccountDatasource extends AbstractDatasource
     {
         if ($pageState->hasSortField()) {
             $select->orderBy(
-              $pageState->getSortField(),
-              SortManager::DESC === $pageState->getSortOrder() ? 'desc' : 'asc'
+                $pageState->getSortField(),
+                SortManager::DESC === $pageState->getSortOrder() ? 'desc' : 'asc'
             );
         }
         $select->orderBy(
-          'u.uid',
-          SortManager::DESC === $pageState->getSortOrder() ? 'desc' : 'asc'
+            'u.uid',
+            SortManager::DESC === $pageState->getSortOrder() ? 'desc' : 'asc'
         );
 
         $sParam = $pageState->getSearchParameter();
         if (!empty($query[$sParam])) {
             $select->condition(
-              'u.name',
-              '%'.db_like($query[$sParam]).'%',
-              'LIKE'
+                'u.name',
+                '%'.db_like($query[$sParam]).'%',
+                'LIKE'
             );
         }
 
@@ -170,14 +170,6 @@ class DefaultAccountDatasource extends AbstractDatasource
           ->extend(DrupalPager::class)
           ->setPageState($pageState)
         ;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function hasSearchForm()
-    {
-        return true;
     }
 
     /**
@@ -194,11 +186,11 @@ class DefaultAccountDatasource extends AbstractDatasource
 
         // Remove anonymous user
         $accountIdList = $select
-          ->fields('u', ['uid'])
-          ->condition('u.uid', 0, '>')
-          ->groupBy('u.uid')
-          ->execute()
-          ->fetchCol()
+            ->fields('u', ['uid'])
+            ->condition('u.uid', 0, '>')
+            ->groupBy('u.uid')
+            ->execute()
+            ->fetchCol()
         ;
 
         // Preload and set nodes at once

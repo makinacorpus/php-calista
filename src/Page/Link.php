@@ -4,6 +4,8 @@ namespace MakinaCorpus\Drupal\Dashboard\Page;
 
 /**
  * Represent a link, for templates.
+ *
+ * @codeCoverageIgnore
  */
 class Link
 {

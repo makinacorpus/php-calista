@@ -168,7 +168,7 @@ class Filter implements \Countable
         $ret = [];
 
         $route = $this->getRoute();
-        $query = $this->getRouteParamaters();
+        $query = $this->getRouteParameters();
 
         $selectedValues = $this->getSelectedValues($query);
 

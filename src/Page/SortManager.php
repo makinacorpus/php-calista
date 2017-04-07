@@ -246,7 +246,7 @@ class SortManager implements \Countable
         $this->links = [];
 
         $route = $this->getRoute();
-        $query = $this->getRouteParamaters();
+        $query = $this->getRouteParameters();
 
         $current = $this->getCurrentField($query);
 
@@ -267,7 +267,7 @@ class SortManager implements \Countable
         $ret = [];
 
         $route = $this->getRoute();
-        $query = $this->getRouteParamaters();
+        $query = $this->getRouteParameters();
 
         $current = $this->getCurrentOrder($query);
         $map = [self::ASC => $this->t("ascending"), self::DESC => $this->t("descending")];

@@ -243,20 +243,4 @@ class DefaultNodeDatasource extends AbstractDatasource
         // Preload and set nodes at once
         return $this->preloadDependencies($select->execute()->fetchCol());
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasSearchForm()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSearchFormParamName()
-    {
-        return 's';
-    }
 }

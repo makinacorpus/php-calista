@@ -4,6 +4,8 @@ namespace MakinaCorpus\Drupal\Dashboard\Page;
 
 /**
  * Contains the current page state
+ *
+ * @codeCoverageIgnore
  */
 class PageState
 {

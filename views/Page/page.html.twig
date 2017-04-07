@@ -14,6 +14,7 @@
  #    state.searchParam: string
  #    state.currentSearch: string (raw user input)
  #    query: string[] (current get query)
+ #    routeParams: string[] (current get query)
  #    sort: SortManager
  #    sort.currentField: string (current sort field)
  #    sort.currentOrder: string (current sort order)
@@ -72,12 +73,14 @@
     <div class="input-group">
       {% if visualFilters %}
         <div class="form-control udashboard-visual-search"
-             data-definition="{{ visualFilters|udashboardFilterDefinition()|e }}"
-             data-query="{{ visualFilters|udashboardFilterQuery(query)|e }}"></div>
+          data-definition="{{ visualFilters|udashboardFilterDefinition()|e }}"
+          data-query="{{ visualFilters|udashboardFilterQuery(query)|e }}">
+        </div>
       {% else %}
         <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ state.searchParameter }}"
-               value="{{ state.currentSearch|escape }}" maxlength="128" type="text">
-        {% for name, value in query %}
+          value="{{ state.currentSearch|escape }}" maxlength="128" type="text"
+        />
+        {% for name, value in routeParams %}
           {% if name != state.searchParameter %}
             <input type="hidden" name="{{ name }}" value="{{ value|udashboard_query_param }}"/>
           {% endif %}
