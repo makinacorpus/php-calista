@@ -461,7 +461,7 @@ final class PageBuilder
      */
     public function validateItems(Request $request, array $idList)
     {
-        $query = array_merge($this->createQueryFromRequest($request), $this->baseQuery);
+        $query = (new PageQuery($request, $this->searchParam, $this->displaySearch, $this->baseQuery))->getAll();
 
         return $this->getDatasource()->validateItems($query, $idList);
     }
@@ -568,6 +568,7 @@ final class PageBuilder
 
         return new PageResult($route, $state, $query, $items, $filters, $visualFilters, $sort);
     }
+
     /**
      * Create the page view
      *
