@@ -52,7 +52,7 @@ class PageQuery
         // Cleanup request and query string input, normalize using allowed
         // values from current datasource filter and base query
         if ($baseQuery) {
-            $this->query = $this->filterQueryWithBaseQuery($this->query, $baseQuery);
+            $this->query = $this->mergeQueries([$baseQuery, $this->filterQueryWithBaseQuery($this->query, $baseQuery)]);
         }
 
         if ($this->search) {
