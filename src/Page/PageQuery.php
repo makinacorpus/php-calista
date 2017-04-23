@@ -73,9 +73,9 @@ class PageQuery
         // This is a very specific use case, but datasource awaits for a single
         // query string for full text search, so just flatten this query
         // parameter
-        $this->all    = $this->flattenQueryParam($this->all, $searchParam);
-        $this->search = $this->flattenQueryParam($this->search, $searchParam);
-        $this->query  = $this->flattenQueryParam($this->query, $searchParam);
+        $this->all    = $this->flattenQuery($this->all, [$searchParam]);
+        $this->search = $this->flattenQuery($this->search, [$searchParam]);
+        $this->query  = $this->flattenQuery($this->query, [$searchParam]);
     }
 
     /**
@@ -99,15 +99,30 @@ class PageQuery
     }
 
     /**
-     * In the given query, flatten the given parameter
+     * In the given query, flatten the given parameter.
+     *
+     * All values in the query that are arrays with a single value will be
+     * flattened to be a value instead of an array, this way we limit the
+     * potential wrong type conversions with special parameters such as the
+     * page number.
+     *
+     * All parameters in the $needsImplode array will be imploded using a
+     * whitespace, this is useful for the full text search parameter, that
+     * needs to remain a single string.
      *
      * @param array $query
-     * @param string $param
+     * @param string[] $needsImplode
      */
-    private function flattenQueryParam($query, $param)
+    private function flattenQuery($query, array $needsImplode = [])
     {
-        if (isset($query[$param]) && is_array($query[$param])) {
-            $query[$param] = implode(' ', $query[$param]);
+        foreach ($query as $key => $values) {
+            if (is_array($values)) {
+                if (1 === count($values)) {
+                    $query[$key] = reset($values);
+                } else if (in_array($key, $needsImplode)) {
+                    $query[$key] = implode(' ', $values);
+                }
+            }
         }
 
         return $query;
