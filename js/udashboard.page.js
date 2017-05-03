@@ -70,9 +70,12 @@
    * @param object response
    */
   function placePageBlocks(page, response) {
+    var done = false;
+
     if (response.query) {
       page.query = response.query;
     }
+
     if (response.blocks) {
       $.each(response.blocks, function(index, value) {
         var block = page.selector.find('[data-page-block=' + index + ']');
@@ -89,11 +92,21 @@
         value = value.trim();
         if (value.length) {
           var partialDom = $(value);
-          attachBehaviors(page, partialDom);
+          block.html(partialDom);
+          done = true;
         }
-
-        block.html(partialDom);
       });
+    }
+
+    // Attach globally Drupal behaviors, we need to do it at the page level
+    // else external javascript modules/behaviors will miss whole page, for
+    // exemple, dragula based users will not find the container, since we
+    // just re-attached the children
+    if (done) {
+      // Re-attach Drupal behaviours, we loaded stuff from AJAX
+      Drupal.attachBehaviors(page.element);
+      // And re-attach our own behaviors, they are not targetted properly because of once
+      attachBehaviors(page, page.element);
     }
   }
 
@@ -217,8 +230,6 @@
         }
       });
     }
-
-    Drupal.attachBehaviors(context);
   }
 
   /**
@@ -226,10 +237,12 @@
    */
   Drupal.behaviors.udashboardPage = {
     attach: function(context, settings) {
-      $(context).find("[data-page]").once('udashboard_page', function() {
+      $(context).find("[data-page]").once('udashboard_page').each(function() {
 
         var selector = $(this);
+        var element = this;
         var page = {
+          element: element,
           selector: selector,
           query: JSON.parse(selector.attr('data-page-query')),
           id: selector.attr('data-page'),
