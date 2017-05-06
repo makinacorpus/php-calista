@@ -218,7 +218,7 @@
     <td>{% if item.isPublished %}{{ "published"|trans }}{% endif %}</td>
     <td>{{ item.created|time_diff }}</td>
     <td>{{ item.changed|time_diff }}</td>
-    <td>{{ item.uid }}: @todo</td>
+    <td>{{ item.name }}</td>
     <td>
       {{ udashboard_actions(item) }}
     </td>
