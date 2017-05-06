@@ -1,4 +1,6 @@
-(function ($) {
+(function ($, Drupal) {
+  "use strict";
+
   /**
    * Some general behaviors
    */
@@ -32,48 +34,15 @@
         var $toggle = $('#contextual-pane-toggle', context);
         var $page = $('#page', context);
 
-
-        // Handle pane position
-        var $panePositionSwitch = $('#contextual-pane-switch-position');
-        $panePositionSwitch.click(function () {
-          $contextualPane.toggleClass('pane-right pane-down');
-          position = panePosition();
-          $.cookie('contextual-pane-position', position, {path: '/'});
-          $panePositionSwitch.find('span').toggleClass('glyphicon-collapse-down glyphicon-expand');
-          Drupal.behaviors.udashboardPane.resizeTabs();
-          $page.css('padding-right', position === 'right' ? initial_size : '15ppx');
-        });
-        if ($.cookie('contextual-pane-position') && $.cookie('contextual-pane-position') !== 'right') {
-          // Second toggle if pane must be hidden
-          $panePositionSwitch.click();
-        }
-
-        var position = panePosition();
-        var initial_size = position === 'right' ? $contextualPane.css('width') : $contextualPane.css('height');
-        if (position === 'right') {
-          $page.css('padding-right', initial_size);
-        }
-
-        /**
-         * Quick function to determine pane position.
-         * @returns {string}
-         */
-        function panePosition() {
-          var positions = ['right', 'down', 'left', 'up'];
-          for (var x in positions) {
-            if ($contextualPane.hasClass('pane-' + positions[x])) {
-              return positions[x];
-            }
-          }
-        }
+        var initial_size = $contextualPane.css('width');
+        $page.css('padding-right', initial_size);
 
         /**
          * Quick function to determine if pane is hidden.
          * @returns {boolean}
          */
         function paneIsHidden() {
-          var propName = (position === 'right' ? 'margin-right' : 'margin-bottom');
-          return $contextualPane.css(propName) && $contextualPane.css(propName) !== '0px';
+          return $contextualPane.css('margin-right') && $contextualPane.css('margin-right') !== '0px';
         }
 
         /**
@@ -82,18 +51,14 @@
         function togglePane(shown, fast) {
           $.cookie('contextual-pane-hidden', !shown, {path: '/'});
           var prop = {};
-          prop[position === 'right' ? 'marginRight' : 'marginBottom'] = shown ? '0px' : '-' + initial_size;
+          prop.marginRight = shown ? '0px' : '-' + initial_size;
           if (fast) {
             $contextualPane.css(prop);
-            if (position === 'right') {
-              $page.css('padding-right', shown ? initial_size : '15px');
-            }
+            $page.css('padding-right', shown ? initial_size : '15px');
           }
           else {
             $contextualPane.animate(prop);
-            if (position === 'right') {
-              $page.animate({paddingRight: shown ? initial_size : '15px'});
-            }
+            $page.animate({paddingRight: shown ? initial_size : '15px'});
           }
         }
 
@@ -120,7 +85,7 @@
             // Update link's class
             $toggle_link.removeClass('active');
             $currentLink.addClass('active');
-            Drupal.behaviors.udashboardPane.resizeTabs()
+            Drupal.behaviors.udashboardPane.resizeTabs();
           }
           return false; // Prevent hash change
         });
@@ -190,4 +155,4 @@
       }
     }
   };
-}(jQuery));
+}(jQuery, Drupal));

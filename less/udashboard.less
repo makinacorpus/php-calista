@@ -84,13 +84,6 @@
       padding-top: 50px;
     }
   }
-
-  &.pane-down {
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: @udashboard-pane-height;
-  }
 }
 
 #contextual-pane .tabs {
@@ -137,11 +130,6 @@
   right: 100%;
   border-radius: @udashboard-border-radius 0 0 @udashboard-border-radius;
 }
-#contextual-pane.pane-down #contextual-pane-toggle {
-  bottom: 100%;
-  left: 50%;
-  border-radius: @udashboard-border-radius @udashboard-border-radius 0 0;
-}
 #contextual-pane.pane-right #contextual-pane-toggle a:first-child {
   border-top: none;
   border-radius: @udashboard-border-radius 0 0 0;
@@ -151,19 +139,6 @@
 }
 #contextual-pane.pane-right #contextual-pane-toggle a:only-child {
   border-radius: @udashboard-border-radius 0 0 @udashboard-border-radius;
-}
-#contextual-pane.pane-down #contextual-pane-toggle a {
-  margin-left: -.25em;
-}
-#contextual-pane.pane-down #contextual-pane-toggle a:first-child {
-  border-left: none;
-  border-radius: @udashboard-border-radius 0 0 0;
-}
-#contextual-pane.pane-down #contextual-pane-toggle a:last-child {
-  border-radius: 0 @udashboard-border-radius 0 0;
-}
-#contextual-pane.pane-down #contextual-pane-toggle a:only-child {
-  border-radius: @udashboard-border-radius @udashboard-border-radius 0 0;
 }
 
 #contextual-pane #contextual-pane-toggle a.active {
