@@ -254,17 +254,6 @@
 
         // Spawn the modal once for all.
         var modal = $('<div class="page-modal"></div>');
-        modal.css({
-          display: "none",
-          background: "black",
-          opacity: 0.4,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          "z-index": 1000
-        });
         selector.append(modal);
         page.modal = modal;
       });
