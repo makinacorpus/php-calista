@@ -86,7 +86,7 @@ class PageExtension extends \Twig_Extension
     {
         if ($page instanceof PageBuilder) {
             return $this->renderPageBuilder($page);
-        } else if ($page instanceof PageBuilder) {
+        } else if ($page instanceof PageView) {
             return $this->renderPageView($page);
         } else {
             return '';
