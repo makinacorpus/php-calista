@@ -525,21 +525,7 @@ final class PageBuilder
 
         $items = $datasource->getItems($datasourceQuery, $state);
 
-        // Build the filter array
-        if ($filters = $datasource->getFilters($query)) {
-            foreach ($filters as $filter) {
-                if (isset($this->baseQuery[$filter->getField()])) {
-                    // @todo figure out why I commented this out, it actually
-                    //   works very nice without this unset()...
-                    //unset($filters[$index]);
-                }
-                $filter->prepare($route, $query);
-                if (array_key_exists($filter->getField(), $this->enabledFilters)) {
-                    $filters[] = $filter;
-                }
-            }
-        }
-
+        // Build filters arrays
         $filters = $visualFilters = [];
 
         if ($baseFilters = $datasource->getFilters($query)) {
@@ -561,7 +547,6 @@ final class PageBuilder
                 }
             }
         }
-
 
         // Set current display
         $state->setCurrentDisplay($request->get('display'));
