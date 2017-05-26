@@ -21,6 +21,7 @@ final class PageBuilder
     private $datasource;
     private $debug = false;
     private $defaultDisplay = 'table';
+    private $disabledSorts = [];
     private $dispatcher;
     private $displayFilters = true;
     private $displayPager = true;
@@ -367,6 +368,20 @@ final class PageBuilder
     }
 
     /**
+     * Disable a sort.
+     *
+     * Sorts are enabled by default but you can disable some.
+     *
+     * @return $this
+     */
+    public function disableSort($sort)
+    {
+        $this->disabledSorts[] = $sort;
+
+        return $this;
+    }
+
+    /**
      * Get item per page
      *
      * @param int $limit
@@ -501,7 +516,14 @@ final class PageBuilder
         $sort->prepare($route, $query);
 
         if ($sortFields = $datasource->getSortFields($datasourceQuery)) {
+            foreach ($sortFields as $field => $label) {
+                if (in_array($field, $this->disabledSorts)) {
+                    unset($sortFields[$field]);
+                }
+            }
+
             $sort->setFields($sortFields);
+
             // Do not set the sort order links if there is no field to sort on
             if ($sortDefault = $datasource->getDefaultSort()) {
                 // @todo PHP 5.6 $sort->setDefault(...$sortDefault);
