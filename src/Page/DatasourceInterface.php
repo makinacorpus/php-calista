@@ -93,8 +93,6 @@ interface DatasourceInterface
      *   Arbitrary item identifier list
      *
      * @return bool
-     *
-     * TODO: Remove this as it is unused?
      */
     public function validateItems(array $query, array $idList);
 }

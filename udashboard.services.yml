@@ -6,7 +6,7 @@ services:
 
   udashboard.admin_widget_factory:
     class: MakinaCorpus\Drupal\Dashboard\AdminWidgetFactory
-    arguments: ['@service_container', '@udashboard.action_provider_registry', '@twig', '@event_dispatcher']
+    arguments: ['@service_container', '@form_builder', '@udashboard.action_provider_registry', '@twig', '@event_dispatcher']
 
   udashboard.processor_registry:
     class: MakinaCorpus\Drupal\Dashboard\Action\ProcessorActionProvider
