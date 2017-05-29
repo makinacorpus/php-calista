@@ -2,16 +2,18 @@
 
 namespace MakinaCorpus\Drupal\Dashboard;
 
-use Drupal\Core\Form\FormBuilderInterface;
 use MakinaCorpus\Drupal\Dashboard\Action\ActionRegistry;
+use MakinaCorpus\Drupal\Dashboard\Page\DrupalFormPageBuilder;
 use MakinaCorpus\Drupal\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Drupal\Dashboard\Page\PageTypeInterface;
+use MakinaCorpus\Drupal\Dashboard\Page\SymfonyFormPageBuilder;
 use MakinaCorpus\Drupal\Dashboard\Table\AdminTable;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * God I hate to register more factories to the DIC, but we have some
@@ -21,7 +23,6 @@ use Symfony\Component\HttpFoundation\Request;
 final class AdminWidgetFactory
 {
     private $container;
-    private $formBuilder;
     private $pageTypes = [];
     private $actionRegistry;
     private $eventDispatcher;
@@ -32,20 +33,17 @@ final class AdminWidgetFactory
      * Default constructor
      *
      * @param ContainerInterface $container
-     * @param FormBuilderInterface $formBuilder
      * @param ActionRegistry $actionRegistry
      * @param \Twig_Environment $twig
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         ContainerInterface $container,
-        FormBuilderInterface $formBuilder,
         ActionRegistry $actionRegistry,
         \Twig_Environment $twig,
         EventDispatcherInterface $eventDispatcher = null
     ) {
         $this->container = $container;
-        $this->formBuilder = $formBuilder;
         $this->actionRegistry = $actionRegistry;
         $this->eventDispatcher = $eventDispatcher;
         $this->debug = $twig->isDebug();
@@ -115,6 +113,26 @@ final class AdminWidgetFactory
     }
 
     /**
+     * Create a SF form page builder without page type
+     *
+     * @return \MakinaCorpus\Drupal\Dashboard\Page\SymfonyFormPageBuilder
+     */
+    public function createSymfonyFormPageBuilder()
+    {
+        return new SymfonyFormPageBuilder($this->twig, $this->eventDispatcher);
+    }
+
+    /**
+     * Create a page builder without page type
+     *
+     * @return \MakinaCorpus\Drupal\Dashboard\Page\DrupalFormPageBuilder
+     */
+    public function createDrupalFormPageBuilder()
+    {
+        return new DrupalFormPageBuilder($this->twig, $this->eventDispatcher);
+    }
+
+    /**
      * Get the page builder
      *
      * @param string $name
@@ -123,13 +141,31 @@ final class AdminWidgetFactory
      */
     public function getPageBuilder($name, Request $request)
     {
-        $type = $this->getPageType($name);
-        $builder = new PageBuilder($this->twig, $this->eventDispatcher);
+        return $this->getPageBuilderFromClass('\MakinaCorpus\Drupal\Dashboard\Page\PageBuilder', $name, $request);
+    }
 
-        $type->build($builder, $request);
-        $builder->setId($name);
+    /**
+     * Get the page builder
+     *
+     * @param string $name
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \MakinaCorpus\Drupal\Dashboard\Page\SymfonyFormPageBuilder
+     */
+    public function getSymfonyFormPageBuilder($name, Request $request)
+    {
+        return $this->getPageBuilderFromClass('\MakinaCorpus\Drupal\Dashboard\Page\SymfonyFormPageBuilder', $name, $request);
+    }
 
-        return $builder;
+    /**
+     * Get the page builder
+     *
+     * @param string $name
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \MakinaCorpus\Drupal\Dashboard\Page\DrupalFormPageBuilder
+     */
+    public function getDrupalFormPageBuilder($name, Request $request)
+    {
+        return $this->getPageBuilderFromClass('\MakinaCorpus\Drupal\Dashboard\Page\DrupalFormPageBuilder', $name, $request);
     }
 
     /**
@@ -142,5 +178,25 @@ final class AdminWidgetFactory
     public function getTable($name, $attributes = [])
     {
         return new AdminTable($name, $attributes, $this->eventDispatcher);
+    }
+
+    /**
+     *
+     *
+     * @param string $pageBuilderClass
+     * @param $name
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return mixed
+     */
+    private function getPageBuilderFromClass($pageBuilderClass, $name, Request $request)
+    {
+        $type = $this->getPageType($name);
+        /** @var PageBuilder $builder */
+        $builder = new $pageBuilderClass($this->twig, $this->eventDispatcher);
+
+        $type->build($builder, $request);
+        $builder->setId($name);
+
+        return $builder;
     }
 }
