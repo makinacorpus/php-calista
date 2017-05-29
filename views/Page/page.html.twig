@@ -191,23 +191,10 @@
   <input type="checkbox" data-page-checkbox="all" title="{{ "(Un)check all"|t }}"/>
 {%- endblock -%}
 
-{#
- # Checkbox for a single item - please note that if you are not working
- # on Drupal nodes, you have to override this block into your page to
- # provide the right item identifier.
- #}
-{%- block item_checkbox -%}
-  {% set name = form_name ~ "[]" %}
-  {% set id = pageId ~ '_' ~ form_name ~ '_' ~ item.nid %}
-  <label for="{{ id }}">
-    <input type="checkbox" data-page-checkbox="item" id={{ id }} name="{{ name }}" value="{{ item.nid }}" title="{{ "Select this row"|t }}"/>
-  </label>
-{%- endblock -%}
-
 {%- block item -%}
   <tr>
-    {% if form_name %}
-      <td>{{ block('item_checkbox') }}</td>
+    {% if element %}
+      <td>{{ form_widget(element) }}</td>
     {% endif %}
     <td>{{ item.type }}</td>
     <td class="ui-sortable"><span class="pull-right"></span>
@@ -229,7 +216,7 @@
   <table class="table table-condensed">
     <thead>
       <tr>
-        {% if form_name %}
+        {% if formset %}
           <th>{{ block('item_checkbox_all') }}</th>
         {% endif %}
         <th>{{ "Type"|trans }}</th>
@@ -243,6 +230,7 @@
     </thead>
     <tbody>
       {% for item in items %}
+        {% set element = formset.forms[item.id] %}
         {{ block('item') }}
       {% endfor %}
     </tbody>
@@ -323,6 +311,10 @@
     {% endif %}
     <div class="row">
       <div class="col-md-12" data-page-block="item_list">
+        {% if formset %}
+          {{ form_errors(formset) }}
+          {{ form_widget(formset.csrf_token) }}
+        {% endif %}
         {{ block('item_list') }}
       </div>
     </div>

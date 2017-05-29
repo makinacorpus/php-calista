@@ -195,7 +195,11 @@ class SymfonyFormPageBuilder extends PageBuilder
      */
     public function hasSelectedValue($value, ExecutionContextInterface $context)
     {
-        if (!array_filter($value, function ($d) {return !empty($d['selected']);})) {
+        $selectedElements = array_filter($value, function ($d) {
+            return !empty($d['selected']);
+        });
+
+        if (!$selectedElements) {
             $context->buildViolation('At least an element has to be selected.')
                     ->addViolation()
             ;
@@ -275,5 +279,17 @@ class SymfonyFormPageBuilder extends PageBuilder
     public function clearData(Request $request)
     {
         $request->getSession()->remove($this->computeId());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Also include the formset for display
+     */
+    public function createPageView(PageResult $result, array $arguments = [])
+    {
+        $arguments['formset'] = $this->formset->createView();
+
+        return parent::createPageView($result, $arguments);
     }
 }

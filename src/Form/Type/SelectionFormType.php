@@ -21,6 +21,7 @@ class SelectionFormType extends AbstractType
         $builder->add('id', HiddenType::class);
         $builder->add('selected', CheckboxType::class, [
             'required' => false,
+            'label' => false,
         ]);
     }
 }

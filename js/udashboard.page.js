@@ -219,7 +219,7 @@
 
     // Ensure there are checkboxes
     var master = page.selector.find('[data-page-checkbox="all"]');
-    var checkboxes = page.selector.find('[data-page-checkbox="item"]');
+    var checkboxes = page.selector.find('table input:checkbox');
     if (master.length && checkboxes.length) {
       master.on("click", function (event) {
         event.stopPropagation();
