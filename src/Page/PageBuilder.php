@@ -11,31 +11,29 @@ use Symfony\Component\HttpFoundation\Request;
  *   - Remove buiseness methods from this oibject and move them to "Page"
  *   - widget factory should return a page, not a builder
  */
-final class PageBuilder
+class PageBuilder
 {
     const DEFAULT_LIMIT = 24;
     const EVENT_VIEW = 'pagebuilder:view';
     const EVENT_SEARCH = 'pagebuilder:search';
-
-    private $baseQuery = [];
-    private $datasource;
-    private $debug = false;
-    private $defaultDisplay = 'table';
-    private $disabledSorts = [];
-    private $dispatcher;
-    private $displayFilters = true;
-    private $displayPager = true;
-    private $displaySearch = true;
-    private $displaySort = true;
-    private $displayVisualSearch = false;
-    private $enabledFilters = [];
-    private $enabledVisualFilters = [];
-    private $formName = null;
-    private $id;
-    private $limit = self::DEFAULT_LIMIT;
-    private $searchParam = 's';
-    private $templates = [];
-    private $twig;
+    protected $baseQuery = [];
+    protected $datasource;
+    protected $debug = false;
+    protected $defaultDisplay = 'table';
+    protected $disabledSorts = [];
+    protected $dispatcher;
+    protected $displayFilters = true;
+    protected $displayPager = true;
+    protected $displaySearch = true;
+    protected $displaySort = true;
+    protected $displayVisualSearch = false;
+    protected $enabledFilters = [];
+    protected $enabledVisualFilters = [];
+    protected $id;
+    protected $limit = self::DEFAULT_LIMIT;
+    protected $searchParam = 's';
+    protected $templates = [];
+    protected $twig;
 
     /**
      * Default constructor
@@ -90,29 +88,6 @@ final class PageBuilder
         }
 
         return $this->datasource;
-    }
-
-    /**
-     * If the page is to be inserted as a form widget, set the element name
-     *
-     * Please notice that in all cases, only the template can materialize the
-     * form element, this API is agnostic from any kind of form API and cannot
-     * do it automatically.
-     *
-     * This parameter will only be carried along to the twig template under
-     * the 'form_name' variable. It is YOUR job to create the associated
-     * inputs in the final template.
-     *
-     * @param string $name
-     *   Form parameter name.
-     *
-     * @return $this
-     */
-    public function setFormName($name)
-    {
-        $this->formName = $name;
-
-        return $this;
     }
 
     /**
@@ -451,7 +426,7 @@ final class PageBuilder
      *
      * @return null|string
      */
-    private function computeId()
+    protected function computeId()
     {
         if (!$this->id) {
             return null;
@@ -459,26 +434,6 @@ final class PageBuilder
 
         // @todo do better than that...
         return $this->id;
-    }
-
-    /**
-     * Shortcut to this internal datasource validateItems() method that will
-     * take care of the incoming query.
-     *
-     * @param Request $request
-     *   Incoming request
-     * @param string[] $idList
-     *   Arbitrary item identifier list
-     *
-     * @return bool
-     *
-     * @see DatasourceInterface::validateItems()
-     */
-    public function validateItems(Request $request, array $idList)
-    {
-        $query = (new PageQuery($request, $this->searchParam, $this->displaySearch, $this->baseQuery))->getAll();
-
-        return $this->getDatasource()->validateItems($query, $idList);
     }
 
     /**
@@ -614,7 +569,6 @@ final class PageBuilder
 
         $arguments = [
             'pageId'        => $this->computeId(),
-            'form_name'     => $this->formName,
             'result'        => $result,
             'state'         => $state,
             'route'         => $result->getRoute(),
