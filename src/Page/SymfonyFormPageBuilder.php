@@ -1,10 +1,9 @@
 <?php
 
-
 namespace MakinaCorpus\Drupal\Dashboard\Page;
 
-
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
@@ -28,12 +27,12 @@ class SymfonyFormPageBuilder extends PageBuilder
     private $storedData;
 
     /**
-     * @var \mixed
+     * @var bool
      */
-    private $dataItems;
+    private $requestHandled = false;
 
     /**
-     * @var \Symfony\Component\Form\FormInterface
+     * @var \Symfony\Component\Form\Form
      */
     private $formset;
 
@@ -78,35 +77,14 @@ class SymfonyFormPageBuilder extends PageBuilder
      * the 'form_name' variable. It is YOUR job to create the associated
      * inputs in the final template.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
      * @param string $class
      *   Form parameter name.
-     * @param callable $callback
      * @return \Symfony\Component\Form\FormInterface
      */
-    public function createFormset(
-        Request $request,
-        $class = 'MakinaCorpus\Drupal\Dashboard\Form\Type\SelectionFormType',
-        $callback = null
-    ) {
+    public function createFormset($class = 'MakinaCorpus\Drupal\Dashboard\Form\Type\SelectionFormType')
+    {
         if (!in_array(AbstractType::class, class_parents($class))) {
             throw new \InvalidArgumentException(sprintf('class %s is not a child of AbstractType', $class));
-        }
-
-        $this->dataItems = $this->getDataItems($request);
-
-        if ($callback) {
-            if (!is_callable($callback)) {
-                throw new \InvalidArgumentException(sprintf('%s is not a callback', $class));
-            }
-            $defaultValues = call_user_func($callback, $this->dataItems);
-        } else {
-            $defaultValues = [];
-            foreach ($this->dataItems as $item) {
-                $defaultValues[$item->id()] = [
-                    'id' => $item->id(),
-                ];
-            }
         }
 
         $formFactory = Forms::createFormFactoryBuilder()
@@ -115,39 +93,25 @@ class SymfonyFormPageBuilder extends PageBuilder
                             ->getFormFactory()
         ;
 
-        $formBuilder = $formFactory
+        $this->formset = $formFactory
             ->createNamedBuilder('formset')
-            ->add('forms', CollectionType::class, ['entry_type' => $class])
+            ->add('forms', CollectionType::class, [
+                'entry_type' => $class,
+                // TODO: find a way to make configurable (we dont always want a selection)
+                // implement validation groups with submits?
+                // @see http://symfony.com/doc/current/form/button_based_validation.html
+                //'constraints' => [
+                //    new Callback([$this, 'hasSelectedValue']),
+                //],
+            ])
             ->add('csrf_token', HiddenType::class, [
                 'data'        => drupal_get_token(),
                 'constraints' => [
                     new Callback([$this, 'isValidToken']),
                 ],
             ])
-            ->setData([
-                'forms' => $defaultValues,
-            ])
+            ->getForm()
         ;
-
-        $this->formset = $formBuilder->getForm();
-        $this->formset->handleRequest($request);
-        $data = $this->formset->getData();
-
-        if ($this->confirmForm) {
-            $this->confirmForm->handleRequest($request);
-
-            // Test if the formset has been submitted and store data if we need a confirmation form
-            if ($this->formset->isSubmitted() && $this->formset->isValid()) {
-                $request->getSession()->set($this->computeId(), $data);
-                $this->storedData = $data;
-            }
-            else {
-                $this->storedData = $request->getSession()->get($this->computeId());
-            }
-        } else {
-            // Else if no confirm form there's no need to use the session
-            $this->storedData = $data;
-        }
 
         return $this->formset;
     }
@@ -159,6 +123,10 @@ class SymfonyFormPageBuilder extends PageBuilder
      */
     public function needsConfirmation()
     {
+        if (!$this->requestHandled) {
+            throw new LogicException("The request has not been handled by this PageFormBuilder yet.");
+        }
+
         // A form needs confirmation if it has confirmForm...
         if ($this->confirmForm) {
             // If the form has been submitted and is valid
@@ -184,7 +152,7 @@ class SymfonyFormPageBuilder extends PageBuilder
     }
 
     /**
-     * Check drupal token
+     * Check that form has selected values
      *
      * @param $value
      * @param \Symfony\Component\Validator\Context\ExecutionContextInterface $context
@@ -202,18 +170,6 @@ class SymfonyFormPageBuilder extends PageBuilder
         }
     }
 
-
-    /**
-     * Get data items
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return \mixed[]
-     */
-    public function getDataItems(Request $request)
-    {
-        return $this->search($request)->getItems();
-    }
-
     /**
      * Indicate if the formset is ready to process
      *
@@ -221,6 +177,10 @@ class SymfonyFormPageBuilder extends PageBuilder
      */
     public function isReadyToProcess()
     {
+        if (!$this->requestHandled) {
+            throw new LogicException("The request has not been handled by this PageFormBuilder yet.");
+        }
+
         // In order to be ready, form must be confirmed and has data
         if ($this->confirmForm && !$this->confirmForm->isSubmitted()) {
             return false;
@@ -230,12 +190,21 @@ class SymfonyFormPageBuilder extends PageBuilder
     }
 
     /**
+     * Get data
      *
-     *
+     * @param string $name
      * @return mixed
      */
-    public function getStoredData()
+    public function getStoredData($name = null)
     {
+        if ($name) {
+            if (!isset($this->storedData[$name])) {
+                throw new \InvalidArgumentException("No data named ".$name);
+            }
+
+            return $this->storedData[$name];
+        }
+
         return $this->storedData;
     }
 
@@ -287,5 +256,55 @@ class SymfonyFormPageBuilder extends PageBuilder
         $arguments['formset'] = $this->formset->createView();
 
         return parent::createPageView($result, $arguments);
+    }
+
+    /**
+     * Make the formset anr confirm form handle request
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param callable $callback
+     */
+    public function handleRequest(Request $request, $callback = null)
+    {
+        // Get items to work on
+        $dataItems = $this->search($request)->getItems();
+
+        //
+        if ($callback) {
+            if (!is_callable($callback)) {
+                throw new \InvalidArgumentException(sprintf('%s is not a callback', $callback));
+            }
+            $defaultValues = call_user_func($callback, $dataItems);
+        } else {
+            $defaultValues = [];
+            foreach ($dataItems as $item) {
+                $defaultValues[$item->id()] = [
+                    'id' => $item->id(),
+                ];
+            }
+        }
+
+        $this->formset->setData(['forms' => $defaultValues])
+                      ->handleRequest($request)
+        ;
+        $data = $this->formset->getData();
+
+        if ($this->confirmForm) {
+            $this->confirmForm->handleRequest($request);
+
+            // Test if the formset has been submitted and store data if we need a confirmation form
+            if ($this->formset->isSubmitted() && $this->formset->isValid()) {
+                $data['clicked_button'] = $this->formset->getClickedButton()->getName();
+                $request->getSession()->set($this->computeId(), $data);
+                $this->storedData = $data;
+            } else {
+                $this->storedData = $request->getSession()->get($this->computeId());
+            }
+        } else {
+            // Else if no confirm form there's no need to use the session
+            $this->storedData = $data;
+        }
+
+        $this->requestHandled = true;
     }
 }
