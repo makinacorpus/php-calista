@@ -52,6 +52,7 @@ class PageBuilder
      * Set builder identifier
      *
      * @param string $id
+     * @return $this
      */
     public function setId($id)
     {
@@ -60,6 +61,8 @@ class PageBuilder
         }
 
         $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -347,6 +350,7 @@ class PageBuilder
      *
      * Sorts are enabled by default but you can disable some.
      *
+     * @param string $sort
      * @return $this
      */
     public function disableSort($sort)

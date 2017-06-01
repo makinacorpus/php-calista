@@ -40,7 +40,7 @@ class SymfonyFormPageBuilder extends PageBuilder
     /**
      * Enable the confirm form
      *
-     * @return self
+     * @return $this
      */
     public function enableConfirmForm()
     {
@@ -50,9 +50,7 @@ class SymfonyFormPageBuilder extends PageBuilder
                             ->getFormFactory()
         ;
         $formBuilder = $formFactory
-            ->createBuilder('Symfony\Component\Form\Extension\Core\Type\FormType', null, [
-                'allow_extra_fields' => true,  // This is required to handle the second request with extra data
-            ])
+            ->createNamedBuilder('confirm')
             ->add('confirm', HiddenType::class, [
                 'data' => true,
             ])
@@ -87,7 +85,9 @@ class SymfonyFormPageBuilder extends PageBuilder
      * @return \Symfony\Component\Form\FormInterface
      */
     public function createFormset(
-        Request $request, $class = 'MakinaCorpus\Drupal\Dashboard\Form\Type\SelectionFormType', $callback = null
+        Request $request,
+        $class = 'MakinaCorpus\Drupal\Dashboard\Form\Type\SelectionFormType',
+        $callback = null
     ) {
         if (!in_array(AbstractType::class, class_parents($class))) {
             throw new \InvalidArgumentException(sprintf('class %s is not a child of AbstractType', $class));
@@ -114,14 +114,10 @@ class SymfonyFormPageBuilder extends PageBuilder
                             ->addExtension(new ValidatorExtension(Validation::createValidator()))
                             ->getFormFactory()
         ;
+
         $formBuilder = $formFactory
-            ->createBuilder()
-            ->add('forms', CollectionType::class, [
-                'entry_type'  => $class,
-                'constraints' => [
-                    new Callback([$this, 'hasSelectedValue']),
-                ],
-            ])
+            ->createNamedBuilder('formset')
+            ->add('forms', CollectionType::class, ['entry_type' => $class])
             ->add('csrf_token', HiddenType::class, [
                 'data'        => drupal_get_token(),
                 'constraints' => [
@@ -135,22 +131,22 @@ class SymfonyFormPageBuilder extends PageBuilder
 
         $this->formset = $formBuilder->getForm();
         $this->formset->handleRequest($request);
-
-
-        // Test if the form has been submitted
-        $this->storedData = $request->getSession()->get($this->computeId());
-
-        // This is actually a form we are going to process manually
-        if ($this->formset->isSubmitted() && $this->formset->isValid() && !$this->storedData) {
-            // Store data
-            $data = $this->formset->getData();
-            $request->getSession()->set($this->computeId(), $data);
-            $this->storedData = $data;
-
-        }
+        $data = $this->formset->getData();
 
         if ($this->confirmForm) {
             $this->confirmForm->handleRequest($request);
+
+            // Test if the formset has been submitted and store data if we need a confirmation form
+            if ($this->formset->isSubmitted() && $this->formset->isValid()) {
+                $request->getSession()->set($this->computeId(), $data);
+                $this->storedData = $data;
+            }
+            else {
+                $this->storedData = $request->getSession()->get($this->computeId());
+            }
+        } else {
+            // Else if no confirm form there's no need to use the session
+            $this->storedData = $data;
         }
 
         return $this->formset;

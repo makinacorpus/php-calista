@@ -73,12 +73,12 @@
     <div class="input-group">
       {% if visualFilters %}
         <div class="form-control udashboard-visual-search"
-          data-definition="{{ visualFilters|udashboardFilterDefinition()|e }}"
-          data-query="{{ visualFilters|udashboardFilterQuery(query)|e }}">
+             data-definition="{{ visualFilters|udashboardFilterDefinition()|e }}"
+             data-query="{{ visualFilters|udashboardFilterQuery(query)|e }}">
         </div>
       {% else %}
         <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ state.searchParameter }}"
-          value="{{ state.currentSearch|escape }}" maxlength="128" type="text"
+               value="{{ state.currentSearch|escape }}" maxlength="128" type="text"
         />
         {% for name, value in routeParams %}
           {% if name != state.searchParameter %}
@@ -194,6 +194,7 @@
 {%- block item -%}
   <tr>
     {% if element %}
+      <td>{{ form_widget(id) }}</td>
       <td>{{ form_widget(element) }}</td>
     {% endif %}
     <td>{{ item.type }}</td>
@@ -311,11 +312,17 @@
     {% endif %}
     <div class="row">
       <div class="col-md-12" data-page-block="item_list">
-        {% if formset %}
-          {{ form_errors(formset) }}
-          {{ form_widget(formset.csrf_token) }}
-        {% endif %}
-        {{ block('item_list') }}
+        {% block form_content %}
+          {% if formset %}
+            <form action="" method="post">
+            {{ form_errors(formset) }}
+            {{ form_widget(formset.csrf_token) }}
+          {% endif %}
+          {{ block('item_list') }}
+          {% if formset %}
+            </form>
+          {% endif %}
+        {% endblock form_content %}
       </div>
     </div>
     {% if state.limit < state.totalCount %}
@@ -350,9 +357,9 @@
             <div data-page-block="filters">
               {{ block('filters') }}
             </div>
-         {% endif %}
+          {% endif %}
         </div>
-       <div id="udashboard-results" class="col-md-10">
+        <div id="udashboard-results" class="col-md-10">
           {{ block('page_content') }}
         </div>
       {% else %}
