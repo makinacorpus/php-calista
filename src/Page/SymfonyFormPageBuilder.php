@@ -2,10 +2,13 @@
 
 namespace MakinaCorpus\Drupal\Dashboard\Page;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use MakinaCorpus\Drupal\Dashboard\Form\Type\SelectionFormType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\Forms;
@@ -16,6 +19,8 @@ use Symfony\Component\Validator\Validation;
 
 class SymfonyFormPageBuilder extends PageBuilder
 {
+    use StringTranslationTrait;
+
     /**
      * @var \Symfony\Component\Form\Form
      */
@@ -32,12 +37,17 @@ class SymfonyFormPageBuilder extends PageBuilder
     private $requestHandled = false;
 
     /**
+     * @var bool
+     */
+    private $confirmationCancelled = false;
+
+    /**
      * @var \Symfony\Component\Form\Form
      */
     private $formset;
 
     /**
-     * Enable the confirm form
+     * Builds and enables the confirm form
      *
      * @return $this
      */
@@ -50,9 +60,8 @@ class SymfonyFormPageBuilder extends PageBuilder
         ;
         $formBuilder = $formFactory
             ->createNamedBuilder('confirm')
-            ->add('confirm', HiddenType::class, [
-                'data' => true,
-            ])
+            ->add('confirm', SubmitType::class, ['label' => $this->t('Confirm')])
+            ->add('cancel', SubmitType::class, ['label' => $this->t('Cancel')])
             ->add('csrf_token', HiddenType::class, [
                 'data'        => drupal_get_token(),
                 'constraints' => [
@@ -81,7 +90,7 @@ class SymfonyFormPageBuilder extends PageBuilder
      *   Form parameter name.
      * @return \Symfony\Component\Form\FormInterface
      */
-    public function createFormset($class = 'MakinaCorpus\Drupal\Dashboard\Form\Type\SelectionFormType')
+    public function createFormset($class = SelectionFormType::class)
     {
         if (!in_array(AbstractType::class, class_parents($class))) {
             throw new \InvalidArgumentException(sprintf('class %s is not a child of AbstractType', $class));
@@ -117,7 +126,7 @@ class SymfonyFormPageBuilder extends PageBuilder
     }
 
     /**
-     * Return true if this form page needs confirmation.
+     * Returns true if this form page needs confirmation.
      *
      * @return bool
      */
@@ -127,8 +136,8 @@ class SymfonyFormPageBuilder extends PageBuilder
             throw new LogicException("The request has not been handled by this PageFormBuilder yet.");
         }
 
-        // A form needs confirmation if it has confirmForm...
-        if ($this->confirmForm) {
+        // A form needs confirmation if it has confirmForm (not cancelled)...
+        if ($this->confirmForm && !$this->confirmationCancelled) {
             // If the form has been submitted and is valid
             return $this->formset->isSubmitted() && $this->formset->isValid();
         }
@@ -145,7 +154,7 @@ class SymfonyFormPageBuilder extends PageBuilder
     public function isValidToken($token, ExecutionContextInterface $context)
     {
         if (!drupal_valid_token($token)) {
-            $context->buildViolation('Wrong token')
+            $context->buildViolation($this->t('An unrecoverable error occurred. Use of this form has expired. Try reloading the page and submitting again.'))
                     ->addViolation()
             ;
         }
@@ -164,7 +173,7 @@ class SymfonyFormPageBuilder extends PageBuilder
         });
 
         if (!$selectedElements) {
-            $context->buildViolation('At least an element has to be selected.')
+            $context->buildViolation($this->t('No items selected.'))
                     ->addViolation()
             ;
         }
@@ -182,7 +191,7 @@ class SymfonyFormPageBuilder extends PageBuilder
         }
 
         // In order to be ready, form must be confirmed and has data
-        if ($this->confirmForm && !$this->confirmForm->isSubmitted()) {
+        if ($this->confirmForm && (!$this->confirmForm->isSubmitted() || $this->confirmationCancelled)) {
             return false;
         }
 
@@ -259,7 +268,7 @@ class SymfonyFormPageBuilder extends PageBuilder
     }
 
     /**
-     * Make the formset anr confirm form handle request
+     * Make the formset and confirm form handle request
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param callable $callback
@@ -269,7 +278,7 @@ class SymfonyFormPageBuilder extends PageBuilder
         // Get items to work on
         $dataItems = $this->search($request)->getItems();
 
-        //
+        // Bind initial data
         if ($callback) {
             if (!is_callable($callback)) {
                 throw new \InvalidArgumentException(sprintf('%s is not a callback', $callback));
@@ -292,13 +301,24 @@ class SymfonyFormPageBuilder extends PageBuilder
         if ($this->confirmForm) {
             $this->confirmForm->handleRequest($request);
 
-            // Test if the formset has been submitted and store data if we need a confirmation form
-            if ($this->formset->isSubmitted() && $this->formset->isValid()) {
-                $data['clicked_button'] = $this->formset->getClickedButton()->getName();
-                $request->getSession()->set($this->computeId(), $data);
-                $this->storedData = $data;
+            if ($this->confirmForm->isSubmitted() && $this->confirmForm->getClickedButton()->getName() == 'cancel') {
+
+                // Confirm form has been cancelled, set the data back and display form
+                $this->confirmationCancelled = true;
+                $data = $request->getSession()->get($this->computeId());
+                $this->formset->setData($data);
+
             } else {
-                $this->storedData = $request->getSession()->get($this->computeId());
+
+                // Test if the formset has been submitted and store data if we need a confirmation form
+                if ($this->formset->isSubmitted() && $this->formset->isValid()) {
+                    $data['clicked_button'] = $this->formset->getClickedButton()->getName();
+                    $request->getSession()->set($this->computeId(), $data);
+                    $this->storedData = $data;
+                } else {
+                    $this->storedData = $request->getSession()->get($this->computeId());
+                }
+
             }
         } else {
             // Else if no confirm form there's no need to use the session
