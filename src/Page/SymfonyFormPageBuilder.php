@@ -25,7 +25,7 @@ class SymfonyFormPageBuilder extends PageBuilder
     private $confirmForm;
 
     /**
-     * @var \mixed
+     * @var mixed
      */
     private $storedData;
 
@@ -92,8 +92,8 @@ class SymfonyFormPageBuilder extends PageBuilder
      */
     public function createFormset($class = SelectionFormType::class)
     {
-        if (!in_array(AbstractType::class, class_parents($class))) {
-            throw new \InvalidArgumentException(sprintf('class %s is not a child of AbstractType', $class));
+        if (!is_subclass_of($class, AbstractType::class)) {
+            throw new \InvalidArgumentException(sprintf("Class %s doesn't extend %s.", $class, AbstractType::class));
         }
 
         $this->formset = $this->formFactory
@@ -147,8 +147,9 @@ class SymfonyFormPageBuilder extends PageBuilder
         });
 
         if (!$selectedElements) {
-            $context->buildViolation($this->t('No items selected.'))
-                    ->addViolation()
+            $context
+                ->buildViolation($this->t("No items selected."))
+                ->addViolation()
             ;
         }
     }
@@ -169,7 +170,7 @@ class SymfonyFormPageBuilder extends PageBuilder
             return false;
         }
 
-        return (bool)$this->getStoredData();
+        return (bool) $this->getStoredData();
     }
 
     /**
@@ -182,7 +183,7 @@ class SymfonyFormPageBuilder extends PageBuilder
     {
         if ($name) {
             if (!isset($this->storedData[$name])) {
-                throw new \InvalidArgumentException("No data named ".$name);
+                throw new \InvalidArgumentException(sprintf("No data named '%s'.", $name));
             }
 
             return $this->storedData[$name];
@@ -202,6 +203,7 @@ class SymfonyFormPageBuilder extends PageBuilder
         if (!$data) {
             $data = $this->formset->getData();
         }
+
         $selectedIds = array_keys(array_filter($data['forms'], function ($d) {
             return !empty($d['selected']);
         }));
@@ -255,10 +257,11 @@ class SymfonyFormPageBuilder extends PageBuilder
         // Bind initial data
         if ($callback) {
             if (!is_callable($callback)) {
-                throw new \InvalidArgumentException(sprintf('%s is not a callback', $callback));
+                throw new \InvalidArgumentException("The provided callback is not valid.");
             }
             $defaultValues = call_user_func($callback, $dataItems);
-        } else {
+        }
+        else {
             $defaultValues = [];
             foreach ($dataItems as $item) {
                 $defaultValues[$item->id()] = [
@@ -267,23 +270,26 @@ class SymfonyFormPageBuilder extends PageBuilder
             }
         }
 
-        $this->formset->setData(['forms' => $defaultValues])
-                      ->handleRequest($request)
+        $this->formset
+            ->setData(['forms' => $defaultValues])
+            ->handleRequest($request)
         ;
+
         $data = $this->formset->getData();
 
         if ($this->confirmForm) {
             $this->confirmForm->handleRequest($request);
 
-            if ($this->confirmForm->isSubmitted() && $this->confirmForm->getClickedButton()->getName() == 'cancel') {
-
+            if (
+                $this->confirmForm->isSubmitted() &&
+                $this->confirmForm->getClickedButton()->getName() == 'cancel'
+            ) {
                 // Confirm form has been cancelled, set the data back and display form
                 $this->confirmationCancelled = true;
                 $data = $request->getSession()->get($this->computeId());
                 $this->formset->setData($data);
-
-            } else {
-
+            }
+            else {
                 // Test if the formset has been submitted and store data if we need a confirmation form
                 if ($this->formset->isSubmitted() && $this->formset->isValid()) {
                     $data['clicked_button'] = $this->formset->getClickedButton()->getName();
@@ -292,9 +298,9 @@ class SymfonyFormPageBuilder extends PageBuilder
                 } else {
                     $this->storedData = $request->getSession()->get($this->computeId());
                 }
-
             }
-        } else {
+        }
+        else {
             // Else if no confirm form there's no need to use the session
             $this->storedData = $data;
         }
