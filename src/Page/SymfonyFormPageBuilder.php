@@ -68,12 +68,6 @@ class SymfonyFormPageBuilder extends PageBuilder
             ->createNamedBuilder('confirm')
             ->add('confirm', SubmitType::class, ['label' => $this->t('Confirm')])
             ->add('cancel', SubmitType::class, ['label' => $this->t('Cancel')])
-            ->add('csrf_token', HiddenType::class, [
-                'data'        => drupal_get_token(),
-                'constraints' => [
-                    new Callback([$this, 'isValidToken']),
-                ],
-            ])
         ;
 
         $this->confirmForm = $formBuilder->getForm();
@@ -114,12 +108,6 @@ class SymfonyFormPageBuilder extends PageBuilder
                 //    new Callback([$this, 'hasSelectedValue']),
                 //],
             ])
-            ->add('csrf_token', HiddenType::class, [
-                'data'        => drupal_get_token(),
-                'constraints' => [
-                    new Callback([$this, 'isValidToken']),
-                ],
-            ])
             ->getForm()
         ;
 
@@ -144,21 +132,6 @@ class SymfonyFormPageBuilder extends PageBuilder
         }
 
         return false;
-    }
-
-    /**
-     * Check drupal token
-     *
-     * @param $token
-     * @param \Symfony\Component\Validator\Context\ExecutionContextInterface $context
-     */
-    public function isValidToken($token, ExecutionContextInterface $context)
-    {
-        if (!drupal_valid_token($token)) {
-            $context->buildViolation($this->t('An unrecoverable error occurred. Use of this form has expired. Try reloading the page and submitting again.'))
-                    ->addViolation()
-            ;
-        }
     }
 
     /**

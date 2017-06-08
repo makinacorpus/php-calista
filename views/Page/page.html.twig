@@ -316,10 +316,10 @@
           {% if formset %}
             <form action="" method="post">
             {{ form_errors(formset) }}
-            {{ form_widget(formset.csrf_token) }}
           {% endif %}
           {{ block('item_list') }}
           {% if formset %}
+            {{ form_rest(formset) }}
             </form>
           {% endif %}
         {% endblock form_content %}
