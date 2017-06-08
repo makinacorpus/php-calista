@@ -4,18 +4,16 @@ namespace MakinaCorpus\Drupal\Dashboard\Page;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use MakinaCorpus\Drupal\Dashboard\Form\Type\SelectionFormType;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
-use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
-use Symfony\Component\Form\Forms;
+use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Symfony\Component\Validator\Validation;
 
 class SymfonyFormPageBuilder extends PageBuilder
 {
@@ -47,18 +45,26 @@ class SymfonyFormPageBuilder extends PageBuilder
     private $formset;
 
     /**
+     * @var \Symfony\Component\Form\FormFactory
+     */
+    private $formFactory;
+
+    public function __construct(
+        \Twig_Environment $twig, EventDispatcherInterface $dispatcher,
+        FormFactory $formFactory
+    ) {
+        $this->formFactory = $formFactory;
+        parent::__construct($twig, $dispatcher);
+    }
+
+    /**
      * Builds and enables the confirm form
      *
      * @return $this
      */
     public function enableConfirmForm()
     {
-        $formFactory = Forms::createFormFactoryBuilder()
-                            ->addExtension(new HttpFoundationExtension())
-                            ->addExtension(new ValidatorExtension(Validation::createValidator()))
-                            ->getFormFactory()
-        ;
-        $formBuilder = $formFactory
+        $formBuilder = $this->formFactory
             ->createNamedBuilder('confirm')
             ->add('confirm', SubmitType::class, ['label' => $this->t('Confirm')])
             ->add('cancel', SubmitType::class, ['label' => $this->t('Cancel')])
@@ -96,16 +102,11 @@ class SymfonyFormPageBuilder extends PageBuilder
             throw new \InvalidArgumentException(sprintf('class %s is not a child of AbstractType', $class));
         }
 
-        $formFactory = Forms::createFormFactoryBuilder()
-                            ->addExtension(new HttpFoundationExtension())
-                            ->addExtension(new ValidatorExtension(Validation::createValidator()))
-                            ->getFormFactory()
-        ;
-
-        $this->formset = $formFactory
+        $this->formset = $this->formFactory
             ->createNamedBuilder('formset')
             ->add('forms', CollectionType::class, [
                 'entry_type' => $class,
+                'label'      => false,
                 // TODO: find a way to make configurable (we dont always want a selection)
                 // implement validation groups with submits?
                 // @see http://symfony.com/doc/current/form/button_based_validation.html

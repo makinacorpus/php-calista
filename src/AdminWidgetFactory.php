@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -23,6 +25,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 final class AdminWidgetFactory
 {
     private $container;
+    private $formFactory;
     private $pageTypes = [];
     private $actionRegistry;
     private $eventDispatcher;
@@ -33,17 +36,20 @@ final class AdminWidgetFactory
      * Default constructor
      *
      * @param ContainerInterface $container
+     * @param FormFactory $formFactory
      * @param ActionRegistry $actionRegistry
      * @param \Twig_Environment $twig
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         ContainerInterface $container,
+        FormFactory $formFactory,
         ActionRegistry $actionRegistry,
         \Twig_Environment $twig,
         EventDispatcherInterface $eventDispatcher = null
     ) {
         $this->container = $container;
+        $this->formFactory = $formFactory;
         $this->actionRegistry = $actionRegistry;
         $this->eventDispatcher = $eventDispatcher;
         $this->debug = $twig->isDebug();
@@ -119,7 +125,7 @@ final class AdminWidgetFactory
      */
     public function createSymfonyFormPageBuilder()
     {
-        return new SymfonyFormPageBuilder($this->twig, $this->eventDispatcher);
+        return new SymfonyFormPageBuilder($this->twig, $this->eventDispatcher, $this->formFactory);
     }
 
     /**
@@ -153,7 +159,13 @@ final class AdminWidgetFactory
      */
     public function getSymfonyFormPageBuilder($name, Request $request)
     {
-        return $this->getPageBuilderFromClass('\MakinaCorpus\Drupal\Dashboard\Page\SymfonyFormPageBuilder', $name, $request);
+        $type = $this->getPageType($name);
+        $builder = new SymfonyFormPageBuilder($this->twig, $this->eventDispatcher, $this->formFactory);
+
+        $type->build($builder, $request);
+        $builder->setId($name);
+
+        return $builder;
     }
 
     /**
