@@ -8,7 +8,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,7 +49,8 @@ class SymfonyFormPageBuilder extends PageBuilder
     private $formFactory;
 
     public function __construct(
-        \Twig_Environment $twig, EventDispatcherInterface $dispatcher,
+        \Twig_Environment $twig,
+        EventDispatcherInterface $dispatcher,
         FormFactory $formFactory
     ) {
         $this->formFactory = $formFactory;

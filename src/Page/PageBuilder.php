@@ -16,6 +16,7 @@ class PageBuilder
     const DEFAULT_LIMIT = 24;
     const EVENT_VIEW = 'pagebuilder:view';
     const EVENT_SEARCH = 'pagebuilder:search';
+
     protected $baseQuery = [];
     protected $datasource;
     protected $debug = false;
@@ -57,7 +58,7 @@ class PageBuilder
     public function setId($id)
     {
         if ($this->id && $this->id !== $id) {
-            throw new \LogicException("cannot change a page builder identifier");
+            throw new \LogicException("Cannot change a page builder identifier.");
         }
 
         $this->id = $id;
@@ -87,7 +88,7 @@ class PageBuilder
     public function getDatasource()
     {
         if (!$this->datasource) {
-            throw new \LogicException("cannot build page without a datasource");
+            throw new \LogicException("Cannot build page without a datasource.");
         }
 
         return $this->datasource;
@@ -369,7 +370,7 @@ class PageBuilder
      */
     public function setLimit($limit)
     {
-        $this->limit = (int)$limit;
+        $this->limit = (int) $limit;
 
         return $this;
     }
