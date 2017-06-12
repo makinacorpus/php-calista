@@ -153,6 +153,8 @@
       },
       error: function() {
         // refresh the page manually
+        delete data.name;
+        location.href = location.pathname + "?" + $.param(data)
       },
       complete: function() {
         modalDestroy(page);
