@@ -34,11 +34,6 @@ class Link
         return $this->route;
     }
 
-    public function getArguments()
-    {
-        return $this->arguments;
-    }
-
     public function getRouteParameters()
     {
         return $this->arguments;

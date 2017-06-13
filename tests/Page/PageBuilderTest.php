@@ -6,6 +6,7 @@ use MakinaCorpus\Dashboard\Datasource\Configuration;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageResult;
+use MakinaCorpus\Dashboard\Page\SortCollection;
 use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,5 +56,15 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(7, $items);
         $this->assertSame(3, $query->getPageNumber());
         $this->assertSame(128, $items->getTotalCount());
+
+        // Ensure sorting was OK
+        $itemsArray = iterator_to_array($items);
+        $this->assertGreaterThan($itemsArray[1], $itemsArray[0]);
+
+        // Is sort collection OK?
+        $this->assertInstanceOf(SortCollection::class, $result->getSortCollection());
+
+        // Build a page, for fun
+        $pageView = $pageBuilder->createPageView($result);
     }
 }

@@ -4,7 +4,6 @@ namespace MakinaCorpus\Dashboard\Page;
 
 use MakinaCorpus\Dashboard\Datasource\Configuration;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
-use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Datasource\QueryFactory;
 use MakinaCorpus\Dashboard\Event\PageBuilderEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -35,7 +34,6 @@ class PageBuilder
     private $enabledFilters = [];
     private $enabledVisualFilters = [];
     private $id;
-    private $limit = Query::LIMIT_DEFAULT;
     private $templates = [];
     private $twig;
 
@@ -484,36 +482,18 @@ class PageBuilder
 
         $configuration = $this->getConfiguration();
         $query = (new QueryFactory())->fromRequest($configuration, $request, $this->baseQuery);
+
+        // Initialize properly datasource
         $datasource = $this->getDatasource();
         $datasource->init($query);
 
-        /*
-        if ($sortFields = $datasource->getSortFields($query)) {
-            foreach ($sortFields as $field => $label) {
-                if (in_array($field, $this->disabledSorts)) {
-                    unset($sortFields[$field]);
-                }
-            }
+        // Gather sorts
+        $sortCollection = $datasource->getSorts($query);
 
-            $sort->setFields($sortFields);
-
-            // Do not set the sort order links if there is no field to sort on
-            if ($sortDefault = $datasource->getDefaultSort()) {
-                // @todo PHP 5.6 $sort->setDefault(...$sortDefault);
-                $sort->setDefault($sortDefault[0], $sortDefault[1]);
-            }
-            // Enfore sorts not being displayed
-            if (!$this->displaySort) {
-                $sort->setFields([$sortDefault[0] => 'default']);
-            }
-        }
-         */
-
-        // Build the page state gracefully, this uglyfies the code but it does
-        // help to reduce code within the datasources
+        // Execute query
         $items = $datasource->getItems($query);
 
-        // Build filters arrays
+        // Build allowed filters arrays
         $filters = $visualFilters = [];
         if ($baseFilters = $datasource->getFilters($query)) {
             foreach ($baseFilters as $filter) {
@@ -526,7 +506,7 @@ class PageBuilder
             }
         }
 
-        return new PageResult($configuration, $query, $items, $filters, $visualFilters);
+        return new PageResult($configuration, $query, $items, $sortCollection, $filters, $visualFilters);
     }
 
     /**
@@ -561,15 +541,19 @@ class PageBuilder
             $displayLinks[] = new Link($name, $query->getRoute(), ['display' => $name] + $query->getRouteParameters(), $display === $name, $displayIcon);
         }
 
+        // Build sort links from here
+
         $arguments = [
             'pageId'        => $this->computeId(),
             'result'        => $result,
             'items'         => $result->getItems(),
             'filters'       => $this->displayFilters ? $result->getFilters() : [],
             'visualFilters' => $this->displayVisualSearch ? $result->getVisualFilters() : [],
+            'sorts'         => $result->getSortCollection(),
             'query'         => $query,
+            'display'       => $display,
             'displays'      => $displayLinks,
-            'hasPager'      => $this->displayPager,
+            'hasPager'      => $this->displayPager && $this->configuration->isSearchEnabled(),
         ] + $arguments;
 
         $event = new PageBuilderEvent($this);

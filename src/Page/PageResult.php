@@ -27,14 +27,19 @@ class PageResult
     private $items;
 
     /**
-     * @var Filter[]
+     * @var SortCollection
      */
-    private $enabledFilters;
+    private $sortCollection = [];
 
     /**
      * @var Filter[]
      */
-    private $enabledVisualFilters;
+    private $enabledFilters = [];
+
+    /**
+     * @var Filter[]
+     */
+    private $enabledVisualFilters = [];
 
     /**
      * Default constructor
@@ -45,16 +50,19 @@ class PageResult
      * @param Filter[] $filters
      * @param Filter[] $visualFilters
      */
-    public function __construct(Configuration $configuration, Query $query, DatasourceResultInterface $items, array $enabledFilters = [], array $enabledVisualFilters = [])
+    public function __construct(Configuration $configuration, Query $query, DatasourceResultInterface $items, SortCollection $sortCollection, array $enabledFilters = [], array $enabledVisualFilters = [])
     {
         $this->configuration = $configuration;
         $this->query = $query;
         $this->items = $items;
+        $this->sortCollection = $sortCollection;
         $this->enabledFilters = $enabledFilters;
         $this->enabledVisualFilters = $enabledVisualFilters;
     }
 
     /**
+     * Get current configuration
+     *
      * @return Configuration
      */
     public function getConfiguration()
@@ -63,6 +71,8 @@ class PageResult
     }
 
     /**
+     * Get current query
+     *
      * @return Query
      */
     public function getQuery()
@@ -71,6 +81,8 @@ class PageResult
     }
 
     /**
+     * Get results
+     *
      * @return DatasourceResultInterface
      */
     public function getItems()
@@ -79,6 +91,18 @@ class PageResult
     }
 
     /**
+     * Get sort collection
+     *
+     * @return SortCollection
+     */
+    public function getSortCollection()
+    {
+        return $this->sortCollection;
+    }
+
+    /**
+     * Get enabled filters
+     *
      * @return Filter[]
      */
     public function getFilters()
@@ -87,6 +111,8 @@ class PageResult
     }
 
     /**
+     * Get enabled visual filters
+     *
      * @return Filter[]
      */
     public function getVisualFilters()

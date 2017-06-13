@@ -2,6 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\Page;
 
+use MakinaCorpus\Dashboard\Datasource\Query;
+
 /**
  * Default implementation that will convert a single hashmap to a set of links
  */
@@ -82,8 +84,8 @@ class Filter implements \Countable
             $values = $query[$this->queryParameter];
 
             if (!is_array($values)) {
-                if (false !== strpos($values, self::URL_VALUE_SEP)) {
-                    $values = explode(self::URL_VALUE_SEP, $values);
+                if (false !== strpos($values, Query::URL_VALUE_SEP)) {
+                    $values = explode(Query::URL_VALUE_SEP, $values);
                 } else {
                     $values = [$values];
                 }
@@ -112,7 +114,7 @@ class Filter implements \Countable
             if (is_array($query[$this->queryParameter])) {
                 $actual = $query[$this->queryParameter];
             } else {
-                $actual = explode(self::URL_VALUE_SEP, $query[$this->queryParameter]);
+                $actual = explode(Query::URL_VALUE_SEP, $query[$this->queryParameter]);
             }
         } else {
             $actual = [];
@@ -133,21 +135,23 @@ class Filter implements \Countable
             return $query;
         } else {
             sort($actual);
-            return [$this->queryParameter => implode(self::URL_VALUE_SEP, $actual)] + $query;
+            return [$this->queryParameter => implode(Query::URL_VALUE_SEP, $actual)] + $query;
         }
     }
 
     /**
      * Get links
      *
+     * @param Query $query
+     *
      * @return Link[]
      */
-    public function getLinks()
+    public function getLinks(Query $query)
     {
         $ret = [];
 
-        $route = $this->filter->getRoute();
-        $query = $this->filter->getRouteParameters();
+        $route = $query->getRoute();
+        $query = $query->getRouteParameters();
 
         $selectedValues = $this->getSelectedValues($query);
 

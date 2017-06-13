@@ -3,6 +3,7 @@
 namespace MakinaCorpus\Dashboard\Datasource;
 
 use MakinaCorpus\Dashboard\Page\Filter;
+use MakinaCorpus\Dashboard\Page\SortCollection;
 
 /**
  * Use this class to interface with the main dashboard page layout
@@ -32,21 +33,9 @@ interface DatasourceInterface
      * @param Query $query
      *   Incoming query parameters
      *
-     * @return string[]
-     *   Keys are field names, values are human readable labels
+     * @return SortCollection
      */
-    public function getSortFields(Query $query);
-
-    /**
-     * Get default sort
-     *
-     * @return string[]
-     *   First value is sort field, second is sort order,
-     *   if first value is null, first in the list will be the default,
-     *   if seconf value is null, default is descending
-     *   if the whole return is null, all is default
-     */
-    public function getDefaultSort();
+    public function getSorts(Query $query);
 
     /**
      * This method is called before all others, if some operations such as the

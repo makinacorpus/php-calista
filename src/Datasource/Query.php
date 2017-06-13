@@ -151,6 +151,16 @@ class Query
     }
 
     /**
+     * Get configuration
+     *
+     * @return Configuration
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
+    }
+
+    /**
      * Get base query
      *
      * @return array

@@ -1,8 +1,9 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests;
+namespace MakinaCorpus\Dashboard\Page\Tests;
 
-use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\QueryFactory;
 use MakinaCorpus\Dashboard\Page\Filter;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -16,7 +17,6 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testBasics()
     {
-        $this->markTestSkipped();
         $filter = new Filter('foo', 'The foo filter');
 
         $this->assertSame('foo', $filter->getField());
@@ -33,17 +33,10 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(4, $filter->count());
         $this->assertCount(4, $filter->getChoicesMap());
 
-        try {
-            $filter->getLinks();
-            $this->fail("filter is not prepared");
-        } catch (\Exception $e) {
-            $this->assertTrue(true, "filter is not prepared");
-        }
+        $request = new Request(['foo' => 'a|c'], [], ['_route' => 'where/should/I/go']);
+        $query = (new QueryFactory())->fromRequest(new Configuration(), $request);
 
-        $request = new Request(['foo' => 'a|c']);
-        $filter->prepare('where/should/I/go', new Query($request, 'search'));
-
-        $links = $filter->getLinks();
+        $links = $filter->getLinks($query);
         $this->assertCount(4, $links);
 
         // Get individual links, they should be ordered
@@ -53,7 +46,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $dLink = $links[3];
 
         // Just for fun, test the link class
-        $this->assertSame($aLink->getgetRouteParameters(), $aLink->getArguments());
+        $this->assertSame($aLink->getRouteParameters(), $aLink->getRouteParameters());
         $this->assertSame('The A option', $aLink->getTitle());
         $this->assertSame('where/should/I/go', $aLink->getRoute());
 
