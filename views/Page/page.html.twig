@@ -4,8 +4,8 @@
  #
  #  Variables:
  #    pageId: page uuid, for security and ajax queries
- #    configuration: Configuration
  #    result: PageResult
+ #    sorts: SortCollection
  #    filters: Filter[]
  #    filters.ID.title: string (title)
  #    filters.ID.links: Link[]
@@ -13,9 +13,10 @@
  #    visualFilters.ID.title: string (title)
  #    visualFilters.ID.links: Link[]
  #    displays: Link[]
+ #    query: Query
+ #    query.configuration: Configuration
  #    query.searchParam: string
  #    query.rawSearchString: string (raw user input)
- #    query: string[] (current get query)
  #    query.route: string (current internal route)
  #    query.routeParameters: string[] (current get query)
  #    query.sortField: string (current sort field)
@@ -50,9 +51,9 @@
 {%- block filter_link -%}
   <div class="checkbox">
     <label>
-      <a{% if link.isActive %} class="active"{% endif %} href="{{ path(link.route, link.routeParameters) }}" data-page-link="{{ field.field }}">
+      <a{% if link.isActive %} class="active"{% endif %} href="{{ path(link.route, link.routeParameters) }}" data-page-link="{{ filter.field }}">
         <input type="checkbox"{% if link.isActive %} checked="checked"{% endif %}>
-        {{ link.title }} {% if link.count %}<span class="badge">{{ link.count }}</span>{% endif %}
+        {{ link.title }} {% if link.count is defined %}<span class="badge">{{ link.count }}</span>{% endif %}
       </a>
     </label>
   </div>
@@ -61,7 +62,7 @@
 {%- block filter -%}
   <strong>{{ filter.title }}</strong>
   <ul class="list-unstyled">
-    {% for link in filter.links %}
+    {% for link in filter.links(query) %}
       <li>{{ block('filter_link') }}</li>
     {% else %}
       <li>{{ "No values"|trans }}</li>
@@ -123,7 +124,7 @@
  #}
 {% block sort_link_shortcut %}
   {% set param = query.sortOrderParameter %}
-  {% set link = sort.getLink(field) %}
+  {% set link = sorts.getLink(field) %}
   {% set suffix = '' %}
   {% spaceless %}
     {% if link.isActive %}
@@ -156,7 +157,7 @@
     {{ sort.currentFieldTitle(query) }}&nbsp;<span class="caret"></span>
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
-    {% for link in sort.fieldLinks %}
+    {% for link in sort.fieldLinks(query) %}
       <li>{{ block('sort_link') }}</li>
     {% endfor %}
   </ul>
@@ -167,7 +168,7 @@
     {{ sort.currentOrderTitle(query) }}&nbsp;<span class="caret"></span>
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
-    {% for link in sort.orderLinks %}
+    {% for link in sort.orderLinks(query) %}
       <li>{{ block('sort_link') }}</li>
     {% endfor %}
   </ul>
@@ -194,7 +195,8 @@
 
 {%- block item -%}
   <tr>
-    {% if element %}
+    {% if formset is defined %}
+      {% set element = formset.forms[item.id] %}
       <td>{{ form_widget(id) }}</td>
       <td>{{ form_widget(element) }}</td>
     {% endif %}
@@ -218,7 +220,7 @@
   <table class="table table-condensed">
     <thead>
       <tr>
-        {% if formset %}
+        {% if formset is defined %}
           <th>{{ block('item_checkbox_all') }}</th>
         {% endif %}
         <th>{{ "Type"|trans }}</th>
@@ -232,7 +234,6 @@
     </thead>
     <tbody>
       {% for item in items %}
-        {% set element = formset.forms[item.id] %}
         {{ block('item') }}
       {% endfor %}
     </tbody>
@@ -297,14 +298,14 @@
 
 {% block page_content %}
   <div class="container-fluid">
-    {% if configuration.searchParameter or visualFilters %}
+    {% if query.configuration.isSearchEnabled or visualFilters %}
       <div class="row">
         <div class="col-md-12" data-page-block="search_form">
           {{ block('search_form') }}
         </div>
       </div>
     {% endif %}
-    {% if 1 < sort.count %}
+    {% if 1 < sorts.count %}
       <div class="row">
         <div class="col-md-12" data-page-block="sort_links">
           {{ block('sort_links') }}
@@ -314,7 +315,7 @@
     <div class="row">
       <div class="col-md-12" data-page-block="item_list">
         {% block form_content %}
-          {% if formset %}
+          {% if formset is defined %}
             <form action="" method="post">
             {{ form_errors(formset) }}
           {% endif %}
@@ -373,7 +374,7 @@
 {% endblock %}
 
 {% block page %}
-  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ result.queryToJson|escape }}"{% endif %} data-page-search="{{ configuration.searchParameter }}">
+  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ result.queryToJson|escape }}"{% endif %} data-page-search="{{ query.configuration.searchParameter }}">
     {{ block('page_layout') }}
   </div>
 {% endblock %}

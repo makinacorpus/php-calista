@@ -4,7 +4,6 @@ namespace MakinaCorpus\Dashboard\Drupal\Twig\Extension;
 
 use MakinaCorpus\Dashboard\Drupal\Action\ActionRegistry;
 use MakinaCorpus\Dashboard\Drupal\Action\Action;
-use MakinaCorpus\Dashboard\Drupal\Page\Filter;
 
 /**
  * Displays any object's actions
@@ -34,30 +33,6 @@ class ActionExtension extends \Twig_Extension
             new \Twig_SimpleFunction('udashboard_actions', [$this, 'renderActions'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('udashboard_actions_raw', [$this, 'renderActionsRaw'], ['is_safe' => ['html']]),
         ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFilters()
-    {
-        return [
-            new \Twig_SimpleFilter('udashboard_query_param', [$this, 'flattenQueryParam']),
-        ];
-    }
-
-    /**
-     * Flatten query param if array
-     *
-     * @param string|string[] $value
-     */
-    public function flattenQueryParam($value)
-    {
-        if (is_array($value)) {
-            return implode(Filter::URL_VALUE_SEP, $value);
-        }
-
-        return $value;
     }
 
     /**

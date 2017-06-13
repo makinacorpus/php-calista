@@ -31,7 +31,7 @@ services:
 
   udashboard.twig.page_extension:
     public: false
-    class: MakinaCorpus\Dashboard\Drupal\Twig\Extension\PageExtension
+    class: MakinaCorpus\Dashboard\Twig\PageExtension
     arguments: ['@request_stack']
     tags: [{name: twig.extension}]
 

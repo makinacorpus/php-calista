@@ -8,14 +8,61 @@ use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageResult;
 use MakinaCorpus\Dashboard\Page\SortCollection;
 use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
+use MakinaCorpus\Dashboard\Twig\PageExtension;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Tests the page builder
  */
 class PageBuilderTest extends \PHPUnit_Framework_TestCase
 {
+    private function createTwigEnv()
+    {
+        $twigEnv = new \Twig_Environment(
+            new \Twig_Loader_Filesystem([
+                dirname(dirname(__DIR__)) . '/views/Page'
+            ]),
+            [
+                'debug' => true,
+                'strict_variables' => true,
+                'autoescape' => 'html',
+                'cache' => false,
+                'auto_reload' => null,
+                'optimizations' => -1,
+            ]
+        );
+
+        $twigEnv->addFunction(new \Twig_SimpleFunction('path', function ($route, $routeParameters = []) {
+            return $route . implode('&=', $routeParameters);
+        }));
+        $twigEnv->addFunction(new \Twig_SimpleFunction('form_widget', function () {
+            return 'FORM_WIDGET';
+        }));
+        $twigEnv->addFunction(new \Twig_SimpleFunction('form_errors', function () {
+            return 'FORM_ERRORS';
+        }));
+        $twigEnv->addFunction(new \Twig_SimpleFunction('form_rest', function () {
+            return 'FORM_REST';
+        }));
+        $twigEnv->addFunction(new \Twig_SimpleFunction('udashboard_actions', function () {
+            return 'ACTIONS';
+        }));
+        $twigEnv->addFilter(new \Twig_SimpleFilter('trans', function ($string, $params = []) {
+            return strtr($string, $params);
+        }));
+        $twigEnv->addFilter(new \Twig_SimpleFilter('t', function ($string, $params = []) {
+            return strtr($string, $params);
+        }));
+        $twigEnv->addFilter(new \Twig_SimpleFilter('time_diff', function ($value) {
+            return (string)$value;
+        }));
+        $twigEnv->addExtension(new PageExtension(new RequestStack()));
+
+        return $twigEnv;
+    }
+
     /**
      * Tests basics
      */
@@ -30,9 +77,13 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
 
         $configuration = new Configuration(['limit_default' => 7]);
 
-        $pageBuilder = new PageBuilder(new \Twig_Environment(new \Twig_Loader_Filesystem()), new EventDispatcher());
+        $pageBuilder = new PageBuilder($this->createTwigEnv(), new EventDispatcher());
         $pageBuilder
             ->setDatasource(new IntArrayDatasource())
+            ->setAllowedTemplates([
+                'page' => 'page.html.twig',
+            ])
+            ->setDefaultDisplay('page')
             ->setConfiguration($configuration)
             ->enableFilter('odd_or_even')
             ->enableVisualFilter('mod3')
@@ -66,5 +117,6 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
 
         // Build a page, for fun
         $pageView = $pageBuilder->createPageView($result);
+        $rendered = $pageView->render();
     }
 }

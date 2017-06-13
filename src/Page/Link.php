@@ -11,15 +11,15 @@ class Link
 {
     private $title;
     private $route;
-    private $arguments;
+    private $routeParameters;
     private $isActive = false;
     private $icon;
 
-    public function __construct($title, $route, array $arguments = [], $isActive = false, $icon = null)
+    public function __construct($title, $route, array $routeParameters = [], $isActive = false, $icon = null)
     {
         $this->title = $title;
         $this->route = $route;
-        $this->arguments = $arguments;
+        $this->routeParameters = $routeParameters;
         $this->isActive = $isActive;
         $this->icon = $icon;
     }
@@ -36,7 +36,7 @@ class Link
 
     public function getRouteParameters()
     {
-        return $this->arguments;
+        return $this->routeParameters;
     }
 
     public function isActive()

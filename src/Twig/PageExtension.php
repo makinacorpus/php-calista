@@ -1,7 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\Twig\Extension;
+namespace MakinaCorpus\Dashboard\Twig;
 
+use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageView;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -45,6 +46,7 @@ class PageExtension extends \Twig_Extension
         return [
             new \Twig_SimpleFilter('udashboardFilterDefinition', [$this, 'filterDefinition'], ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('udashboardFilterQuery', [$this, 'filterQuery'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter('udashboard_query_param', [$this, 'flattenQueryParam']),
         ];
     }
 
@@ -91,6 +93,20 @@ class PageExtension extends \Twig_Extension
         } else {
             return '';
         }
+    }
+
+    /**
+     * Flatten query param if array
+     *
+     * @param string|string[] $value
+     */
+    public function flattenQueryParam($value)
+    {
+        if (is_array($value)) {
+            return implode(Query::URL_VALUE_SEP, $value);
+        }
+
+        return $value;
     }
 
     /**
