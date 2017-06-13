@@ -1,6 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Drupal\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\Page;
+
+use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
 
 /**
  * @codeCoverageIgnore
@@ -10,7 +12,7 @@ class PageResult
     private $route;
     private $state;
     private $items;
-    private $query;
+    private $filter;
     private $filters = [];
     private $visualFilters = [];
     private $sort;
@@ -20,18 +22,17 @@ class PageResult
      *
      * @param string $route
      * @param PageState $state
-     * @param mixed[] $items
-     * @param string[] $query
+     * @param RequestFilter $filter
+     * @param DatasourceResultInterface $items
      * @param Filter[] $filters
      * @param Filter[] $visualFilters
      * @param SortManager $sort
      */
-    public function __construct($route, PageState $state, PageQuery $query, array $items, array $filters = [], array $visualFilters = [], SortManager $sort = null)
+    public function __construct(PageState $state, RequestFilter $filter, DatasourceResultInterface $items, array $filters = [], array $visualFilters = [], SortManager $sort = null)
     {
-        $this->route = $route;
         $this->state = $state;
         $this->items = $items;
-        $this->query = $query;
+        $this->filter = $filter;
         $this->filters = $filters;
         $this->visualFilters = $visualFilters;
         $this->sort = $sort;
@@ -42,7 +43,7 @@ class PageResult
      */
     public function getRoute()
     {
-        return $this->route;
+        return $this->filter->getRoute();
     }
 
     /**
@@ -54,7 +55,7 @@ class PageResult
     }
 
     /**
-     * @return \mixed[]
+     * @return DatasourceResultInterface
      */
     public function getItems()
     {
@@ -62,11 +63,11 @@ class PageResult
     }
 
     /**
-     * @return PageQuery
+     * @return RequestFilter
      */
-    public function getQuery()
+    public function getRequestFilter()
     {
-        return $this->query;
+        return $this->filter;
     }
 
     /**
@@ -101,7 +102,7 @@ class PageResult
      */
     public function queryToArray()
     {
-        $query = $this->query->getRouteParameters();
+        $query = $this->filter->getRouteParameters();
 
         foreach ($query as $index => $value) {
             if ($value === null || $value === '') {

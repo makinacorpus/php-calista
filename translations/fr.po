@@ -75,11 +75,9 @@ msgstr "propriétaire"
 msgid "title"
 msgstr "titre"
 
-#: sites/all/modules/composer/drupal-udashboard/src/Page/SortManager.php:196;273
 msgid "ascending"
 msgstr "ascendant"
 
-#: sites/all/modules/composer/drupal-udashboard/src/Page/SortManager.php:196;273
 msgid "descending"
 msgstr "descendant"
 

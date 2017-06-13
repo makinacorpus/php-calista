@@ -1,60 +1,60 @@
 services:
 
   udashboard.context:
-    class: MakinaCorpus\Drupal\Dashboard\Context\ContextPane
+    class: MakinaCorpus\Dashboard\Drupal\Context\ContextPane
     arguments: ['@event_dispatcher', '@request_stack']
 
   udashboard.admin_widget_factory:
-    class: MakinaCorpus\Drupal\Dashboard\AdminWidgetFactory
+    class: MakinaCorpus\Dashboard\Drupal\AdminWidgetFactory
     arguments: ['@service_container', '@form.factory', '@udashboard.action_provider_registry', '@twig', '@event_dispatcher']
 
   udashboard.processor_registry:
-    class: MakinaCorpus\Drupal\Dashboard\Action\ProcessorActionProvider
+    class: MakinaCorpus\Dashboard\Drupal\Action\ProcessorActionProvider
     tags: [{name: udashboard.action_provider}]
 
   udashboard.action_provider_registry:
     public: false
-    class: MakinaCorpus\Drupal\Dashboard\Action\ActionRegistry
+    class: MakinaCorpus\Dashboard\Drupal\Action\ActionRegistry
 
   udashboard.portlet_registry:
-    class: MakinaCorpus\Drupal\Dashboard\Portlet\PortletRegistry
+    class: MakinaCorpus\Dashboard\Drupal\Portlet\PortletRegistry
 
   udashboard.transaction_handler:
-    class: MakinaCorpus\Drupal\Dashboard\TransactionHandler
+    class: MakinaCorpus\Dashboard\Drupal\TransactionHandler
     arguments: ['@database']
 
   udashboard.twig.action_extension:
     public: false
-    class: MakinaCorpus\Drupal\Dashboard\Twig\Extension\ActionExtension
+    class: MakinaCorpus\Dashboard\Drupal\Twig\Extension\ActionExtension
     arguments: ['@udashboard.action_provider_registry']
     tags: [{name: twig.extension}]
 
   udashboard.twig.page_extension:
     public: false
-    class: MakinaCorpus\Drupal\Dashboard\Twig\Extension\PageExtension
+    class: MakinaCorpus\Dashboard\Drupal\Twig\Extension\PageExtension
     arguments: ['@request_stack']
     tags: [{name: twig.extension}]
 
   udashboard.empty_page_builder:
     public: false
     shared: false
-    class: MakinaCorpus\Drupal\Dashboard\Page\PageBuilder
+    class: MakinaCorpus\Dashboard\Drupal\Page\PageBuilder
     factory: ['@udashboard.admin_widget_factory', createPageBuilder]
 
   # Default node datasource, this is registered as an example only, copy/paste
   # and adapt this to declare your datasources.
   udashboard.datasource.node_default:
     public: false
-    class: MakinaCorpus\Drupal\Dashboard\Page\Node\DefaultNodeDatasource
+    class: MakinaCorpus\Dashboard\Drupal\Page\Node\DefaultNodeDatasource
     arguments: ["@database", "@entity.manager"]
 
   # Default node page builder, this is registered as an example only, copy/paste
   # and adapt this to declare your page builders.
   udashboard.page.node_default:
-    class: MakinaCorpus\Drupal\Dashboard\Page\Node\DefaultNodeAdminPage
+    class: MakinaCorpus\Dashboard\Drupal\Page\Node\DefaultNodeAdminPage
     arguments: ['@udashboard.datasource.node_default', false]
     tags: [{name: udashboard.page_type, id: 'node.default'}]
 
   udashboard.pagebuilder_event_subscriber:
-    class: MakinaCorpus\Drupal\Dashboard\Event\PageBuilderEventSubscriber
+    class: MakinaCorpus\Dashboard\Drupal\Event\PageBuilderEventSubscriber
     tags: [{name: event_subscriber}]

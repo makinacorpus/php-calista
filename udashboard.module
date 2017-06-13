@@ -3,9 +3,9 @@
  * µDashboard - Dashboard and fioritures.
  */
 
-use MakinaCorpus\Drupal\Dashboard\Controller\ActionProcessorController;
-use MakinaCorpus\Drupal\Dashboard\Controller\AjaxPageController;
-use MakinaCorpus\Drupal\Dashboard\TransactionHandler;
+use MakinaCorpus\Dashboard\Drupal\Controller\ActionProcessorController;
+use MakinaCorpus\Dashboard\Drupal\Controller\AjaxPageController;
+use MakinaCorpus\Dashboard\Drupal\TransactionHandler;
 
 /**
  * View mode for content display.
@@ -510,13 +510,13 @@ function udashboard_page_build(&$page) {
   if (variable_get('udashboard.context_pane_enable') &&
       user_access(UDASHBOARD_PERM_USE_CONTEXT_PANE)
   ) {
-    /** @var \MakinaCorpus\Drupal\Dashboard\Context\ContextPane $context */
+    /** @var \MakinaCorpus\Dashboard\Drupal\Context\ContextPane $context */
     $context = \Drupal::service('udashboard.context');
     $context->init();
 
     $actions = [];
     foreach ($context->getActions() as $data) {
-      if (is_array($data['actions']) && count($data['actions']) && reset($data['actions']) instanceof \MakinaCorpus\Drupal\Dashboard\Action\Action) {
+      if (is_array($data['actions']) && count($data['actions']) && reset($data['actions']) instanceof \MakinaCorpus\Dashboard\Drupal\Action\Action) {
         $actions[] = [
           '#theme'      => 'udashboard_actions',
           '#actions'    => $data['actions'],
@@ -590,7 +590,7 @@ function template_preprocess_udashboard_actions(&$variables) {
   }
 
   foreach ($variables['actions'] as $key => $action) {
-    /** @var $action \MakinaCorpus\Drupal\Dashboard\Action\Action */
+    /** @var $action \MakinaCorpus\Dashboard\Drupal\Action\Action */
     // Remove actions for which the path is the same.
     if (current_path() === $action->getURI()) {
       continue;
@@ -649,7 +649,7 @@ function template_preprocess_udashboard_action_single(&$variables) {
     $variables['show_title'] = empty($variables['icon']);
   }
 
-  /** @var $action \MakinaCorpus\Drupal\Dashboard\Action\Action */
+  /** @var $action \MakinaCorpus\Dashboard\Drupal\Action\Action */
   $action = $variables['action'];
 
   $item = [];

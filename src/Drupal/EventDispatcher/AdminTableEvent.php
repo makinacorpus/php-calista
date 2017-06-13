@@ -1,0 +1,33 @@
+<?php
+
+namespace MakinaCorpus\Dashboard\Drupal\EventDispatcher;
+
+use MakinaCorpus\Dashboard\Drupal\Table\AdminTable;
+
+use Symfony\Component\EventDispatcher\GenericEvent;
+
+/**
+ * An admin information table is being displayed, append stuff in there
+ */
+class AdminTableEvent extends GenericEvent
+{
+    /**
+     * Default constructor
+     *
+     * @param AdminTable $table
+     */
+    public function __construct(AdminTable $table)
+    {
+        parent::__construct($table);
+    }
+
+    /**
+     * Get table
+     *
+     * @return AdminTable
+     */
+    public function getTable()
+    {
+        return $this->getSubject();
+    }
+}

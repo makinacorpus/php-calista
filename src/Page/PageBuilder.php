@@ -1,10 +1,14 @@
 <?php
 
-namespace MakinaCorpus\Drupal\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\Page;
 
-use MakinaCorpus\Drupal\Dashboard\Event\PageBuilderEvent;
+use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
+use MakinaCorpus\Dashboard\Datasource\QueryFactory;
+use MakinaCorpus\Dashboard\Event\PageBuilderEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
+use MakinaCorpus\Dashboard\Datasource\Query;
 
 /**
  * @todo
@@ -13,7 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class PageBuilder
 {
-    const DEFAULT_LIMIT = 24;
     const EVENT_VIEW = 'pagebuilder:view';
     const EVENT_SEARCH = 'pagebuilder:search';
 
@@ -31,7 +34,7 @@ class PageBuilder
     protected $enabledFilters = [];
     protected $enabledVisualFilters = [];
     protected $id;
-    protected $limit = self::DEFAULT_LIMIT;
+    protected $limit = Query::LIMIT_DEFAULT;
     protected $searchParam = 's';
     protected $templates = [];
     protected $twig;
@@ -456,26 +459,23 @@ class PageBuilder
 
         $datasource = $this->getDatasource();
 
-        $route = $request->attributes->get('_route');
-        $state = new PageState();
-        $query = new PageQuery($request, $this->searchParam, $this->displaySearch, $this->baseQuery);
-
-        $datasourceQuery = $query->getAll();
+        $configuration = new Configuration();
+        $query = (new QueryFactory())->fromRequest($configuration, $request, $this->baseQuery);
 
         if ($this->displaySearch) {
             // Search can aim for very specific filters, datasource does not
             // need to be able to understand those, so we can actually have
             // a search without the datasource being able to search
-            $state->setSearchParameter($this->searchParam);
-            $state->setCurrentSearch($request->get($this->searchParam));
+            $configuration->setSearchParameter($this->searchParam);
+            // $state->setCurrentSearch($request->get($this->searchParam));
         }
 
-        $datasource->init($datasourceQuery, $this->baseQuery);
+        $datasource->init($query);
 
         $sort = new SortManager();
-        $sort->prepare($route, $query);
+        $sort->setQuery($query);
 
-        if ($sortFields = $datasource->getSortFields($datasourceQuery)) {
+        if ($sortFields = $datasource->getSortFields($query)) {
             foreach ($sortFields as $field => $label) {
                 if (in_array($field, $this->disabledSorts)) {
                     unset($sortFields[$field]);
@@ -497,15 +497,15 @@ class PageBuilder
 
         // Build the page state gracefully, this uglyfies the code but it does
         // help to reduce code within the datasources
-        $state->setSortField($sort->getCurrentField($datasourceQuery));
-        $state->setSortOrder($sort->getCurrentOrder($datasourceQuery));
-        if (!$this->displayPager || empty($datasourceQuery[$state->getPageParameter()])) {
-            $state->setRange($this->limit);
+        $configuration->setSortField($sort->getCurrentField($query));
+        $configuration->setSortOrder($sort->getCurrentOrder($query));
+        if (!$this->displayPager || empty($query[$configuration->getPageParameter()])) {
+            $configuration->setRange($this->limit);
         } else {
-            $state->setRange($this->limit, $datasourceQuery[$state->getPageParameter()]);
+            $configuration->setRange($this->limit, $query[$configuration->getPageParameter()]);
         }
 
-        $items = $datasource->getItems($datasourceQuery, $state);
+        $items = $datasource->getItems($query);
 
         // Build filters arrays
         $filters = $visualFilters = [];
@@ -519,7 +519,7 @@ class PageBuilder
                     //unset($filters[$index]);
                 }
 
-                $filter->prepare($route, $query);
+                $filter->setRequestFilter($filter);
 
                 if (array_key_exists($filter->getField(), $this->enabledFilters)) {
                     $filters[] = $filter;
@@ -531,9 +531,9 @@ class PageBuilder
         }
 
         // Set current display
-        $state->setCurrentDisplay($request->get('display'));
+        $configuration->setCurrentDisplay($request->get('display'));
 
-        return new PageResult($route, $state, $query, $items, $filters, $visualFilters, $sort);
+        return new PageResult($configuration, $filter, $items, $filters, $visualFilters, $sort);
     }
 
     /**
@@ -550,6 +550,7 @@ class PageBuilder
     public function createPageView(PageResult $result, array $arguments = [])
     {
         $state = $result->getState();
+        $filter = $result->getRequestFilter();
 
         $display = $state->getCurrentDisplay();
         if (!$display) {
@@ -569,7 +570,7 @@ class PageBuilder
                     $displayIcon = 'th-list';
                     break;
             }
-            $displayLinks[] = new Link($name, $result->getRoute(), ['display' => $name] + $result->getQuery()->getRouteParameters(), $display === $name, $displayIcon);
+            $displayLinks[] = new Link($name, $result->getRoute(), ['display' => $name] + $filter->getRouteParameters(), $display === $name, $displayIcon);
         }
 
         $arguments = [
@@ -581,8 +582,8 @@ class PageBuilder
             'visualFilters' => $this->displayVisualSearch ? $result->getVisualFilters() : [],
             'display'       => $display,
             'displays'      => $displayLinks,
-            'query'         => $result->getQuery()->getAll(),
-            'routeParams'   => $result->getQuery()->getRouteParameters(),
+            'query'         => $filter->getAll(),
+            'routeParams'   => $filter->getRouteParameters(),
             'sort'          => $result->getSort(),
             'items'         => $result->getItems(),
             'hasPager'      => $this->displayPager,

@@ -101,7 +101,7 @@ The `AccountController::actionListAction` method will be called when hitting `ad
 ```php
 <?php
 
-use MakinaCorpus\Drupal\Dashboard\Controller\PageControllerTrait;
+use MakinaCorpus\Dashboard\Drupal\Controller\PageControllerTrait;
 use MakinaCorpus\Drupal\Sf\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -118,7 +118,7 @@ class AccountController extends Controller
      */
     public function accountListAction(Request $request)
     {
-        /** @var \MakinaCorpus\Drupal\Dashboard\Page\DatasourceInterface $datasource */
+        /** @var \MakinaCorpus\Dashboard\Drupal\Datasource\DatasourceInterface $datasource */
         $datasource = $this->get('mymodule.datasource.account');
 
         return $this
@@ -150,8 +150,8 @@ A `DefaultAccountDatasource` is available and abstracts the main part of queryin
 
 namespace MyModule\Page;
 
-use MakinaCorpus\Drupal\Dashboard\Page\Account\DefaultAccountDatasource;
-use MakinaCorpus\Drupal\Dashboard\Page\PageState;
+use MakinaCorpus\Dashboard\Drupal\Datasource\Account\DefaultAccountDatasource;
+use MakinaCorpus\Dashboard\Drupal\Datasource\Query;
 
 /**
  * Account Datasource
@@ -172,7 +172,7 @@ class AccountDatasource extends DefaultAccountDatasource
         return $sortFields;
     }
 
-    protected function applyFilters(\SelectQueryInterface $select, $query, PageState $pageState)
+    protected function applyFilters(\SelectQueryInterface $select, Query $query)
     {
         $select->leftJoin('field_data_myfield', 'm', 'm.entity_id = u.uid');
     }
@@ -256,8 +256,8 @@ namespace MyModule\Action;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\user\User;
-use MakinaCorpus\Drupal\Dashboard\Action\Action;
-use MakinaCorpus\Drupal\Dashboard\Action\ActionProviderInterface;
+use MakinaCorpus\Dashboard\Drupal\Action\Action;
+use MakinaCorpus\Dashboard\Drupal\Action\ActionProviderInterface;
 
 /**
  * Action provider for accounts

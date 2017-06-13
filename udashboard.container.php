@@ -4,10 +4,9 @@ namespace Drupal\Module\udashboard;
 
 use Drupal\Core\DependencyInjection\ServiceProviderInterface;
 
-use MakinaCorpus\Drupal\Dashboard\DependencyInjection\Compiler\ActionProviderRegisterPass;
-use MakinaCorpus\Drupal\Dashboard\DependencyInjection\Compiler\PageBuilderRegisterPass;
-use MakinaCorpus\Drupal\Dashboard\DependencyInjection\Compiler\PortletRegisterPass;
-
+use MakinaCorpus\Dashboard\Drupal\DependencyInjection\Compiler\ActionProviderRegisterPass;
+use MakinaCorpus\Dashboard\Drupal\DependencyInjection\Compiler\PageBuilderRegisterPass;
+use MakinaCorpus\Dashboard\Drupal\DependencyInjection\Compiler\PortletRegisterPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 

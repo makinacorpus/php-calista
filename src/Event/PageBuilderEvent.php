@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Drupal\Dashboard\Event;
+namespace MakinaCorpus\Dashboard\Event;
 
-use MakinaCorpus\Drupal\Dashboard\Page\PageBuilder;
+use MakinaCorpus\Dashboard\Page\PageBuilder;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -11,14 +11,14 @@ use Symfony\Component\EventDispatcher\Event;
 final class PageBuilderEvent extends Event
 {
     /**
-     * @var \MakinaCorpus\Drupal\Dashboard\Page\PageBuilder
+     * @var \MakinaCorpus\Dashboard\Page\PageBuilder
      */
     private $builder;
 
     /**
      * PageBuilderEvent constructor.
      *
-     * @param \MakinaCorpus\Drupal\Dashboard\Page\PageBuilder $builder
+     * @param \MakinaCorpus\Dashboard\Page\PageBuilder $builder
      */
     public function __construct(PageBuilder $builder)
     {
@@ -26,7 +26,7 @@ final class PageBuilderEvent extends Event
     }
 
     /**
-     * @return \MakinaCorpus\Drupal\Dashboard\Page\PageBuilder
+     * @return \MakinaCorpus\Dashboard\Page\PageBuilder
      */
     public function getPageBuilder()
     {

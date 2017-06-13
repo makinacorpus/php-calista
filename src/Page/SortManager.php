@@ -1,8 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Drupal\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\Page;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\Query;
 
 /**
  * Sort manager, it worthes the shot to have a decicated class for this
@@ -12,7 +14,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 class SortManager implements \Countable
 {
     use StringTranslationTrait;
-    use PrepareableTrait;
 
     /**
      * Descending order
@@ -42,7 +43,7 @@ class SortManager implements \Countable
     /**
      * @var string
      */
-    private $defaultOrder = self::DESC;
+    private $defaultOrder = Configuration::SORT_DESC;
 
     /**
      * @var string[]
@@ -55,56 +56,18 @@ class SortManager implements \Countable
     private $links;
 
     /**
-     * Default constructor
-     *
-     * @param string $paramField
-     *   Sort field query parameter name
-     * @param string $paramOrder
-     *   Sort order query parameter name
-     */
-    public function __construct($paramField = null, $paramOrder = null)
-    {
-        if ($paramField) {
-            $this->paramField = $paramField;
-        }
-        if ($paramOrder) {
-            $this->paramOrder = $paramOrder;
-        }
-    }
-
-    /**
-     * Get sort field parameter name
-     *
-     * @return string
-     */
-    public function getFieldParameter()
-    {
-        return $this->paramField;
-    }
-
-    /**
-     * Get sort order parameter name
-     *
-     * @return string
-     */
-    public function getOrderParameter()
-    {
-        return $this->paramOrder;
-    }
-
-    /**
      * Set default sort
      *
      * @param string $field
      * @param string $order
      */
-    public function setDefault($field, $order = self::DESC)
+    public function setDefault($field, $order = Query::SORT_DESC)
     {
         if (!isset($this->allowed[$field])) {
             trigger_error(sprintf("%s field is not allowed for sorting", $field), E_USER_ERROR);
             return;
         }
-        if (!in_array($order, [self::ASC, self::DESC])) {
+        if (!in_array($order, [Configuration::SORT_ASC, Query::SORT_DESC])) {
             trigger_error(sprintf("%s order is not allowed for sorting", $order), E_USER_ERROR);
             return;
         }
@@ -177,7 +140,7 @@ class SortManager implements \Countable
     {
         if (isset($query[$this->paramOrder])) {
             $order = $query[$this->paramOrder];
-            if (in_array($order, [self::ASC, self::DESC])) {
+            if (in_array($order, [Query::SORT_ASC, Query::SORT_DESC])) {
                 return $order;
             }
         }
@@ -245,8 +208,8 @@ class SortManager implements \Countable
 
         $this->links = [];
 
-        $route = $this->getRoute();
-        $query = $this->getRouteParameters();
+        $route = $this->filter->getRoute();
+        $query = $this->filter->getRouteParameters();
 
         $current = $this->getCurrentField($query);
 
@@ -266,11 +229,11 @@ class SortManager implements \Countable
     {
         $ret = [];
 
-        $route = $this->getRoute();
-        $query = $this->getRouteParameters();
+        $route = $this->filter->getRoute();
+        $query = $this->filter->getRouteParameters();
 
         $current = $this->getCurrentOrder($query);
-        $map = [self::ASC => $this->t("ascending"), self::DESC => $this->t("descending")];
+        $map = [Query::SORT_ASC => $this->t("ascending"), Query::SORT_DESC => $this->t("descending")];
 
         foreach ($map as $value => $label) {
             $ret[$value] = $this->buildLink($query, $route, $this->paramOrder, $value, $label, $current, $this->defaultOrder);

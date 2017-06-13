@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Drupal\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\Page;
 
 use Symfony\Component\HttpFoundation\Request;
 

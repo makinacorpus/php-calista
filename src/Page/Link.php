@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Drupal\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\Page;
 
 /**
  * Represent a link, for templates.

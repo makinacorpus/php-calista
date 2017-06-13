@@ -1,7 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Drupal\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\Page;
 
+/**
+ * Context variable for twig templates and main renderer for pages
+ */
 class PageView
 {
     private $twig;

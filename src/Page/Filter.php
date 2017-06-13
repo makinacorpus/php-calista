@@ -1,33 +1,12 @@
 <?php
 
-namespace MakinaCorpus\Drupal\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\Page;
 
 /**
  * Default implementation that will convert a single hashmap to a set of links
  */
 class Filter implements \Countable
 {
-    const URL_VALUE_SEP = '|';
-
-    use PrepareableTrait;
-
-    /**
-     * Sure ugly has hell, but right now I have no clean solution
-     *
-     * @param string[] $query
-     *
-     * @return string[]
-     */
-    static public function fixQuery(array $query)
-    {
-        foreach ($query as $key => $value) {
-            if (false !== strpos($value, self::URL_VALUE_SEP)) {
-                $query[$key] = explode(self::URL_VALUE_SEP, $value);
-            }
-        }
-        return $query;
-    }
-
     private $choicesMap = [];
     private $queryParameter;
     private $title;
@@ -167,8 +146,8 @@ class Filter implements \Countable
     {
         $ret = [];
 
-        $route = $this->getRoute();
-        $query = $this->getRouteParameters();
+        $route = $this->filter->getRoute();
+        $query = $this->filter->getRouteParameters();
 
         $selectedValues = $this->getSelectedValues($query);
 
