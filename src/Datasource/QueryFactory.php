@@ -32,11 +32,11 @@ class QueryFactory
         $filters = $this->createQueryFromRequest($request);
         $routeParameters = $filters;
 
-        if ($configuration->getSearchParameter()) {
+        if ($configuration->isSearchEnabled() && $searchParameter) {
             $rawSearchString = $request->get($searchParameter, '');
 
             // Parsed the search query string if asked for
-            if ($rawSearchString && $configuration->doParseSearch()) {
+            if ($rawSearchString && $configuration->isSearchParsed()) {
                 $parsedSearch = (new QueryStringParser())->parse($rawSearchString, $searchParameter);
 
                 if ($parsedSearch) {

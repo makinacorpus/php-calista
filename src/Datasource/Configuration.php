@@ -2,6 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\Datasource;
 
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
 /**
  * Configuration for the query
  *
@@ -9,129 +11,157 @@ namespace MakinaCorpus\Dashboard\Datasource;
  */
 class Configuration
 {
-    private $defaultLimit = Query::LIMIT_DEFAULT;
-    private $displayParameter = 'disp';
-    private $doParseSearch = false;
-    private $isLimitFixed = true;
-    private $limitParameter = 'limit';
-    private $pageParameter = 'page';
-    private $pagerElement = 0;
-    private $searchParameter = null;
-    private $sortFieldParameter = 'st';
-    private $sortOrderParameter = 'by';
+    /**
+     * @var mixed[]
+     */
+    private $options = [];
 
-    public function enableParseSearch()
+    /**
+     * Build an instance from an array
+     *
+     * @param mixed[] $options
+     */
+    public function __construct(array $options = [])
     {
-        $this->doParseSearch = true;
+        $resolver = new OptionsResolver();
+        $resolver->setDefaults(array(
+            'display_param'     => 'display',
+            'limit_allowed'     => false,
+            'limit_default'     => Query::LIMIT_DEFAULT,
+            'limit_param'       => 'limit',
+            'pager_element'     => 0,
+            'pager_enable'      => true,
+            'pager_param'       => 'page',
+            'search_enable'     => false,
+            'search_parse'      => false,
+            'search_param'      => 's',
+            'sort_field_param'  => 'st',
+            'sort_order_param'  => 'by',
+        ));
+
+        $this->options = $resolver->resolve($options);
     }
 
-    public function disableParseSearch()
-    {
-        $this->doParseSearch = false;
-    }
-
-    public function doParseSearch()
-    {
-        return $this->doParseSearch;
-    }
-
-    public function allowLimitChange()
-    {
-        $this->isLimitFixed = false;
-    }
-
-    public function disallowLimitChange()
-    {
-        $this->isLimitFixed = true;
-    }
-
-    public function isLimitFixed()
-    {
-       return $this->isLimitFixed;
-    }
-
-    public function setLimitParameter($name)
-    {
-        $this->limitParameter = $name;
-    }
-
-    public function getLimitParameter()
-    {
-        return $this->limitParameter;
-    }
-
-    public function setDefaultLimit($limit)
-    {
-        $this->defaultLimit = $limit;
-    }
-
-    public function getDefaultLimit()
-    {
-        return $this->defaultLimit;
-    }
-
-    public function setSortFieldParameter($name)
-    {
-        $this->sortFieldParameter = $name;
-    }
-
-    public function getSortFieldParameter()
-    {
-        return $this->sortFieldParameter;
-    }
-
-    public function setSortOrderParameter($name)
-    {
-        $this->sortOrderParameter = $name;
-    }
-
-    public function getSortOrderParameter()
-    {
-        return $this->sortOrderParameter;
-    }
-
-    public function isSearchEnabled()
-    {
-        return !!$this->searchParameter;
-    }
-
-    public function setSearchParameter($name)
-    {
-        $this->searchParameter = $name;
-    }
-
-    public function getSearchParameter()
-    {
-        return $this->searchParameter;
-    }
-
-    public function setDisplayParameter($name)
-    {
-        $this->displayParameter = $name;
-    }
-
+    /**
+     * Get display parameter name
+     *
+     * @return string
+     */
     public function getDisplayParameter()
     {
-        return $this->displayParameter;
+        return $this->options['display_param'];
     }
 
-    public function setPageParameter($name)
+    /**
+     * Can the query change the limit
+     *
+     * @return bool
+     */
+    public function isLimitAllowed()
     {
-        $this->pageParameter = $name;
+        return $this->options['limit_allowed'];
     }
 
-    public function getPageParameter()
+    /**
+     * Get the default limit
+     *
+     * @return int
+     */
+    public function getDefaultLimit()
     {
-        return $this->pageParameter;
+        return $this->options['limit_default'];
     }
 
-    public function setPagerElement($name)
+    /**
+     * Get the limit parameter name
+     *
+     * @return string
+     */
+    public function getLimitParameter()
     {
-        $this->pagerElement = $name;
+        return $this->options['limit_param'];
     }
 
+    /**
+     * Is paging enabled
+     *
+     * @return bool
+     */
+    public function isPagerEnabled()
+    {
+        return $this->options['pager_enable'];
+    }
+
+    /**
+     * Get page parameter
+     *
+     * @return string
+     */
+    public function getPagerParameter()
+    {
+        return $this->options['pager_param'];
+    }
+
+    /**
+     * Get pager element
+     *
+     * @return int
+     *
+     * @deprecated
+     *   This is a Drupal only addition
+     */
     public function getPagerElement()
     {
-        return $this->pagerElement;
+        return $this->options['pager_element'];
+    }
+
+    /**
+     * Is full search enabled
+     *
+     * @return bool
+     */
+    public function isSearchEnabled()
+    {
+        return $this->options['search_enable'];
+    }
+
+    /**
+     * Is search parsed
+     *
+     * @return bool
+     */
+    public function isSearchParsed()
+    {
+        return $this->options['search_parse'];
+    }
+
+    /**
+     * Get search parameter name
+     *
+     * @return string
+     */
+    public function getSearchParameter()
+    {
+        return $this->options['search_param'];
+    }
+
+    /**
+     * Get sort field parameter
+     *
+     * @return string
+     */
+    public function getSortFieldParameter()
+    {
+        return $this->options['sort_field_param'];
+    }
+
+    /**
+     * Get sort order parameter
+     *
+     * @return string
+     */
+    public function getSortOrderParameter()
+    {
+        return $this->options['sort_order_param'];
     }
 }

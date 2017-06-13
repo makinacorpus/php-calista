@@ -27,13 +27,12 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
             'by' => Query::SORT_DESC,
         ], [], ['_route' => '_test_route']);
 
-        $configuration = new Configuration();
+        $configuration = new Configuration(['limit_default' => 7]);
 
         $pageBuilder = new PageBuilder(new \Twig_Environment(new \Twig_Loader_Filesystem()), new EventDispatcher());
         $pageBuilder
             ->setDatasource(new IntArrayDatasource())
             ->setConfiguration($configuration)
-            ->setLimit(7)
             ->enableFilter('odd_or_even')
             ->enableVisualFilter('mod3')
         ;

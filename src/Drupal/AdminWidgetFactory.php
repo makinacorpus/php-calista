@@ -11,10 +11,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * God I hate to register more factories to the DIC, but we have some
@@ -108,53 +106,52 @@ final class AdminWidgetFactory
     }
 
     /**
+     * Initialize page builder
+     */
+    private function initializeBuilder(PageBuilder $builder, $name = null, Request $request = null)
+    {
+       if ($name) {
+            if (!$request) {
+                throw new \LogicException("you cannot fetch a page builder through a type without a request");
+            }
+
+            $builder->setId($name);
+            $this->getPageType($name)->build($builder, $request);
+        }
+    }
+
+    /**
      * Create a page builder without page type
+     *
+     * @param string $name
+     *   If given will use the given page type
+     * @param Request $request
+     *   Mandatory when name is given
      *
      * @return PageBuilder
      */
-    public function createPageBuilder()
+    public function createPageBuilder($name = null, Request $request = null)
     {
-        return new PageBuilder($this->twig, $this->eventDispatcher);
+        $builder = new PageBuilder($this->twig, $this->eventDispatcher);
+        $this->initializeBuilder($builder);
+
+        return $builder;
     }
 
     /**
      * Create a SF form page builder without page type
      *
-     * @return SymfonyFormPageBuilder
-     */
-    public function createSymfonyFormPageBuilder()
-    {
-        return new SymfonyFormPageBuilder($this->twig, $this->eventDispatcher, $this->formFactory);
-    }
-
-    /**
-     * Get the page builder
-     *
      * @param string $name
+     *   If given will use the given page type
      * @param Request $request
-     *
-     * @return PageBuilder
-     */
-    public function getPageBuilder($name, Request $request)
-    {
-        return $this->getPageBuilderFromClass(PageBuilder::class, $name, $request);
-    }
-
-    /**
-     * Get the page builder
-     *
-     * @param string $name
-     * @param Request $request
+     *   Mandatory when name is given
      *
      * @return SymfonyFormPageBuilder
      */
-    public function getSymfonyFormPageBuilder($name, Request $request)
+    public function createSymfonyFormPageBuilder($name = null, Request $request = null)
     {
-        $type = $this->getPageType($name);
         $builder = new SymfonyFormPageBuilder($this->twig, $this->eventDispatcher, $this->formFactory);
-
-        $type->build($builder, $request);
-        $builder->setId($name);
+        $this->initializeBuilder($builder);
 
         return $builder;
     }
@@ -167,30 +164,8 @@ final class AdminWidgetFactory
      *
      * @return AdminTable
      */
-    public function getTable($name, $attributes = [])
+    public function createAdminTable($name, $attributes = [])
     {
         return new AdminTable($name, $attributes, $this->eventDispatcher);
-    }
-
-    /**
-     *
-     *
-     * @param string $pageBuilderClass
-     * @param $name
-     *
-     * @param Request $request
-     *
-     * @return mixed
-     */
-    private function getPageBuilderFromClass($pageBuilderClass, $name, Request $request)
-    {
-        $type = $this->getPageType($name);
-        /** @var PageBuilder $builder */
-        $builder = new $pageBuilderClass($this->twig, $this->eventDispatcher);
-
-        $type->build($builder, $request);
-        $builder->setId($name);
-
-        return $builder;
     }
 }

@@ -2,10 +2,10 @@
 
 namespace MakinaCorpus\Dashboard\Drupal\Controller;
 
+use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use MakinaCorpus\Dashboard\Drupal\AdminWidgetFactory;
-use MakinaCorpus\Dashboard\Drupal\Datasource\DatasourceInterface;
-use MakinaCorpus\Dashboard\Drupal\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Drupal\Table\AdminTable;
+use MakinaCorpus\Dashboard\Page\PageBuilder;
 
 use Symfony\Component\HttpFoundation\Request;
 

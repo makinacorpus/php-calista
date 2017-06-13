@@ -31,9 +31,10 @@ class QueryTest extends \PHPUnit_Framework_TestCase
 
         $factory = new QueryFactory();
 
-        $configuration = new Configuration();
-        $configuration->setLimitParameter('_limit');
-        $configuration->disallowLimitChange();
+        $configuration = new Configuration([
+            'limit_allowed' => false,
+            'limit_param'   => '_limit',
+        ]);
         $query = $factory->fromRequest($configuration, $request);
         // Limit is not overridable per default
         $this->assertSame(Query::LIMIT_DEFAULT, $query->getLimit());
@@ -44,12 +45,14 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $query->getPageNumber());
         $this->assertSame(0, $query->getOffset());
 
-        $configuration = new Configuration();
-        $configuration->setSortFieldParameter('_st');
-        $configuration->setSortOrderParameter('_by');
-        $configuration->setPageParameter('_page');
-        $configuration->setLimitParameter('_limit');
-        $configuration->allowLimitChange();
+        $configuration = new Configuration([
+            'limit_allowed'     => true,
+            'limit_param'       => '_limit',
+            'pager_enable'      => true,
+            'pager_param'       => '_page',
+            'sort_field_param'  => '_st',
+            'sort_order_param'  => '_by'
+        ]);
         $query = $factory->fromRequest($configuration, $request);
         // Limit is not overridable per default
         $this->assertSame(12, $query->getLimit());
@@ -83,9 +86,11 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             'search'  => $search,
         ]);
 
-        $configuration = new Configuration();
-        $configuration->setSearchParameter('search');
-        $configuration->enableParseSearch();
+        $configuration = new Configuration([
+            'search_enable' => true,
+            'search_param'  => 'search',
+            'search_parse'  => true,
+        ]);
 
         $factory = new QueryFactory();
         $queryFromArray = $factory->fromArray($configuration, ['foo' => ['c', 'd', 'e'], 'bar' => 'baz', 'search' => $search]);
@@ -142,9 +147,11 @@ class QueryTest extends \PHPUnit_Framework_TestCase
 
         $baseQuery = ['foo' => ['a', 'b', 'c']];
 
-        $configuration = new Configuration();
-        $configuration->setSearchParameter('search');
-        $configuration->enableParseSearch();
+        $configuration = new Configuration([
+            'search_enable' => true,
+            'search_param'  => 'search',
+            'search_parse'  => true,
+        ]);
 
         $factory = new QueryFactory();
         $queryFromArray = $factory->fromArray($configuration, ['foo' => ['b', 'c', 'd', 'e'], 'bar' => 'baz'], $baseQuery);
@@ -198,9 +205,11 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             'search'  => $search,
         ]);
 
-        $configuration = new Configuration();
-        $configuration->setSearchParameter('search');
-        $configuration->disableParseSearch();
+        $configuration = new Configuration([
+            'search_enable' => true,
+            'search_param'  => 'search',
+            'search_parse'  => false,
+        ]);
 
         $factory = new QueryFactory();
         $queryFromArray = $factory->fromArray($configuration, ['foo' => ['c', 'd', 'e'], 'bar' => 'baz', 'search' => $search]);

@@ -55,7 +55,7 @@ class Query
      */
     private function findRange()
     {
-        if ($this->configuration->isLimitFixed()) {
+        if (!$this->configuration->isLimitAllowed()) {
             // Limit cannot be changed
             $this->limit = $this->configuration->getDefaultLimit();
         } else {
@@ -71,14 +71,17 @@ class Query
             }
         }
 
-        $pageParameter = $this->configuration->getPageParameter();
-        if ($pageParameter && isset($this->routeParameters[$pageParameter])) {
-            $this->page = (int)$this->routeParameters[$pageParameter];
-        }
+        // Pager initialization, only if enabled
+        if ($this->configuration->isPagerEnabled()) {
+            $pageParameter = $this->configuration->getPagerParameter();
+            if ($pageParameter && isset($this->routeParameters[$pageParameter])) {
+                $this->page = (int)$this->routeParameters[$pageParameter];
+            }
 
-        // Additional security, do not allow negative or 0 page
-        if ($this->page <= 0) {
-            $this->page = 1;
+            // Additional security, do not allow negative or 0 page
+            if ($this->page <= 0) {
+                $this->page = 1;
+            }
         }
     }
 
@@ -103,9 +106,11 @@ class Query
      */
     private function findSearch()
     {
-        $searchParameter = $this->configuration->getSearchParameter();
-        if ($searchParameter && isset($this->routeParameters[$searchParameter])) {
-            $this->rawSearchString = (string)$this->routeParameters[$searchParameter];
+        if ($this->configuration->isSearchEnabled()) {
+            $searchParameter = $this->configuration->getSearchParameter();
+            if ($searchParameter && isset($this->routeParameters[$searchParameter])) {
+                $this->rawSearchString = (string)$this->routeParameters[$searchParameter];
+            }
         }
     }
 

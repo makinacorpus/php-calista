@@ -402,20 +402,6 @@ class PageBuilder
     }
 
     /**
-     * Get item per page
-     *
-     * @param int $limit
-     *
-     * @return $this
-     */
-    public function setLimit($limit)
-    {
-        $this->getConfiguration()->setDefaultLimit($limit);
-
-        return $this;
-    }
-
-    /**
      * Get default template
      *
      * @return string

@@ -7,7 +7,6 @@ use Drupal\Core\Form\FormBuilderInterface;
 use MakinaCorpus\Dashboard\Drupal\Action\ProcessorActionProvider;
 use MakinaCorpus\Dashboard\Drupal\TransactionHandler;
 use MakinaCorpus\Drupal\Sf\Controller;
-
 use Symfony\Component\HttpFoundation\Request;
 
 class ActionProcessorController extends Controller
