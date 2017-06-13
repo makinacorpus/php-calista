@@ -23,23 +23,23 @@ class Configuration
      */
     public function __construct(array $options = [])
     {
-        $resolver = new OptionsResolver();
-        $resolver->setDefaults(array(
-            'display_param'     => 'display',
-            'limit_allowed'     => false,
-            'limit_default'     => Query::LIMIT_DEFAULT,
-            'limit_param'       => 'limit',
-            'pager_element'     => 0,
-            'pager_enable'      => true,
-            'pager_param'       => 'page',
-            'search_enable'     => false,
-            'search_parse'      => false,
-            'search_param'      => 's',
-            'sort_field_param'  => 'st',
-            'sort_order_param'  => 'by',
-        ));
-
-        $this->options = $resolver->resolve($options);
+        $this->options = (new OptionsResolver())
+            ->setDefaults([
+                'display_param'     => 'display',
+                'limit_allowed'     => false,
+                'limit_default'     => Query::LIMIT_DEFAULT,
+                'limit_param'       => 'limit',
+                'pager_element'     => 0,
+                'pager_enable'      => true,
+                'pager_param'       => 'page',
+                'search_enable'     => false,
+                'search_parse'      => false,
+                'search_param'      => 's',
+                'sort_field_param'  => 'st',
+                'sort_order_param'  => 'by',
+            ])
+            ->resolve($options)
+        ;
     }
 
     /**

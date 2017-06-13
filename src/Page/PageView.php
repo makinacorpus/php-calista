@@ -46,16 +46,4 @@ class PageView
     {
         return $this->renderPartial('page');
     }
-
-    /**
-     * Alias of ::render()
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        trigger_error("__toString() usage is dangerous, please render the page explicitely", E_USER_DEPRECATED);
-
-        return $this->renderPartial('page');
-    }
 }

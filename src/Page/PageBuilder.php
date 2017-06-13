@@ -480,17 +480,13 @@ class PageBuilder
         $event = new PageBuilderEvent($this);
         $this->dispatcher->dispatch(PageBuilder::EVENT_SEARCH, $event);
 
+        // Build query from configuration
         $configuration = $this->getConfiguration();
         $query = (new QueryFactory())->fromRequest($configuration, $request, $this->baseQuery);
 
-        // Initialize properly datasource
+        // Initialize properly datasource then execute
         $datasource = $this->getDatasource();
         $datasource->init($query);
-
-        // Gather sorts
-        $sortCollection = $datasource->getSorts($query);
-
-        // Execute query
         $items = $datasource->getItems($query);
 
         // Build allowed filters arrays
@@ -506,7 +502,7 @@ class PageBuilder
             }
         }
 
-        return new PageResult($configuration, $query, $items, $sortCollection, $filters, $visualFilters);
+        return new PageResult($configuration, $query, $items, $datasource->getSorts($query), $filters, $visualFilters);
     }
 
     /**
