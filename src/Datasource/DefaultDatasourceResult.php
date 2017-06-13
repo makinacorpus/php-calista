@@ -5,7 +5,7 @@ namespace MakinaCorpus\Dashboard\Datasource;
 /**
  * Basics for the datasource result interface implementation
  */
-class DefaultDatasourceResult implements \IteratorAggregate
+class DefaultDatasourceResult implements \IteratorAggregate, DatasourceResultInterface
 {
     use DatasourceResultTrait;
 

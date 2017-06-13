@@ -39,7 +39,7 @@ class Link
         return $this->arguments;
     }
 
-    public function getRouteParams()
+    public function getRouteParameters()
     {
         return $this->arguments;
     }

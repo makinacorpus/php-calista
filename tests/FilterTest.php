@@ -2,8 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\Tests;
 
-use MakinaCorpus\Dashboard\Page\Filter;
 use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\Page\Filter;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -53,7 +53,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $dLink = $links[3];
 
         // Just for fun, test the link class
-        $this->assertSame($aLink->getRouteParams(), $aLink->getArguments());
+        $this->assertSame($aLink->getgetRouteParameters(), $aLink->getArguments());
         $this->assertSame('The A option', $aLink->getTitle());
         $this->assertSame('where/should/I/go', $aLink->getRoute());
 

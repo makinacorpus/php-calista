@@ -2,56 +2,72 @@
 
 namespace MakinaCorpus\Dashboard\Page;
 
+use MakinaCorpus\Dashboard\Datasource\Configuration;
 use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
+use MakinaCorpus\Dashboard\Datasource\Query;
 
 /**
  * @codeCoverageIgnore
  */
 class PageResult
 {
-    private $route;
-    private $state;
+    /**
+     * @var Configuration
+     */
+    private $configuration;
+
+    /**
+     * @var Query
+     */
+    private $query;
+
+    /**
+     * @var DatasourceResultInterface
+     */
     private $items;
-    private $filter;
-    private $filters = [];
-    private $visualFilters = [];
-    private $sort;
+
+    /**
+     * @var Filter[]
+     */
+    private $enabledFilters;
+
+    /**
+     * @var Filter[]
+     */
+    private $enabledVisualFilters;
 
     /**
      * Default constructor
      *
-     * @param string $route
-     * @param PageState $state
-     * @param RequestFilter $filter
+     * @param Configuration $configuration
+     * @param Query $query
      * @param DatasourceResultInterface $items
      * @param Filter[] $filters
      * @param Filter[] $visualFilters
-     * @param SortManager $sort
      */
-    public function __construct(PageState $state, RequestFilter $filter, DatasourceResultInterface $items, array $filters = [], array $visualFilters = [], SortManager $sort = null)
+    public function __construct(Configuration $configuration, Query $query, DatasourceResultInterface $items, array $enabledFilters = [], array $enabledVisualFilters = [])
     {
-        $this->state = $state;
+        $this->configuration = $configuration;
+        $this->query = $query;
         $this->items = $items;
-        $this->filter = $filter;
-        $this->filters = $filters;
-        $this->visualFilters = $visualFilters;
-        $this->sort = $sort;
+        $this->enabledFilters = $enabledFilters;
+        $this->enabledVisualFilters = $enabledVisualFilters;
     }
 
     /**
-     * @return string
+     * @return Configuration
      */
-    public function getRoute()
+    public function getConfiguration()
     {
-        return $this->filter->getRoute();
+        return $this->configuration;
     }
 
     /**
-     * @return PageState
+     * @return Query
      */
-    public function getState()
+    public function getQuery()
     {
-        return $this->state;
+        return $this->query;
     }
 
     /**
@@ -63,19 +79,11 @@ class PageResult
     }
 
     /**
-     * @return RequestFilter
-     */
-    public function getRequestFilter()
-    {
-        return $this->filter;
-    }
-
-    /**
      * @return Filter[]
      */
     public function getFilters()
     {
-        return $this->filters;
+        return $this->enabledFilters;
     }
 
     /**
@@ -83,15 +91,7 @@ class PageResult
      */
     public function getVisualFilters()
     {
-        return $this->visualFilters;
-    }
-
-    /**
-     * @return SortManager
-     */
-    public function getSort()
-    {
-        return $this->sort;
+        return $this->enabledVisualFilters;
     }
 
     /**
@@ -102,7 +102,7 @@ class PageResult
      */
     public function queryToArray()
     {
-        $query = $this->filter->getRouteParameters();
+        $query = $this->query->getRouteParameters();
 
         foreach ($query as $index => $value) {
             if ($value === null || $value === '') {

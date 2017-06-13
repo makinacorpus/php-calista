@@ -4,31 +4,32 @@
  #
  #  Variables:
  #    pageId: page uuid, for security and ajax queries
+ #    configuration: Configuration
  #    result: PageResult
- #    state: PageState
- #    route: string (current route)
  #    filters: Filter[]
  #    filters.ID.title: string (title)
  #    filters.ID.links: Link[]
+ #    visualFilters: Filter[]
+ #    visualFilters.ID.title: string (title)
+ #    visualFilters.ID.links: Link[]
  #    displays: Link[]
- #    state.searchParam: string
- #    state.currentSearch: string (raw user input)
+ #    query.searchParam: string
+ #    query.rawSearchString: string (raw user input)
  #    query: string[] (current get query)
- #    routeParams: string[] (current get query)
- #    sort: SortManager
- #    sort.currentField: string (current sort field)
- #    sort.currentOrder: string (current sort order)
+ #    query.route: string (current internal route)
+ #    query.routeParameters: string[] (current get query)
+ #    query.sortField: string (current sort field)
+ #    sort.sortOrder: string (current sort order)
  #    sort.fieldLinks: Link[] (keyed with field names)
  #    sort.orderLinks: Link[]
  #    sort.getLink(NAME): Link
  #    sort.count: int (number of sort fields)
  #    hasPager: should we show pager or not
- #    pager: string (an already rendered pager)
- #    items: mixed[] the items (in most cases, nodes)
+ #    items: DatasourceResultInterface|mixed[] the items
  #}
 
 {%- block display_mode_link -%}
-  <a class="{% if link.isActive %}active {% endif %}btn btn-default" href="{{ path(link.route, link.routeParams) }}" title="{{ link.title }}" data-page-link>
+  <a class="{% if link.isActive %}active {% endif %}btn btn-default" href="{{ path(link.route, link.routeParameters) }}" title="{{ link.title }}" data-page-link>
     <span class="glyphicon glyphicon-{{ link.icon }}" aria-hidden="true"></span>
     <span class="sr-only">{{ link.title }}</span>
   </a>
@@ -49,7 +50,7 @@
 {%- block filter_link -%}
   <div class="checkbox">
     <label>
-      <a{% if link.isActive %} class="active"{% endif %} href="{{ path(link.route, link.routeParams) }}" data-page-link="{{ field.field }}">
+      <a{% if link.isActive %} class="active"{% endif %} href="{{ path(link.route, link.routeParameters) }}" data-page-link="{{ field.field }}">
         <input type="checkbox"{% if link.isActive %} checked="checked"{% endif %}>
         {{ link.title }} {% if link.count %}<span class="badge">{{ link.count }}</span>{% endif %}
       </a>
@@ -73,15 +74,15 @@
     <div class="input-group">
       {% if visualFilters %}
         <div class="form-control udashboard-visual-search"
-             data-definition="{{ visualFilters|udashboardFilterDefinition()|e }}"
-             data-query="{{ visualFilters|udashboardFilterQuery(query)|e }}">
+          data-definition="{{ visualFilters|udashboardFilterDefinition()|e }}"
+          data-query="{{ visualFilters|udashboardFilterQuery(query.all)|e }}">
         </div>
       {% else %}
-        <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ state.searchParameter }}"
-               value="{{ state.currentSearch|escape }}" maxlength="128" type="text"
+        <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ query.searchParameter }}"
+          value="{{ query.rawSearchString|escape }}" maxlength="128" type="text"
         />
-        {% for name, value in routeParams %}
-          {% if name != state.searchParameter %}
+        {% for name, value in query.routeParameters %}
+          {% if name != query.searchParameter %}
             <input type="hidden" name="{{ name }}" value="{{ value|udashboard_query_param }}"/>
           {% endif %}
         {% endfor %}
@@ -121,20 +122,20 @@
  # example. For more information see https://github.com/TFD7/TFD7/issues/43
  #}
 {% block sort_link_shortcut %}
-  {% set param = sort.orderParameter %}
+  {% set param = query.sortOrderParameter %}
   {% set link = sort.getLink(field) %}
   {% set suffix = '' %}
   {% spaceless %}
     {% if link.isActive %}
-      {% if 'asc' == sort.currentOrder(query) %}
-        {% set href = path(link.route, link.routeParams|merge({(sort.orderParameter): 'desc'})) %}
+      {% if 'asc' == query.sortOrder(query) %}
+        {% set href = path(link.route, link.routeParameters|merge({(param): 'desc'})) %}
         {% set suffix = block('sort_link_active_asc') %}
       {% else %}
-        {% set href = path(link.route, link.routeParams|merge({(sort.orderParameter): 'asc'})) %}
+        {% set href = path(link.route, link.routeParameters|merge({(param): 'asc'})) %}
         {% set suffix = block('sort_link_active_desc') %}
       {% endif %}
     {% else %}
-      {% set href = path(link.route, link.routeParams) %}
+      {% set href = path(link.route, link.routeParameters) %}
     {% endif %}
     <a href="{{ href }}" data-page-link>{{ title }}</a>
   {% endspaceless %}
@@ -143,7 +144,7 @@
 {# A normal sort link #}
 {% block sort_link %}
   {% spaceless %}
-    <a href="{{ path(link.route, link.routeParams) }}" data-page-link>
+    <a href="{{ path(link.route, link.routeParameters) }}" data-page-link>
       {{ link.title }}
     </a>
   {% endspaceless %}
@@ -243,7 +244,7 @@
  #}
 {%- block pager_href -%}
   {% if index is defined %}
-    {{ path(result.route, routeParams|merge({(state.pageParameter): index})) }}
+    {{ path(query.route, routeParameters|merge({(configuration.pageParameter): index})) }}
   {% else %}
     #
   {% endif %}
@@ -267,7 +268,7 @@
  #}
 {%- block pager -%}
   {% if hasPager %}
-    {% set page = state.pageNumber %}
+    {% set page = query.pageNumber %}
     <nav aria-label="{{ "Navigation"|trans }}">
       <ul class="pagination">
         {% if 1 < page %}
@@ -296,7 +297,7 @@
 
 {% block page_content %}
   <div class="container-fluid">
-    {% if state.searchParameter or visualFilters %}
+    {% if configuration.searchParameter or visualFilters %}
       <div class="row">
         <div class="col-md-12" data-page-block="search_form">
           {{ block('search_form') }}
@@ -325,7 +326,7 @@
         {% endblock form_content %}
       </div>
     </div>
-    {% if state.limit < state.totalCount %}
+    {% if query.limit < items.totalCount %}
       <div class="row">
         <div class="col-md-12" data-page-block="pager">
           {{ block('pager') }}
@@ -372,7 +373,7 @@
 {% endblock %}
 
 {% block page %}
-  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ result.queryToJson|escape }}"{% endif %} data-page-search="{{ state.searchParameter }}">
+  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ result.queryToJson|escape }}"{% endif %} data-page-search="{{ configuration.searchParameter }}">
     {{ block('page_layout') }}
   </div>
 {% endblock %}
