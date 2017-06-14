@@ -4,8 +4,8 @@ services:
     class: MakinaCorpus\Dashboard\Drupal\Context\ContextPane
     arguments: ['@event_dispatcher', '@request_stack']
 
-  udashboard.admin_widget_factory:
-    class: MakinaCorpus\Dashboard\Drupal\AdminWidgetFactory
+  udashboard.page_builder_factory:
+    class: MakinaCorpus\Dashboard\Page\PageBuilderFactory
     arguments: ['@service_container', '@form.factory', '@udashboard.action_provider_registry', '@twig', '@event_dispatcher']
 
   udashboard.processor_registry:
@@ -34,8 +34,8 @@ services:
   udashboard.empty_page_builder:
     public: false
     shared: false
-    class: MakinaCorpus\Dashboard\Drupal\Page\PageBuilder
-    factory: ['@udashboard.admin_widget_factory', createPageBuilder]
+    class: MakinaCorpus\Dashboard\\PageBuilder
+    factory: ['@udashboard.page_builder_factory', createPageBuilder]
 
   # Default node datasource, this is registered as an example only, copy/paste
   # and adapt this to declare your datasources.

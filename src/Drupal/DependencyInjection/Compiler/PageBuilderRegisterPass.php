@@ -4,16 +4,19 @@ namespace MakinaCorpus\Dashboard\Drupal\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
+use MakinaCorpus\Dashboard\Page\PageTypeInterface;
 
+/**
+ * Registers page types
+ */
 class PageBuilderRegisterPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('udashboard.admin_widget_factory')) {
+        if (!$container->hasDefinition('udashboard.page_builder_factory')) {
             return;
         }
-        $definition = $container->getDefinition('udashboard.admin_widget_factory');
+        $definition = $container->getDefinition('udashboard.page_builder_factory');
 
         $types = [];
 
@@ -24,10 +27,9 @@ class PageBuilderRegisterPass implements CompilerPassInterface
 
             $class = $container->getParameterBag()->resolveValue($def->getClass());
             $refClass = new \ReflectionClass($class);
-            $interface = '\MakinaCorpus\Dashboard\Page\PageTypeInterface';
 
-            if (!$refClass->implementsInterface($interface)) {
-                throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, $interface));
+            if (!$refClass->implementsInterface(PageTypeInterface::class)) {
+                throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, PageTypeInterface::class));
             }
 
             if (empty($attributes[0]['id'])) {

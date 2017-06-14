@@ -4,9 +4,11 @@ namespace MakinaCorpus\Dashboard\Drupal\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * Registers action providers into the action registry
+ */
 class ActionProviderRegisterPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)

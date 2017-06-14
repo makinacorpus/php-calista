@@ -3,9 +3,9 @@
 namespace MakinaCorpus\Dashboard\Controller;
 
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
-use MakinaCorpus\Dashboard\Drupal\AdminWidgetFactory;
 use MakinaCorpus\Dashboard\Drupal\Table\AdminTable;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
+use MakinaCorpus\Dashboard\Page\PageBuilderFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -49,11 +49,11 @@ trait PageControllerTrait
     /**
      * Get page factory
      *
-     * @return AdminWidgetFactory
+     * @return PageBuilderFactory
      */
     protected function getWidgetFactory()
     {
-        return $this->get('udashboard.admin_widget_factory');
+        return $this->get('udashboard.page_builder_factory');
     }
 
     /**

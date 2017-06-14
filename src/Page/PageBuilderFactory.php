@@ -1,12 +1,9 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal;
+namespace MakinaCorpus\Dashboard\Page;
 
 use MakinaCorpus\Dashboard\Drupal\Action\ActionRegistry;
 use MakinaCorpus\Dashboard\Drupal\Table\AdminTable;
-use MakinaCorpus\Dashboard\Page\FormPageBuilder;
-use MakinaCorpus\Dashboard\Page\PageBuilder;
-use MakinaCorpus\Dashboard\Page\PageTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -19,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  * dependencies that we should inject into pages, and only this allows
  * us to do it properly
  */
-final class AdminWidgetFactory
+final class PageBuilderFactory
 {
     private $container;
     private $formFactory;
