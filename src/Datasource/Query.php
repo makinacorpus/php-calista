@@ -12,6 +12,8 @@ class Query
     const SORT_DESC = 'desc';
     const URL_VALUE_SEP = '|';
 
+    private $allowedFilters = [];
+    private $baseQuery = [];
     private $configuration;
     private $currentDisplay = '';
     private $filters = [];
@@ -22,7 +24,6 @@ class Query
     private $routeParameters = [];
     private $sortField = '';
     private $sortOrder = self::SORT_DESC;
-    private $baseQuery = [];
 
     /**
      * Default constructor

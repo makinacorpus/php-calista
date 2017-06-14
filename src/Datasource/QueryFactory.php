@@ -10,46 +10,45 @@ use Symfony\Component\HttpFoundation\Request;
 class QueryFactory
 {
     /**
-     * Create query from request
+     * Create query from array
      *
      * @param Configuration $configuration
      *   Current search configuration
-     * @param Request $request
+     * @param array $request
      *   Incomming request
      * @param string[] $baseQuery
      *   Base filter query
      *
      * @return Query
      */
-    public function fromRequest(Configuration $configuration, Request $request, array $baseQuery = [])
+    public function fromArray(Configuration $configuration, array $input, array $baseQuery = [], $route = null)
     {
-        $route = $request->attributes->get('_route');
-        $parsedSearch = [];
         $rawSearchString = '';
         $searchParameter = $configuration->getSearchParameter();
 
         // Append filter values from the request into the query
-        $filters = $this->createQueryFromRequest($request);
-        $routeParameters = $filters;
+        $input = $this->normalizeInput($input);
 
-        if ($configuration->isSearchEnabled() && $searchParameter) {
-            $rawSearchString = $request->get($searchParameter, '');
+        // We'll start with route parameters being identical that the global
+        // query, we will prune default values later to make it shorter
+        $routeParameters = $input;
 
-            // Parsed the search query string if asked for
-            if ($rawSearchString && $configuration->isSearchParsed()) {
+        // Deal with search
+        if ($configuration->isSearchEnabled() && $searchParameter && !empty($input[$searchParameter])) {
+            $rawSearchString = $input[$searchParameter];
+
+            // Parse search and merge it properly to the incomming query
+            if ($configuration->isSearchParsed()) {
                 $parsedSearch = (new QueryStringParser())->parse($rawSearchString, $searchParameter);
 
                 if ($parsedSearch) {
-                    unset($filters[$searchParameter]);
-                    $filters = $this->mergeQueries([$parsedSearch, $filters]);
+                    // Filters should not contain the search parameter, since
+                    // it has been parsed and normalize, we remove it then merge
+                    // the parsed one
+                    unset($input[$searchParameter]);
+                    $input = $this->mergeQueries([$parsedSearch, $input]);
                 }
             }
-        }
-
-        // Parameters that are not in the filter array, but present in base
-        // query must be added into filters
-        if ($baseQuery) {
-            $filters = $this->mergeQueries([$filters]);
         }
 
         // Route parameters must contain the raw search string and not the
@@ -64,29 +63,30 @@ class QueryFactory
         return new Query(
             $configuration,
             $route,
-            $this->flattenQuery($this->applyBaseQuery($filters, $baseQuery), [$searchParameter]),
+            $this->flattenQuery($this->applyBaseQuery($input, $baseQuery), [$searchParameter]),
             $this->flattenQuery($this->applyBaseQuery($routeParameters, $baseQuery), [$searchParameter]),
             $baseQuery
         );
     }
 
     /**
-     * Create query from array
+     * Create query from request
      *
      * @param Configuration $configuration
      *   Current search configuration
-     * @param array $request
+     * @param Request $request
      *   Incomming request
      * @param string[] $baseQuery
      *   Base filter query
      *
      * @return Query
      */
-    public function fromArray(Configuration $configuration, array $request, array $baseQuery = [], $route = null)
+    public function fromRequest(Configuration $configuration, Request $request, array $baseQuery = [])
     {
-        $request = new Request($request, [], ['_route' => $route]);
+        $route = $request->attributes->get('_route');
+        $input = array_merge($request->query->all(), $request->attributes->get('_route_params', []));
 
-        return $this->fromRequest($configuration, $request, $baseQuery);
+        return $this->fromArray($configuration, $input, $baseQuery, $route);
     }
 
     /**
@@ -156,33 +156,31 @@ class QueryFactory
     /**
      * From the incoming query, prepare the $query array for datasource
      *
-     * @param Request $request
-     *   Incoming request
+     * @param string[]|string[][]
+     *   Input
      *
-     * @return string[]
+     * @return string[]|string[][]
      *   Prepare query parameters, using base query and filters
      */
-    private function createQueryFromRequest(Request $request)
+    private function normalizeInput(array $query, array $exclude = ['q'])
     {
-        $query = array_merge(
-            $request->query->all(),
-            $request->attributes->get('_route_params', [])
-        );
+        // Proceed to unwanted parameters exclusion
+        foreach ($exclude as $parameter) {
+            unset($query[$parameter]);
+        }
 
-        // We are working with Drupal, q should never get here.
-        unset($query['q']);
-
-        // @todo ugly
+        // Normalize input
         foreach ($query as $key => $value) {
+            // Drops all empty values
+            if ('' === $value || null === $value || [] === $value) {
+                unset($query[$key]);
+                continue;
+            }
+            // Normalize non-array input using the value separator
             if (is_string($value) && false !== strpos($value, Query::URL_VALUE_SEP)) {
                 $query[$key] = explode(Query::URL_VALUE_SEP, $value);
             }
         }
-
-        // Drops all empty values
-        $query = array_filter($query, function ($value) {
-            return $value !== '' && $value !== null;
-        });
 
         return $query;
     }
@@ -199,7 +197,6 @@ class QueryFactory
     private function applyBaseQuery(array $query, array $baseQuery)
     {
         // Ensure that query values are in base query bounds
-        // @todo find a more generic and proper way to do this
         foreach ($baseQuery as $name => $allowed) {
             if (isset($query[$name])) {
                 $input = $query[$name];

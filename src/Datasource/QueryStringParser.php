@@ -39,12 +39,15 @@ final class QueryStringParser
      * Parse query string
      *
      * @param string $string
+     * @param string $searchParameter
+     *   Treat differently parsed values with this name, and let exists as
+     *   a raw string for full text search
      *
      * @return string[][]
      *   Query filter, keys are field names, values are arrays of string
      *   values.
      */
-    public function parse($string, $defaultSearchQueryStringName)
+    public function parse($string, $searchParameter)
     {
         $ret = [];
 
@@ -54,7 +57,7 @@ final class QueryStringParser
             foreach ($matches[1] as $index => $field) {
 
                 if (!$field) {
-                    $field = $defaultSearchQueryStringName;
+                    $field = $searchParameter;
                 }
 
                 $value = $matches[2][$index];
