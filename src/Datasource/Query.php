@@ -256,7 +256,7 @@ class Query
      *
      * @return array
      */
-    public function getAll()
+    public function all()
     {
         return $this->filters;
     }

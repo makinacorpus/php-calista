@@ -112,7 +112,10 @@ class IntArrayDatasource extends AbstractDatasource
             }
         }
 
-        $result = new DefaultDatasourceResult(array_slice($allowedValues, $offset, $limit));
+        $items = array_slice($allowedValues, $offset, $limit);
+        $items = array_map(function ($value) { return new IntItem($value); }, $items);
+
+        $result = new DefaultDatasourceResult($items);
         $result->setTotalItemCount(count($allowedValues));
 
         return $result;

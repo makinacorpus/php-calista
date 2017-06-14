@@ -537,8 +537,6 @@ class PageBuilder
             $displayLinks[] = new Link($name, $query->getRoute(), ['display' => $name] + $query->getRouteParameters(), $display === $name, $displayIcon);
         }
 
-        // Build sort links from here
-
         $arguments = [
             'pageId'        => $this->computeId(),
             'result'        => $result,

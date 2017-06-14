@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\Dashboard\Drupal\Controller;
 
-use MakinaCorpus\Dashboard\Drupal\Page\PageBuilder;
+use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Drupal\Sf\Controller;
 use MakinaCorpus\Ucms\Contrib\Page\NodeAdminPageInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -66,7 +66,7 @@ class AjaxPageController extends Controller
         $page     = $pageType->createPageView($result);
 
         return new JsonResponse([
-            'query' => $result->queryToArray(),
+            'query' => $result->getQuery()->all(),
             'blocks' => [
                 'filters'       => $page->renderPartial('filters'),
                 'display_mode'  => $page->renderPartial('display_mode'),

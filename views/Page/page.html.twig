@@ -320,7 +320,7 @@
             {{ form_errors(formset) }}
           {% endif %}
           {{ block('item_list') }}
-          {% if formset %}
+          {% if formset is defined %}
             {{ form_rest(formset) }}
             </form>
           {% endif %}

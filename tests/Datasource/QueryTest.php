@@ -100,7 +100,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf(Query::class, $query);
 
             // Test the "all" query
-            $all = $query->getAll();
+            $all = $query->all();
             $this->assertArrayNotHasKey('q', $all);
             $this->assertArrayHasKey('foo', $all);
             $this->assertArrayHasKey('some', $all);
@@ -161,7 +161,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf(Query::class, $query);
 
             // Test the "all" query
-            $all = $query->getAll();
+            $all = $query->all();
             // Only those from base query are allowed, and those which are
             // not explicitely added to parameter are removed
             // i.e. base query is [a, b] and current query is [b, c] then
@@ -219,7 +219,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf(Query::class, $query);
 
             // Test the "all" query
-            $all = $query->getAll();
+            $all = $query->all();
             $this->assertArrayNotHasKey('q', $all);
             $this->assertArrayNotHasKey('some', $all);
             $this->assertArrayNotHasKey('other', $all);
