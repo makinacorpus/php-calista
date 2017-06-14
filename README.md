@@ -122,18 +122,18 @@ class AccountController extends Controller
         $datasource = $this->get('mymodule.datasource.account');
 
         return $this
-          ->createPageBuilder()
-          ->setDatasource($datasource)
-          ->setAllowedTemplates(
-            [
-              'table' => 'module:mymodule:Page/page-account.html.twig',
-            ]
-          )
-          ->showFilters()
-          ->showSort()
-          ->showSearch()
-          ->setDefaultDisplay('table')
-          ->searchAndRender($request)
+            ->createPageBuilder()
+            ->setDatasource($datasource)
+            ->setAllowedTemplates(
+                [
+                    'table' => 'module:mymodule:Page/page-account.html.twig',
+                ]
+            )
+            ->showFilters()
+            ->showSort()
+            ->showSearch()
+            ->setDefaultDisplay('table')
+            ->searchAndRender($request)
         ;
     }
 }
@@ -293,8 +293,8 @@ It must be declared in your `mymodule.services.yml`
 
 ```yaml
 services:
-  mymodule.account_action_provider:
-    public: false
-    class: MyModule\Action\AccountActionProvider
-    tags: [{name: udashboard.action_provider}]
+    mymodule.account_action_provider:
+        public: false
+        class: MyModule\Action\AccountActionProvider
+        tags: [{name: udashboard.action_provider}]
 ```
