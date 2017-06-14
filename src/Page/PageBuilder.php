@@ -221,8 +221,9 @@ class PageBuilder
     /**
      * Add filter from datasource
      *
-     * @param string $filter The field from filter
-     * @return PageBuilder
+     * @param string $filter
+     *
+     * @return $this
      */
     public function enableFilter($filter)
     {
@@ -234,8 +235,10 @@ class PageBuilder
     /**
      * Remove filter from datasource
      *
-     * @param string $filter The field from filter
-     * @return PageBuilder
+     * @param string $filter
+     *   The field from filter
+     *
+     * @return $this
      */
     public function disableFilter($filter)
     {
@@ -300,7 +303,7 @@ class PageBuilder
     /**
      * Set the display of visual search filter.
      *
-     * @return PageBuilder
+     * @return $this
      */
     public function showVisualSearch()
     {
@@ -313,7 +316,7 @@ class PageBuilder
     /**
      * Set the display of visual search filter.
      *
-     * @return PageBuilder
+     * @return $this
      */
     public function hideVisualSearch()
     {
@@ -333,8 +336,9 @@ class PageBuilder
     /**
      * Add visual filter from datasource
      *
-     * @param string $filter The field from filter
-     * @return PageBuilder
+     * @param string $filter
+     *
+     * @return $this
      */
     public function enableVisualFilter($filter)
     {
@@ -346,8 +350,9 @@ class PageBuilder
     /**
      * Remove visual filter from datasource
      *
-     * @param string $filter The field from filter
-     * @return PageBuilder
+     * @param string $filter
+     *
+     * @return $this
      */
     public function disableVisualFilter($filter)
     {
@@ -390,6 +395,7 @@ class PageBuilder
      * Sorts are enabled by default but you can disable some.
      *
      * @param string $sort
+     *
      * @return $this
      */
     public function disableSort($sort)
@@ -455,7 +461,7 @@ class PageBuilder
      *
      * @return null|string
      */
-    private function computeId()
+    public function getId()
     {
         if (!$this->id) {
             return null;
@@ -538,7 +544,7 @@ class PageBuilder
         }
 
         $arguments = [
-            'pageId'        => $this->computeId(),
+            'pageId'        => $this->getId(),
             'result'        => $result,
             'items'         => $result->getItems(),
             'filters'       => $this->displayFilters ? $result->getFilters() : [],

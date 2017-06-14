@@ -1,25 +1,27 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\Page;
+namespace MakinaCorpus\Dashboard\Page;
 
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-use MakinaCorpus\Dashboard\Drupal\Form\Type\SelectionFormType;
+use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
+use MakinaCorpus\Dashboard\Form\Type\SelectionFormType;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-class SymfonyFormPageBuilder extends PageBuilder
+/**
+ * Extends the page builder to add an embedded form feature, that allows items
+ * selection and usage in a more global Symfony form.
+ */
+class FormPageBuilder extends PageBuilder
 {
-    use StringTranslationTrait;
-
     /**
-     * @var \Symfony\Component\Form\Form
+     * @var FormInterface
      */
     private $confirmForm;
 
@@ -39,21 +41,31 @@ class SymfonyFormPageBuilder extends PageBuilder
     private $confirmationCancelled = false;
 
     /**
-     * @var \Symfony\Component\Form\Form
+     * @var FormInterface
      */
-    private $formset;
+    private $form;
 
     /**
-     * @var \Symfony\Component\Form\FormFactory
+     * @var string
+     */
+    private $formItemClass = SelectionFormType::class;
+
+    /**
+     * @var FormFactoryInterface
      */
     private $formFactory;
 
-    public function __construct(
-        \Twig_Environment $twig,
-        EventDispatcherInterface $dispatcher,
-        FormFactory $formFactory
-    ) {
+    /**
+     * Default constructor
+     *
+     * @param \Twig_Environment $twig
+     * @param EventDispatcherInterface $dispatcher
+     * @param FormFactoryInterface $formFactory
+     */
+    public function __construct(\Twig_Environment $twig, EventDispatcherInterface $dispatcher, FormFactoryInterface $formFactory)
+    {
         $this->formFactory = $formFactory;
+
         parent::__construct($twig, $dispatcher);
     }
 
@@ -66,11 +78,29 @@ class SymfonyFormPageBuilder extends PageBuilder
     {
         $formBuilder = $this->formFactory
             ->createNamedBuilder('confirm')
-            ->add('confirm', SubmitType::class, ['label' => $this->t('Confirm')])
-            ->add('cancel', SubmitType::class, ['label' => $this->t('Cancel')])
+            ->add('confirm', SubmitType::class, ['label' => 'Confirm'])
+            ->add('cancel', SubmitType::class, ['label' => 'Cancel'])
         ;
 
         $this->confirmForm = $formBuilder->getForm();
+
+        return $this;
+    }
+
+    /**
+     * Set form item class for each datasource item
+     *
+     * @param string $class
+     *
+     * @return $this
+     */
+    public function setFormItemClass($class)
+    {
+        if (!is_subclass_of($class, AbstractType::class)) {
+            throw new \InvalidArgumentException(sprintf("Class %s doesn't extend %s.", $class, AbstractType::class));
+        }
+
+        $this->formItemClass = $class;
 
         return $this;
     }
@@ -88,18 +118,20 @@ class SymfonyFormPageBuilder extends PageBuilder
      *
      * @param string $class
      *   Form parameter name.
-     * @return \Symfony\Component\Form\FormInterface
+     *
+     * @return FormInterface
      */
-    public function createFormset($class = SelectionFormType::class)
+    public function getForm()
     {
-        if (!is_subclass_of($class, AbstractType::class)) {
-            throw new \InvalidArgumentException(sprintf("Class %s doesn't extend %s.", $class, AbstractType::class));
+        if ($this->form) {
+            return $this->form;
         }
 
-        $this->formset = $this->formFactory
-            ->createNamedBuilder('formset')
-            ->add('forms', CollectionType::class, [
-                'entry_type' => $class,
+        return $this->form = $this
+            ->formFactory
+            ->createNamedBuilder('form')
+            ->add('items', CollectionType::class, [
+                'entry_type' => $this->formItemClass,
                 'label'      => false,
                 // TODO: find a way to make configurable (we dont always want a selection)
                 // implement validation groups with submits?
@@ -110,8 +142,6 @@ class SymfonyFormPageBuilder extends PageBuilder
             ])
             ->getForm()
         ;
-
-        return $this->formset;
     }
 
     /**
@@ -128,7 +158,7 @@ class SymfonyFormPageBuilder extends PageBuilder
         // A form needs confirmation if it has confirmForm (not cancelled)...
         if ($this->confirmForm && !$this->confirmationCancelled) {
             // If the form has been submitted and is valid
-            return $this->formset->isSubmitted() && $this->formset->isValid();
+            return $this->form->isSubmitted() && $this->form->isValid();
         }
 
         return false;
@@ -138,7 +168,7 @@ class SymfonyFormPageBuilder extends PageBuilder
      * Check that form has selected values
      *
      * @param $value
-     * @param \Symfony\Component\Validator\Context\ExecutionContextInterface $context
+     * @param ExecutionContextInterface $context
      */
     public function hasSelectedValue($value, ExecutionContextInterface $context)
     {
@@ -147,15 +177,12 @@ class SymfonyFormPageBuilder extends PageBuilder
         });
 
         if (!$selectedElements) {
-            $context
-                ->buildViolation($this->t("No items selected."))
-                ->addViolation()
-            ;
+            $context->buildViolation("No items selected.")->addViolation();
         }
     }
 
     /**
-     * Indicate if the formset is ready to process
+     * Indicate if the form is ready to process
      *
      * @return bool
      */
@@ -170,7 +197,7 @@ class SymfonyFormPageBuilder extends PageBuilder
             return false;
         }
 
-        return (bool) $this->getStoredData();
+        return (bool)$this->getStoredData();
     }
 
     /**
@@ -196,19 +223,20 @@ class SymfonyFormPageBuilder extends PageBuilder
      * Get the loaded items from selection
      *
      * @param null $data
+     *
      * @return array
      */
     public function getSelectedItems($data = null)
     {
         if (!$data) {
-            $data = $this->formset->getData();
+            $data = $this->form->getData();
         }
 
-        $selectedIds = array_keys(array_filter($data['forms'], function ($d) {
+        $selectedIds = array_keys(array_filter($data['items'], function ($d) {
             return !empty($d['selected']);
         }));
 
-        return array_intersect_key($this->dataItems, array_flip($selectedIds));
+        return array_intersect_key($this->storedData, array_flip($selectedIds));
     }
 
     /**
@@ -228,79 +256,102 @@ class SymfonyFormPageBuilder extends PageBuilder
      */
     public function clearData(Request $request)
     {
-        $request->getSession()->remove($this->computeId());
+        $request->getSession()->remove($this->getId());
     }
 
     /**
      * {@inheritDoc}
      *
-     * Also include the formset for display
+     * Also include the form for display
      */
     public function createPageView(PageResult $result, array $arguments = [])
     {
-        $arguments['formset'] = $this->formset->createView();
+        $arguments['form'] = $this->getForm()->createView();
 
         return parent::createPageView($result, $arguments);
     }
 
     /**
-     * Make the formset and confirm form handle request
+     * Get item identifier
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param DatasourceResultInterface $items
      * @param callable $callback
+     *   A callback accepting an item array as argument and that return an
+     *   ordered array of identifier list (order should be the same as the
+     *   input item array); Please note that the input argument is a valid
+     *   DatasourceResultInterface instance
+     *
+     * @return string[]
      */
-    public function handleRequest(Request $request, $callback = null)
+    private function getItemIdentifierList(DatasourceResultInterface $items, callable $callback = null)
+    {
+        $ret = [];
+
+        if ($callback) {
+            $ret = call_user_func($callback, $items);
+        } else {
+            foreach ($items as $item) {
+                if (is_scalar($item)) {
+                    $id = $item;
+                } else if (method_exists($item, 'getId')) {
+                    $id = $item->getId();
+                } else if (method_exists($item, 'id')) {
+                    $id = $item->id();
+                } else if (property_exists($item, 'id')) {
+                    $id  = $item->id;
+                }
+                $ret[$id] = ['id' => $id];
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Make the form and confirm form handle request
+     *
+     * @param Request $request
+     *   Incomming request
+     * @param callable $callback
+     *   A callback accepting an item array as argument and that return an
+     *   ordered array of identifier list (order should be the same as the
+     *   input item array); Please note that the input argument is a valid
+     *   DatasourceResultInterface instance
+     */
+    public function handleRequest(Request $request, callable $callback = null)
     {
         // Get items to work on
-        $dataItems = $this->search($request)->getItems();
+        $form = $this->getForm();
+        $items = $this->search($request)->getItems();
 
         // Bind initial data
-        if ($callback) {
-            if (!is_callable($callback)) {
-                throw new \InvalidArgumentException("The provided callback is not valid.");
-            }
-            $defaultValues = call_user_func($callback, $dataItems);
-        }
-        else {
-            $defaultValues = [];
-            foreach ($dataItems as $item) {
-                $defaultValues[$item->id()] = [
-                    'id' => $item->id(),
-                ];
-            }
-        }
+        $form->setData(['items' => $this->getItemIdentifierList($items, $callback)])->handleRequest($request);
 
-        $this->formset
-            ->setData(['forms' => $defaultValues])
-            ->handleRequest($request)
-        ;
-
-        $data = $this->formset->getData();
+        $data = $form->getData();
 
         if ($this->confirmForm) {
             $this->confirmForm->handleRequest($request);
 
+            $id = $this->getId();
             if (
                 $this->confirmForm->isSubmitted() &&
                 $this->confirmForm->getClickedButton()->getName() == 'cancel'
             ) {
                 // Confirm form has been cancelled, set the data back and display form
                 $this->confirmationCancelled = true;
-                $data = $request->getSession()->get($this->computeId());
-                $this->formset->setData($data);
-            }
-            else {
-                // Test if the formset has been submitted and store data if we need a confirmation form
-                if ($this->formset->isSubmitted() && $this->formset->isValid()) {
-                    $data['clicked_button'] = $this->formset->getClickedButton()->getName();
-                    $request->getSession()->set($this->computeId(), $data);
+                $data = $request->getSession()->get($id);
+                $form->setData($data);
+            } else {
+                // Test if the form has been submitted and store data if we need a confirmation form
+                if ($form->isSubmitted() && $form->isValid()) {
+                    $data['clicked_button'] = $form->getClickedButton()->getName();
+                    $request->getSession()->set($id, $data);
                     $this->storedData = $data;
                 } else {
-                    $this->storedData = $request->getSession()->get($this->computeId());
+                    $this->storedData = $request->getSession()->get($id);
                 }
             }
-        }
-        else {
+        } else {
             // Else if no confirm form there's no need to use the session
             $this->storedData = $data;
         }

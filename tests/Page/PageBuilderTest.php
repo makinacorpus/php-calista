@@ -4,12 +4,16 @@ namespace MakinaCorpus\Dashboard\Tests\Page;
 
 use MakinaCorpus\Dashboard\Datasource\Configuration;
 use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\Page\FormPageBuilder;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageResult;
 use MakinaCorpus\Dashboard\Page\SortCollection;
 use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
 use MakinaCorpus\Dashboard\Twig\PageExtension;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\Forms;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -18,6 +22,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class PageBuilderTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Create a twig environment with the bare minimum we need
+     *
+     * @return \Twig_Environment
+     */
     private function createTwigEnv()
     {
         $twigEnv = new \Twig_Environment(
@@ -61,6 +70,19 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $twigEnv->addExtension(new PageExtension(new RequestStack()));
 
         return $twigEnv;
+    }
+
+    /**
+     * Create a form factory with the bare minimum we need
+     *
+     * @return FormFactoryInterface
+     */
+    private function createFormFactory()
+    {
+        return  Forms::createFormFactoryBuilder()
+            ->addExtension(new HttpFoundationExtension())
+            ->getFormFactory()
+        ;
     }
 
     /**
@@ -114,6 +136,40 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
 
         // Is sort collection OK?
         $this->assertInstanceOf(SortCollection::class, $result->getSortCollection());
+
+        // Build a page, for fun
+        $pageView = $pageBuilder->createPageView($result);
+        $rendered = $pageView->render();
+    }
+
+    /**
+     * Basic testing for FormPageBuilder coverage, later will be more advanced tests
+     */
+    public function testFormPageBuilder()
+    {
+                $request = new Request([
+            'odd_or_even' => 'odd',
+            'page' => 3,
+            'st' => 'value',
+            'by' => Query::SORT_DESC,
+        ], [], ['_route' => '_test_route']);
+
+        $configuration = new Configuration(['limit_default' => 7]);
+
+        $pageBuilder = new FormPageBuilder($this->createTwigEnv(), new EventDispatcher(), $this->createFormFactory());
+        $pageBuilder
+            ->setDatasource(new IntArrayDatasource())
+            ->setAllowedTemplates([
+                'page' => 'page.html.twig',
+            ])
+            ->setDefaultDisplay('page')
+            ->setConfiguration($configuration)
+            ->enableFilter('odd_or_even')
+            ->enableVisualFilter('mod3')
+            ->handleRequest($request)
+        ;
+
+        $result = $pageBuilder->search($request);
 
         // Build a page, for fun
         $pageView = $pageBuilder->createPageView($result);

@@ -3,8 +3,8 @@
 namespace MakinaCorpus\Dashboard\Drupal;
 
 use MakinaCorpus\Dashboard\Drupal\Action\ActionRegistry;
-use MakinaCorpus\Dashboard\Drupal\Page\SymfonyFormPageBuilder;
 use MakinaCorpus\Dashboard\Drupal\Table\AdminTable;
+use MakinaCorpus\Dashboard\Page\FormPageBuilder;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -146,11 +146,11 @@ final class AdminWidgetFactory
      * @param Request $request
      *   Mandatory when name is given
      *
-     * @return SymfonyFormPageBuilder
+     * @return FormPageBuilder
      */
-    public function createSymfonyFormPageBuilder($name = null, Request $request = null)
+    public function createFormPageBuilder($name = null, Request $request = null)
     {
-        $builder = new SymfonyFormPageBuilder($this->twig, $this->eventDispatcher, $this->formFactory);
+        $builder = new FormPageBuilder($this->twig, $this->eventDispatcher, $this->formFactory);
         $this->initializeBuilder($builder);
 
         return $builder;

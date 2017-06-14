@@ -195,9 +195,9 @@
 
 {%- block item -%}
   <tr>
-    {% if formset is defined %}
-      {% set element = formset.forms[item.id] %}
-      <td>{{ form_widget(id) }}</td>
+    {% if form is defined %}
+      {% set element = form.items[item.id] %}
+      {# <td>{{ form_widget(id) }}</td> #}
       <td>{{ form_widget(element) }}</td>
     {% endif %}
     <td>{{ item.type }}</td>
@@ -220,7 +220,7 @@
   <table class="table table-condensed">
     <thead>
       <tr>
-        {% if formset is defined %}
+        {% if form is defined %}
           <th>{{ block('item_checkbox_all') }}</th>
         {% endif %}
         <th>{{ "Type"|trans }}</th>
@@ -315,13 +315,13 @@
     <div class="row">
       <div class="col-md-12" data-page-block="item_list">
         {% block form_content %}
-          {% if formset is defined %}
+          {% if form is defined %}
             <form action="" method="post">
-            {{ form_errors(formset) }}
+            {{ form_errors(form) }}
           {% endif %}
           {{ block('item_list') }}
-          {% if formset is defined %}
-            {{ form_rest(formset) }}
+          {% if form is defined %}
+            {{ form_rest(form) }}
             </form>
           {% endif %}
         {% endblock form_content %}
