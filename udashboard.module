@@ -5,7 +5,6 @@
 
 use MakinaCorpus\Dashboard\Drupal\Controller\ActionProcessorController;
 use MakinaCorpus\Dashboard\Drupal\Controller\AjaxPageController;
-use MakinaCorpus\Dashboard\Drupal\TransactionHandler;
 
 /**
  * View mode for content display.
@@ -388,22 +387,6 @@ function udashboard_page() {
     '#theme'  => 'udashboard_page',
     '#portlets' => \Drupal::service('udashboard.portlet_registry')->getPortletsForAccount(\Drupal::currentUser()),
   ];
-}
-
-/**
- * Do it in a transaction!
- */
-function udashboard_transaction_form() {
-  if ('GET' !== \Drupal::requestStack()->getCurrentRequest()->getMethod()) {
-    $args = func_get_args();
-    /** @var $helper TransactionHandler */
-    $helper = \Drupal::get('udashboard.transaction_handler');
-    $helper->run(function () use ($args) {
-      return sf_dic_page_form($args);
-    });
-  } else {
-    return sf_dic_page_form(func_get_args());
-  }
 }
 
 /**

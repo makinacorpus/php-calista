@@ -5,7 +5,6 @@ namespace MakinaCorpus\Dashboard\Drupal\Controller;
 use Drupal\Core\Form\FormBuilderInterface;
 
 use MakinaCorpus\Dashboard\Drupal\Action\ProcessorActionProvider;
-use MakinaCorpus\Dashboard\Drupal\TransactionHandler;
 use MakinaCorpus\Drupal\Sf\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -25,14 +24,6 @@ class ActionProcessorController extends Controller
     private function getActionProcessorRegistry()
     {
         return $this->get('udashboard.processor_registry');
-    }
-
-    /**
-     * @return TransactionHandler
-     */
-    private function getTransactionHandler()
-    {
-        return $this->get('udashboard.transaction_handler');
     }
 
     public function processAction(Request $request)
@@ -61,13 +52,6 @@ class ActionProcessorController extends Controller
             throw $this->createAccessDeniedException();
         }
 
-        $builder = $this->getFormBuilder();
-
-        return $this
-            ->getTransactionHandler()
-            ->run(function () use ($builder, $processor, $item) {
-                return $builder->getForm($processor->getFormClass(), $processor, $item);
-            })
-        ;
+        return $this->getFormBuilder()->getForm($processor->getFormClass(), $processor, $item);
     }
 }

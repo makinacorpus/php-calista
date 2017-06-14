@@ -19,10 +19,6 @@ services:
   udashboard.portlet_registry:
     class: MakinaCorpus\Dashboard\Drupal\Portlet\PortletRegistry
 
-  udashboard.transaction_handler:
-    class: MakinaCorpus\Dashboard\Drupal\TransactionHandler
-    arguments: ['@database']
-
   udashboard.twig.action_extension:
     public: false
     class: MakinaCorpus\Dashboard\Drupal\Twig\Extension\ActionExtension
