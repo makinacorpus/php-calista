@@ -101,7 +101,7 @@ The `AccountController::actionListAction` method will be called when hitting `ad
 ```php
 <?php
 
-use MakinaCorpus\Dashboard\Drupal\Controller\PageControllerTrait;
+use MakinaCorpus\Dashboard\Controller\PageControllerTrait;
 use MakinaCorpus\Drupal\Sf\Controller;
 use Symfony\Component\HttpFoundation\Request;
 

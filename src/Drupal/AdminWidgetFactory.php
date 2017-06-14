@@ -121,7 +121,7 @@ final class AdminWidgetFactory
     }
 
     /**
-     * Create a page builder without page type
+     * Create a page builder with or without type
      *
      * @param string $name
      *   If given will use the given page type
@@ -160,7 +160,10 @@ final class AdminWidgetFactory
      * Get a new admin table
      *
      * @param string $name
-     * @param array $attributes
+     *   Name will be the template suggestion, and the event name, where the
+     *   event name will be admin:table:NAME
+     * @param mixed $attributes
+     *   Arbitrary table attributes that will be stored into the table
      *
      * @return AdminTable
      */

@@ -2,6 +2,7 @@
 
 namespace MakinaCorpus\Dashboard\Drupal\Controller;
 
+use MakinaCorpus\Dashboard\Controller\PageControllerTrait;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Drupal\Sf\Controller;
 use MakinaCorpus\Ucms\Contrib\Page\NodeAdminPageInterface;
