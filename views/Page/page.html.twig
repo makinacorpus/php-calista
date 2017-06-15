@@ -20,10 +20,10 @@
  #    query.route: string (current internal route)
  #    query.routeParameters: string[] (current get query)
  #    query.sortField: string (current sort field)
- #    sort.sortOrder: string (current sort order)
- #    sort.fieldLinks: Link[] (keyed with field names)
- #    sort.orderLinks: Link[]
- #    sort.getLink(NAME): Link
+ #    sorts.sortOrder: string (current sort order)
+ #    sorts.fieldLinks: Link[] (keyed with field names)
+ #    sorts.orderLinks: Link[]
+ #    sorts.getLink(NAME): Link
  #    sort.count: int (number of sort fields)
  #    hasPager: should we show pager or not
  #    items: DatasourceResultInterface|mixed[] the items
@@ -154,10 +154,10 @@
 {% block sort_links_field %}
   <span class="text-muted">{{ "Sort by:"|trans }}</span>
   <a href="#" class="dropdown-toggle" title="{{ "Sort by:"|trans }}" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
-    {{ sort.currentFieldTitle(query) }}&nbsp;<span class="caret"></span>
+    {{ sorts.currentFieldTitle(query) }}&nbsp;<span class="caret"></span>
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
-    {% for link in sort.fieldLinks(query) %}
+    {% for link in sorts.fieldLinks(query) %}
       <li>{{ block('sort_link') }}</li>
     {% endfor %}
   </ul>
@@ -165,10 +165,10 @@
 
 {% block sort_links_order %}
   <a href="#" class="dropdown-toggle" title="{{ "Order by:"|trans }}" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
-    {{ sort.currentOrderTitle(query) }}&nbsp;<span class="caret"></span>
+    {{ sorts.currentOrderTitle(query) }}&nbsp;<span class="caret"></span>
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
-    {% for link in sort.orderLinks(query) %}
+    {% for link in sorts.orderLinks(query) %}
       <li>{{ block('sort_link') }}</li>
     {% endfor %}
   </ul>

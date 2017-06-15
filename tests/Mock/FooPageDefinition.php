@@ -33,6 +33,10 @@ class FooPageDefinition implements PageDefinitionInterface
         $builder
             ->setConfiguration($configuration)
             ->setDatasource(new IntArrayDatasource())
+            ->setAllowedTemplates([
+                'default' => 'page.html.twig',
+            ])
+            ->setDefaultDisplay('default')
         ;
     }
 }

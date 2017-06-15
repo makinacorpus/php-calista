@@ -3,11 +3,13 @@
 namespace MakinaCorpus\Dashboard\Drupal\Controller;
 
 use Drupal\Core\Form\FormBuilderInterface;
-
 use MakinaCorpus\Dashboard\Drupal\Action\ProcessorActionProvider;
 use MakinaCorpus\Drupal\Sf\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Action processor controller
+ */
 class ActionProcessorController extends Controller
 {
     /**
