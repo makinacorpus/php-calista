@@ -2,8 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\Tests\Mock;
 
+use MakinaCorpus\Dashboard\Action\ActionRegistry;
 use MakinaCorpus\Dashboard\DependencyInjection\Compiler\PageDefinitionRegisterPass;
-use MakinaCorpus\Dashboard\Drupal\Action\ActionRegistry;
 use MakinaCorpus\Dashboard\Page\PageBuilderFactory;
 use MakinaCorpus\Dashboard\Twig\PageExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\HttpFoundation\RequestStack;
+use MakinaCorpus\Dashboard\DependencyInjection\Compiler\ActionProviderRegisterPass;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Basics for tests
@@ -84,14 +86,27 @@ trait ContainerAwareTestTrait
 
     /**
      * Create a container with page definitions
+     *
+     * @return ContainerBuilder
+     *   Container is not compiled yet, so you can furnish more services
      */
     private function createContainerWithPageDefinitions()
     {
         $container = new ContainerBuilder();
         $container->addDefinitions([
+            'event_dispatcher' => (new Definition())
+                ->setClass(EventDispatcher::class)
+                ->setPublic(true)
+        ]);
+        $container->addDefinitions([
+            'udashboard.action_provider_registry' => (new Definition())
+                ->setClass(ActionRegistry::class)
+                ->setPublic(true)
+        ]);
+        $container->addDefinitions([
             'udashboard.page_builder_factory' => (new Definition())
                 ->setClass(PageBuilderFactory::class)
-                ->setArguments([new Reference('service_container'), $this->createFormFactory(), new ActionRegistry(), $this->createTwigEnv()])
+                ->setArguments([new Reference('service_container'), $this->createFormFactory(), new Reference('udashboard.action_provider_registry'), $this->createTwigEnv(), new Reference('event_dispatcher')])
                 ->setPublic(true)
         ]);
         $container->addDefinitions([
@@ -105,8 +120,8 @@ trait ContainerAwareTestTrait
                 ->setClass(IntArrayDatasource::class)
                 ->setPublic(true)
         ]);
+        $container->addCompilerPass(new ActionProviderRegisterPass());
         $container->addCompilerPass(new PageDefinitionRegisterPass());
-        $container->compile();
 
         return $container;
     }

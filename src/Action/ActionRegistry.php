@@ -1,7 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\Action;
+namespace MakinaCorpus\Dashboard\Action;
 
+/**
+ * Actions registry is what fetches actions from any object.
+ */
 final class ActionRegistry
 {
     /**

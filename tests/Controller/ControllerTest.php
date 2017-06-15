@@ -21,6 +21,8 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testDrupalAjaxController()
     {
         $container = $this->createContainerWithPageDefinitions();
+        $container->compile();
+
         $controller = new AjaxPageController();
         $controller->setContainer($container);
 

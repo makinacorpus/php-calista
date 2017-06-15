@@ -27,6 +27,7 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
     public function testPageBuilderFactory()
     {
         $container = $this->createContainerWithPageDefinitions();
+        $container->compile();
 
         $factory = $container->get('udashboard.page_builder_factory');
         $request = new Request();

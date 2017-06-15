@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\Action;
+namespace MakinaCorpus\Dashboard\Action;
 
 interface ActionProviderInterface
 {

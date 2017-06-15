@@ -2,15 +2,15 @@
 
 namespace MakinaCorpus\Dashboard\Page;
 
-use MakinaCorpus\Dashboard\Drupal\Action\ActionRegistry;
+use MakinaCorpus\Dashboard\Action\ActionRegistry;
 use MakinaCorpus\Dashboard\Drupal\Table\AdminTable;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * God I hate to register more factories to the DIC, but we have some
@@ -160,21 +160,5 @@ final class PageBuilderFactory
         $this->initializeBuilder($builder, $name, $request);
 
         return $builder;
-    }
-
-    /**
-     * Get a new admin table
-     *
-     * @param string $name
-     *   Name will be the template suggestion, and the event name, where the
-     *   event name will be admin:table:NAME
-     * @param mixed $attributes
-     *   Arbitrary table attributes that will be stored into the table
-     *
-     * @return AdminTable
-     */
-    public function createAdminTable($name, $attributes = [])
-    {
-        return new AdminTable($name, $attributes, $this->eventDispatcher);
     }
 }

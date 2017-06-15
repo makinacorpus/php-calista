@@ -1,9 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\DependencyInjection\Compiler;
+namespace MakinaCorpus\Dashboard\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use MakinaCorpus\Dashboard\Action\ActionProviderInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -25,10 +26,9 @@ class ActionProviderRegisterPass implements CompilerPassInterface
 
             $class = $container->getParameterBag()->resolveValue($def->getClass());
             $refClass = new \ReflectionClass($class);
-            $interface = '\MakinaCorpus\Dashboard\Drupal\Action\ActionProviderInterface';
 
-            if (!$refClass->implementsInterface($interface)) {
-                throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, $interface));
+            if (!$refClass->implementsInterface(ActionProviderInterface::class)) {
+                throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, ActionProviderInterface::class));
             }
 
             $definition->addMethodCall('register', [new Reference($id)]);
@@ -38,21 +38,5 @@ class ActionProviderRegisterPass implements CompilerPassInterface
             return;
         }
         $definition = $container->getDefinition('udashboard.processor_registry');
-
-        // Register automatic action provider based on action processors
-        $taggedServices = $container->findTaggedServiceIds('udashboard.action');
-        foreach ($taggedServices as $id => $attributes) {
-            $def = $container->getDefinition($id);
-
-            $class = $container->getParameterBag()->resolveValue($def->getClass());
-            $refClass = new \ReflectionClass($class);
-            $parentClass = '\MakinaCorpus\Dashboard\Drupal\Action\AbstractActionProcessor';
-
-            if (!$refClass->isSubclassOf($parentClass)) {
-                throw new \InvalidArgumentException(sprintf('Service "%s" must implement extend "%s".', $id, $parentClass));
-            }
-
-            $definition->addMethodCall('register', [new Reference($id)]);
-        }
     }
 }

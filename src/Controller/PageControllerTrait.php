@@ -98,7 +98,7 @@ trait PageControllerTrait
      */
     protected function createAdminTable($name, array $attributes = [])
     {
-        return $this->getWidgetFactory()->createAdminTable($name, $attributes);
+        return new AdminTable($name, $attributes, $this->get('event_dispatcher'));
     }
 
     /**

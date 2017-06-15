@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\Action;
+namespace MakinaCorpus\Dashboard\Action;
 
 /**
  * Represent a possible action over a certain item, this is just a value
@@ -8,23 +8,30 @@ namespace MakinaCorpus\Dashboard\Drupal\Action;
  */
 class Action
 {
+    /**
+     * Create action from array
+     *
+     * @param mixed[] $options
+     *
+     * @return Action
+     */
     static public function create($options)
     {
         $options += [
-            'title'     => null,
-            'uri'       => null,
+            'title'     => '',
+            'route'     => '',
             'options'   => [],
-            'icon'      => null,
+            'icon'      => '',
             'priority'  => 0,
             'primary'   => true,
             'redirect'  => false,
             'disabled'  => false,
-            'group'     => null,
+            'group'     => '',
         ];
 
         return new static(
             $options['title'],
-            $options['uri'],
+            $options['route'],
             $options['options'],
             $options['icon'],
             $options['priority'],
@@ -35,20 +42,14 @@ class Action
         );
     }
 
-    private $title;
-
-    private $uri;
-
+    private $title = '';
+    private $route = '';
+    private $routeParameters = [];
     private $linkOptions = [];
-
-    private $priority;
-
-    private $icon;
-
+    private $priority = 0;
+    private $icon = '';
     private $primary = true;
-
     private $disabled = false;
-
     private $group = null;
 
     /**
@@ -56,10 +57,11 @@ class Action
      *
      * @param string $title
      *   Human readable action
-     * @param string $uri
-     *   Resource URI, if no scheme will be used as a Drupal path
+     * @param string $route
+     *   Symfony route, Drupal path or full URL
      * @param string|array $options
-     *   Link options, see the l() and url() functions altogether
+     *   Link options, see the l() and url() functions altogether if you're using Drupal
+     *   or it will be used as route parameters for Symfony router
      *   It can be one of those values:
      *     'dialog' : load the page in a dialog
      *     'blank' : load with target=blank
@@ -79,10 +81,10 @@ class Action
      * @param string $group
      *   An arbitrary string that will be used to group actions altogether
      */
-    public function __construct($title, $uri = null, $options = [], $icon = null, $priority = 0, $primary = true, $addCurrentDestination = false, $disabled = false, $group = null)
+    public function __construct($title, $route = '', $options = [], $icon = '', $priority = 0, $primary = true, $addCurrentDestination = false, $disabled = false, $group = '')
     {
         $this->title = $title;
-        $this->uri = $uri;
+        $this->route = $route;
         $this->icon = $icon;
         $this->priority = $priority;
         $this->primary = $primary;
@@ -101,20 +103,17 @@ class Action
                   break;
 
               case 'ajax':
+                  $addCurrentDestination = true;
                   $this->linkOptions = [
                       'attributes' => ['class' => ['use-ajax']],
-                      'query' => drupal_get_destination(),
                   ];
                   break;
 
               case 'dialog':
+                  $this->routeParameters['minidialog'] = 1;
                   $this->linkOptions = [
                       'attributes' => ['class' => ['use-ajax', 'minidialog']],
-                      'query' => ['minidialog' => 1],
                   ];
-                  if ($addCurrentDestination) {
-                      $this->linkOptions['query'] += drupal_get_destination();
-                  }
                   break;
             }
         }
@@ -125,56 +124,117 @@ class Action
             $this->linkOptions['attributes']['class'][] = 'disabled';
         }
 
-        if ($addCurrentDestination && !isset($this->linkOptions['query']['destination'])) {
-            if (!isset($this->linkOptions['query'])) {
-                $this->linkOptions['query'] = [];
+        if ($addCurrentDestination) {
+            if (function_exists('drupal_get_destination')) {
+                // Do not allow GET query parameter override
+                if (empty($this->routeParameters['destination'])) {
+                    $this->routeParameters += drupal_get_destination();
+                }
+            } else {
+                // We are not in Drupal, and this is not implemented.
+                // @todo sorry
             }
-            $this->linkOptions['query'] += drupal_get_destination();
         }
     }
 
+    /**
+     * Get action group
+     *
+     * @return string
+     */
     public function getGroup()
     {
         return $this->group;
     }
 
+    /**
+     * Get action title
+     *
+     * @return string
+     */
     public function getTitle()
     {
         return $this->title;
     }
 
-    public function getURI()
+    /**
+     * Get action route, can be an already computed URL
+     *
+     * @return string
+     */
+    public function getRoute()
     {
-        return $this->uri;
+        return $this->route;
     }
 
-    public function getLinkOptions()
+    /**
+     * Get route parameters
+     *
+     * @return string[]
+     *   Route parameters (mostly GET query parameters)
+     */
+    public function getRouteParameters()
+    {
+        return $this->routeParameters;
+    }
+
+    /**
+     * Get link options
+     *
+     * @return array
+     *   For Drupal, this is a suitable array for l() and url() functions, whose
+     *   only missing the 'query' key, query must be fetched calling the
+     *   getRouteParameters() method.
+     */
+    public function getDrupalLinkOptions()
     {
         return $this->linkOptions;
     }
 
+    /**
+     * Get icon
+     *
+     * @return string
+     */
     public function getIcon()
     {
         return $this->icon;
     }
 
+    /**
+     * Get action priority (order in list)
+     *
+     * @return int
+     */
     public function getPriority()
     {
         return $this->priority;
     }
 
+    /**
+     * Is the action primary
+     *
+     * @return bool
+     */
     public function isPrimary()
     {
         return $this->primary;
     }
 
+    /**
+     * Is the action disabled
+     *
+     * @return bool
+     */
     public function isDisabled()
     {
         return $this->disabled;
     }
 
     /**
-     * @param boolean $primary
+     * Toggle primary mode
+     *
+     * @param bool $primary
      */
     public function setPrimary($primary)
     {

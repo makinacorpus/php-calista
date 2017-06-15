@@ -2,12 +2,15 @@
 
 namespace MakinaCorpus\Dashboard\Tests\Drupal;
 
-use MakinaCorpus\Dashboard\Drupal\Action\Action;
-use MakinaCorpus\Dashboard\Drupal\Action\ActionProviderInterface;
-use MakinaCorpus\Dashboard\Drupal\Action\ActionRegistry;
+use MakinaCorpus\Dashboard\Action\Action;
+use MakinaCorpus\Dashboard\Action\ActionProviderInterface;
+use MakinaCorpus\Dashboard\Action\ActionRegistry;
+use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
 
 class ActionProviderTest extends \PHPUnit_Framework_TestCase
 {
+    use ContainerAwareTestTrait;
+
     /**
      * Tests a lot of stuff
      */
@@ -48,5 +51,14 @@ class ActionProviderTest extends \PHPUnit_Framework_TestCase
 
         $actions = $registry->getActions((object)[]);
         $this->assertCount(2, $actions);
+    }
+
+    public function testActionRegistryInContainer()
+    {
+        $container = $this->createContainerWithPageDefinitions();
+        $container->compile();
+
+        $registry = new ActionRegistry();
+        // @todo test actions registration
     }
 }
