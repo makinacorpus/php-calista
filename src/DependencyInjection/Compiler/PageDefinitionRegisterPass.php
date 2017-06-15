@@ -1,15 +1,15 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\DependencyInjection\Compiler;
+namespace MakinaCorpus\Dashboard\DependencyInjection\Compiler;
 
+use MakinaCorpus\Dashboard\Page\PageDefinitionInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use MakinaCorpus\Dashboard\Page\PageTypeInterface;
 
 /**
- * Registers page types
+ * Registers page definitions
  */
-class PageBuilderRegisterPass implements CompilerPassInterface
+class PageDefinitionRegisterPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
@@ -21,15 +21,15 @@ class PageBuilderRegisterPass implements CompilerPassInterface
         $types = [];
 
         // Register custom action providers
-        $taggedServices = $container->findTaggedServiceIds('udashboard.page_type');
+        $taggedServices = $container->findTaggedServiceIds('udashboard.page_definition');
         foreach ($taggedServices as $id => $attributes) {
             $def = $container->getDefinition($id);
 
             $class = $container->getParameterBag()->resolveValue($def->getClass());
             $refClass = new \ReflectionClass($class);
 
-            if (!$refClass->implementsInterface(PageTypeInterface::class)) {
-                throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, PageTypeInterface::class));
+            if (!$refClass->implementsInterface(PageDefinitionInterface::class)) {
+                throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, PageDefinitionInterface::class));
             }
 
             if (empty($attributes[0]['id'])) {
@@ -43,7 +43,7 @@ class PageBuilderRegisterPass implements CompilerPassInterface
         }
 
         if ($types) {
-            $definition->addMethodCall('registerPageTypes', [$types]);
+            $definition->addMethodCall('registerPageDefinitions', [$types]);
         }
     }
 }

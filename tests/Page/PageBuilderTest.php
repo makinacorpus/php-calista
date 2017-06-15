@@ -4,12 +4,19 @@ namespace MakinaCorpus\Dashboard\Tests\Page;
 
 use MakinaCorpus\Dashboard\Datasource\Configuration;
 use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\DependencyInjection\Compiler\PageDefinitionRegisterPass;
+use MakinaCorpus\Dashboard\Drupal\Action\ActionRegistry;
 use MakinaCorpus\Dashboard\Page\FormPageBuilder;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
+use MakinaCorpus\Dashboard\Page\PageBuilderFactory;
 use MakinaCorpus\Dashboard\Page\PageResult;
 use MakinaCorpus\Dashboard\Page\SortCollection;
+use MakinaCorpus\Dashboard\Tests\Mock\FooPageDefinition;
 use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
 use MakinaCorpus\Dashboard\Twig\PageExtension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -83,6 +90,89 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
             ->addExtension(new HttpFoundationExtension())
             ->getFormFactory()
         ;
+    }
+
+    /**
+     * Tests the page builder factory, very basic tests
+     */
+    public function testPageBuilderFactory()
+    {
+        $container = new ContainerBuilder();
+        $container->addDefinitions([
+            'udashboard.page_builder_factory' => (new Definition())
+                ->setClass(PageBuilderFactory::class)
+                ->setArguments([new Reference('service_container'), $this->createFormFactory(), new ActionRegistry(), $this->createTwigEnv()])
+                ->setPublic(true)
+        ]);
+        $container->addDefinitions([
+            '_test_page_definition' => (new Definition())
+                ->setClass(FooPageDefinition::class)
+                ->setPublic(true)
+                ->addTag('udashboard.page_definition', ['id' => 'int_array_page'])
+        ]);
+        $container->addDefinitions([
+            '_test_datasource' => (new Definition())
+                ->setClass(IntArrayDatasource::class)
+                ->setPublic(true)
+        ]);
+        $container->addCompilerPass(new PageDefinitionRegisterPass());
+        $container->compile();
+
+        $factory = $container->get('udashboard.page_builder_factory');
+        $request = new Request();
+
+        // Now ensures that we can find our definition
+        $builder = $factory->createPageBuilder('_test_page_definition', $request);
+        $this->assertInstanceOf(PageBuilder::class, $builder);
+        $this->assertSame('_test_page_definition', $builder->getId());
+        $this->assertInstanceOf(IntArrayDatasource::class, $builder->getDatasource());
+        $this->assertSame('_limit', $builder->getConfiguration()->getLimitParameter());
+
+        // And by identifier, and ensure the identifier is not the same as
+        // the service identifier, but the one we added in the tag
+        $builder = $factory->createPageBuilder('int_array_page', $request);
+        $this->assertInstanceOf(PageBuilder::class, $builder);
+        $this->assertSame('int_array_page', $builder->getId());
+        $this->assertInstanceOf(IntArrayDatasource::class, $builder->getDatasource());
+        $this->assertSame('_limit', $builder->getConfiguration()->getLimitParameter());
+
+        // And by class
+        $builder = $factory->createPageBuilder(FooPageDefinition::class, $request);
+        $this->assertSame(FooPageDefinition::class, $builder->getId());
+        $this->assertInstanceOf(PageBuilder::class, $builder);
+        $this->assertInstanceOf(IntArrayDatasource::class, $builder->getDatasource());
+        $this->assertSame('_limit', $builder->getConfiguration()->getLimitParameter());
+
+        // Ensure we have some stuff that do not work
+        try {
+            $factory->createFormPageBuilder('_test_datasource', $request);
+            $this->fail();
+        } catch (\Exception $e) {
+            $this->assertTrue(true);
+        }
+        try {
+            $factory->createFormPageBuilder(IntArrayDatasource::class, $request);
+            $this->fail();
+        } catch (\Exception $e) {
+            $this->assertTrue(true);
+        }
+        try {
+            $factory->createFormPageBuilder('I DO NOT EXIST', $request);
+            $this->fail();
+        } catch (\Exception $e) {
+            $this->assertTrue(true);
+        }
+
+        // And empty builder creation
+        $builder = $factory->createPageBuilder();
+        $this->assertInstanceOf(PageBuilder::class, $builder);
+        // Which cannot have a datasource
+        try {
+            $builder->getDatasource();
+            $this->fail();
+        } catch (\Exception $e) {
+            $this->assertTrue(true);
+        }
     }
 
     /**

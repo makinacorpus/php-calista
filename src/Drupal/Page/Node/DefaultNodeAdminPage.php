@@ -6,13 +6,13 @@ use Drupal\Core\Session\AccountInterface;
 use MakinaCorpus\Dashboard\Datasource\Configuration;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
-use MakinaCorpus\Dashboard\Page\PageTypeInterface;
+use MakinaCorpus\Dashboard\Page\PageDefinitionInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Default node admin page implementation, suitable for most use cases
  */
-class DefaultNodeAdminPage implements PageTypeInterface
+class DefaultNodeAdminPage implements PageDefinitionInterface
 {
     private $datasource;
     private $queryFilter;

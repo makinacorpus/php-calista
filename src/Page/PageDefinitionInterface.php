@@ -13,7 +13,7 @@ use MakinaCorpus\Dashboard\Datasource\Configuration;
  * It also allows you to define once then re-use specific pages at various
  * places on your site.
  */
-interface PageTypeInterface
+interface PageDefinitionInterface
 {
     /**
      * Create configuration

@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * God I hate to register more factories to the DIC, but we have some
@@ -20,7 +21,7 @@ final class PageBuilderFactory
 {
     private $container;
     private $formFactory;
-    private $pageTypes = [];
+    private $pageDefinitions = [];
     private $actionRegistry;
     private $eventDispatcher;
     private $debug;
@@ -42,6 +43,10 @@ final class PageBuilderFactory
         \Twig_Environment $twig,
         EventDispatcherInterface $eventDispatcher = null
     ) {
+        if (!$eventDispatcher) {
+            $eventDispatcher = new EventDispatcher();
+        }
+
         $this->container = $container;
         $this->formFactory = $formFactory;
         $this->actionRegistry = $actionRegistry;
@@ -53,12 +58,12 @@ final class PageBuilderFactory
     /**
      * Register page types
      *
-     * @param string[] $types
+     * @param string[] $definitions
      *   Keys are names, values are service identifiers
      */
-    public function registerPageTypes($types)
+    public function registerPageDefinitions($definitions)
     {
-        $this->pageTypes = $types;
+        $this->pageDefinitions = $definitions;
     }
 
     /**
@@ -66,12 +71,12 @@ final class PageBuilderFactory
      *
      * @param string $name
      *
-     * @return PageTypeInterface
+     * @return PageDefinitionInterface
      */
-    public function getPageType($name)
+    public function getPageDefinition($name)
     {
-        if (isset($this->pageTypes[$name])) {
-            $id = $this->pageTypes[$name];
+        if (isset($this->pageDefinitions[$name])) {
+            $id = $this->pageDefinitions[$name];
         } else {
             $id = $name;
         }
@@ -79,16 +84,16 @@ final class PageBuilderFactory
         try {
             $instance = $this->container->get($id);
 
-            if (!$instance instanceof PageTypeInterface) {
-                throw new \InvalidArgumentException(sprintf("page builder '%s' with service id '%s' does not implement %s", $name, $id, PageTypeInterface::class));
+            if (!$instance instanceof PageDefinitionInterface) {
+                throw new \InvalidArgumentException(sprintf("page builder '%s' with service id '%s' does not implement %s", $name, $id, PageDefinitionInterface::class));
             }
         } catch (ServiceNotFoundException $e) {
 
             if (class_exists($name)) {
                 $instance = new $name();
 
-                if (!$instance instanceof PageTypeInterface) {
-                    throw new \InvalidArgumentException(sprintf("class '%s' does not implement %s", $name, PageTypeInterface::class));
+                if (!$instance instanceof PageDefinitionInterface) {
+                    throw new \InvalidArgumentException(sprintf("class '%s' does not implement %s", $name, PageDefinitionInterface::class));
                 }
             } else {
                 throw new \InvalidArgumentException(sprintf("page builder '%s' with service id '%s' does not exist in container or class does not exists", $name, $id));
@@ -113,7 +118,11 @@ final class PageBuilderFactory
             }
 
             $builder->setId($name);
-            $this->getPageType($name)->build($builder, $request);
+
+            $definition = $this->getPageDefinition($name);
+            $configuration = $definition->createConfiguration();
+
+            $definition->build($builder, $configuration, $request);
         }
     }
 
@@ -130,7 +139,7 @@ final class PageBuilderFactory
     public function createPageBuilder($name = null, Request $request = null)
     {
         $builder = new PageBuilder($this->twig, $this->eventDispatcher);
-        $this->initializeBuilder($builder);
+        $this->initializeBuilder($builder, $name, $request);
 
         return $builder;
     }
@@ -148,7 +157,7 @@ final class PageBuilderFactory
     public function createFormPageBuilder($name = null, Request $request = null)
     {
         $builder = new FormPageBuilder($this->twig, $this->eventDispatcher, $this->formFactory);
-        $this->initializeBuilder($builder);
+        $this->initializeBuilder($builder, $name, $request);
 
         return $builder;
     }

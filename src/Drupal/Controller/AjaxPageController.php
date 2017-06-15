@@ -62,9 +62,9 @@ class AjaxPageController extends Controller
      */
     public function refreshAction(Request $request)
     {
-        $pageType = $this->getPageBuilderOrDie($request);
-        $result   = $pageType->search($request);
-        $page     = $pageType->createPageView($result);
+        $builder  = $this->getPageBuilderOrDie($request);
+        $result   = $builder->search($request);
+        $page     = $builder->createPageView($result);
 
         return new JsonResponse([
             'query' => $result->getQuery()->all(),
