@@ -1,7 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal;
+namespace MakinaCorpus\Dashboard\Util;
 
+/**
+ * I don't know if this trait has any use.
+ */
 trait AttributesTrait
 {
     /**

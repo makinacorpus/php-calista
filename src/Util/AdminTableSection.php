@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\Table;
+namespace MakinaCorpus\Dashboard\Util;
 
 class AdminTableSection
 {

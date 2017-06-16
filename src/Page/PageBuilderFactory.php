@@ -3,7 +3,6 @@
 namespace MakinaCorpus\Dashboard\Page;
 
 use MakinaCorpus\Dashboard\Action\ActionRegistry;
-use MakinaCorpus\Dashboard\Drupal\Table\AdminTable;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;

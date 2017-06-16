@@ -1,9 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\EventDispatcher;
+namespace MakinaCorpus\Dashboard\Event;
 
-use MakinaCorpus\Dashboard\Drupal\Table\AdminTable;
-
+use MakinaCorpus\Dashboard\Util\AdminTable;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**

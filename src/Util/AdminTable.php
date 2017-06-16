@@ -1,9 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\Table;
+namespace MakinaCorpus\Dashboard\Util;
 
-use MakinaCorpus\Dashboard\Drupal\AttributesTrait;
-use MakinaCorpus\Dashboard\Drupal\EventDispatcher\AdminTableEvent;
+use MakinaCorpus\Dashboard\Event\AdminTableEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class AdminTable
