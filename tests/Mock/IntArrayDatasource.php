@@ -26,6 +26,14 @@ class IntArrayDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
+    public function getItemClass()
+    {
+        return IntItem::class;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getFilters(Query $query)
     {
         return [

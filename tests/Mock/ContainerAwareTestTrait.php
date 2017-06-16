@@ -3,24 +3,59 @@
 namespace MakinaCorpus\Dashboard\Tests\Mock;
 
 use MakinaCorpus\Dashboard\Action\ActionRegistry;
+use MakinaCorpus\Dashboard\DependencyInjection\Compiler\ActionProviderRegisterPass;
 use MakinaCorpus\Dashboard\DependencyInjection\Compiler\PageDefinitionRegisterPass;
 use MakinaCorpus\Dashboard\Page\PageBuilderFactory;
 use MakinaCorpus\Dashboard\Twig\PageExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\HttpFoundation\RequestStack;
-use MakinaCorpus\Dashboard\DependencyInjection\Compiler\ActionProviderRegisterPass;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 
 /**
  * Basics for tests
  */
 trait ContainerAwareTestTrait
 {
+    private function createPropertyAccessor()
+    {
+        return new PropertyAccessor();
+    }
+
+    private function createPropertyInfoExtractor()
+    {
+        $listExtractors = [
+            new IntProperyIntoExtractor(),
+            new ReflectionExtractor(),
+        ];
+
+        $typeExtractors = [
+            new IntProperyIntoExtractor(),
+            new ReflectionExtractor(),
+            new PhpDocExtractor(),
+        ];
+
+        $descriptionExtractors = [
+            new IntProperyIntoExtractor(),
+            new PhpDocExtractor(),
+        ];
+
+        $accessExtractors = [
+            new IntProperyIntoExtractor(),
+            new ReflectionExtractor(),
+        ];
+
+        return new PropertyInfoExtractor($listExtractors, $typeExtractors, $descriptionExtractors, $accessExtractors);
+    }
+
     /**
      * Create a twig environment with the bare minimum we need
      *
@@ -29,8 +64,10 @@ trait ContainerAwareTestTrait
     private function createTwigEnv()
     {
         $twigEnv = new \Twig_Environment(
-            new \Twig_Loader_Filesystem([
-                dirname(dirname(__DIR__)) . '/views/Page'
+            new \Twig_Loader_Array([
+                'module:udashboard:views/Page/page-dynamic-table.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-dynamic-table.html.twig'),
+                'module:udashboard:views/Page/page-grid.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-grid.html.twig'),
+                'module:udashboard:views/Page/page.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page.html.twig'),
             ]),
             [
                 'debug' => true,
@@ -66,7 +103,8 @@ trait ContainerAwareTestTrait
         $twigEnv->addFilter(new \Twig_SimpleFilter('time_diff', function ($value) {
             return (string)$value;
         }));
-        $twigEnv->addExtension(new PageExtension(new RequestStack()));
+
+        $twigEnv->addExtension(new PageExtension(new RequestStack(), $this->createPropertyAccessor(), $this->createPropertyInfoExtractor()));
 
         return $twigEnv;
     }

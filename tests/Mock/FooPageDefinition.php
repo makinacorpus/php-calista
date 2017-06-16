@@ -34,7 +34,7 @@ class FooPageDefinition implements PageDefinitionInterface
             ->setConfiguration($configuration)
             ->setDatasource(new IntArrayDatasource())
             ->setAllowedTemplates([
-                'default' => 'page.html.twig',
+                'default' => 'module:udashboard:views/Page/page.html.twig',
             ])
             ->setDefaultDisplay('default')
         ;

@@ -17,6 +17,17 @@ use MakinaCorpus\Dashboard\Page\SortCollection;
 interface DatasourceInterface
 {
     /**
+     * Get item class
+     *
+     * Item class will enable the ProperyInfo component usage over your objects.
+     * Whenever you have very specific classes you also should write your own
+     * property extractors.
+     *
+     * @return null|string
+     */
+    public function getItemClass();
+
+    /**
      * Get ready to display filters
      *
      * @param Query $query

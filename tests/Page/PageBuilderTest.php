@@ -104,7 +104,7 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $pageBuilder
             ->setDatasource(new IntArrayDatasource())
             ->setAllowedTemplates([
-                'page' => 'page.html.twig',
+                'page' => 'module:udashboard:views/Page/page.html.twig',
             ])
             ->setDefaultDisplay('page')
             ->setConfiguration($configuration)
@@ -144,11 +144,41 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests basics
+     */
+    public function testDynamicTablePageTemplate()
+    {
+        $request = new Request([
+            'odd_or_even' => 'odd',
+            'page' => 3,
+            'st' => 'value',
+            'by' => Query::SORT_DESC,
+        ], [], ['_route' => '_test_route']);
+
+        $configuration = new Configuration(['limit_default' => 7]);
+
+        $pageBuilder = new PageBuilder($this->createTwigEnv(), new EventDispatcher());
+        $pageBuilder
+            ->setDatasource(new IntArrayDatasource())
+            ->setAllowedTemplates([
+                'page' => 'module:udashboard:views/Page/page-dynamic-table.html.twig',
+            ])
+            ->setDefaultDisplay('page')
+            ->setConfiguration($configuration)
+            ->enableFilter('odd_or_even')
+            ->enableVisualFilter('mod3')
+        ;
+
+        // Build a page, for fun
+        echo $rendered = $pageBuilder->searchAndRender($request);
+    }
+
+    /**
      * Basic testing for FormPageBuilder coverage, later will be more advanced tests
      */
     public function testFormPageBuilder()
     {
-                $request = new Request([
+        $request = new Request([
             'odd_or_even' => 'odd',
             'page' => 3,
             'st' => 'value',
@@ -161,7 +191,7 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $pageBuilder
             ->setDatasource(new IntArrayDatasource())
             ->setAllowedTemplates([
-                'page' => 'page.html.twig',
+                'page' => 'module:udashboard:views/Page/page.html.twig',
             ])
             ->setDefaultDisplay('page')
             ->setConfiguration($configuration)

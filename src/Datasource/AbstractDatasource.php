@@ -12,6 +12,13 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * {@inheritdoc}
      */
+    public function getItemClass()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getFilters(Query $query)
     {
         return [];

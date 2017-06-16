@@ -1,0 +1,40 @@
+{% extends 'module:udashboard:views/Page/page.html.twig' %}
+
+{%- block item -%}
+    <tr>
+        {% if form is defined %}
+            {% set element = form.items[item.id] %}
+            {# <td>{{ form_widget(id) }}</td> #}
+            <td>{{ form_widget(element) }}</td>
+        {% endif %}
+        {% for property, description in udashboard_item_definition(itemClass) %}
+            <td>
+                {{ udashboard_item_property(item, property) }}
+            </td>
+        {% endfor %}
+        <td>
+            {{ udashboard_actions(item) }}
+        </td>
+    </tr>
+{%- endblock -%}
+
+{% block item_list %}
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                {% if form is defined %}
+                    <th>{{ block('item_checkbox_all') }}</th>
+                {% endif %}
+                {% for property, description in udashboard_item_definition(itemClass) %}
+                    <th class="property-{{ property }}">{{ description }}</th>
+                {% endfor %}
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                {{ block('item') }}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

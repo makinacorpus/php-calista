@@ -545,6 +545,7 @@ class PageBuilder
 
         $arguments = [
             'pageId'        => $this->getId(),
+            'itemClass'     => $this->getDatasource()->getItemClass(),
             'result'        => $result,
             'items'         => $result->getItems(),
             'filters'       => $this->displayFilters ? $result->getFilters() : [],

@@ -6,6 +6,8 @@ use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageView;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Display pages, considering that 'page' is a variable that points to a
@@ -19,6 +21,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class PageExtension extends \Twig_Extension
 {
+    /**
+     * Display when rendering is not possible
+     */
+    const RENDER_NOT_POSSIBLE = '<em>N/A</em>';
+
+    private $propertyAccess;
+    private $propertyInfo;
     private $requestStack;
 
     /**
@@ -26,8 +35,10 @@ class PageExtension extends \Twig_Extension
      *
      * @param RequestStack $requestStack
      */
-    public function __construct(RequestStack $requestStack)
+    public function __construct(RequestStack $requestStack, PropertyAccessor $propertyAccess, PropertyInfoExtractorInterface $propertyInfo)
     {
+        $this->propertyAccess = $propertyAccess;
+        $this->propertyInfo = $propertyInfo;
         $this->requestStack = $requestStack;
     }
 
@@ -38,6 +49,8 @@ class PageExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFunction('udashboard_page', [$this, 'renderPage'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('udashboard_item_definition', [$this, 'getItemDefinition'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('udashboard_item_property', [$this, 'renderItemProperty'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -48,6 +61,67 @@ class PageExtension extends \Twig_Extension
             new \Twig_SimpleFilter('udashboardFilterQuery', [$this, 'filterQuery'], ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('udashboard_query_param', [$this, 'flattenQueryParam']),
         ];
+    }
+
+    /**
+     * Get item definition
+     *
+     * @param string $class
+     *   Must be a string, and an existing class
+     *
+     * @return string[]
+     *   Each key is a property name, each value is a short description for it
+     */
+    public function getItemDefinition($class)
+    {
+        $ret = [];
+
+        if (!$class || !class_exists($class)) {
+            // @todo Raise exception?
+            return $ret;
+        }
+
+        foreach ($this->propertyInfo->getProperties($class) as $property) {
+            $description = $this->propertyInfo->getShortDescription($class, $property);
+            if ($description) {
+                $ret[$property] = $description;
+            } else {
+                $ret[$property] = $property;
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Render a single item property
+     *
+     * @param object $item
+     *   Item on which to find the property
+     * @param string $propery
+     *   Property name
+     *
+     * @return string
+     */
+    public function renderItemProperty($item, $property)
+    {
+        if (!is_object($item)) {
+            // @todo Raise exception?
+            return self::RENDER_NOT_POSSIBLE;
+        }
+
+        $class = get_class($item);
+
+        if (!$this->propertyInfo->isReadable($class, $property)) {
+            return self::RENDER_NOT_POSSIBLE;
+        }
+
+        $types = $this->propertyInfo->getTypes($class, $property);
+        if (!$types) {
+            return self::RENDER_NOT_POSSIBLE;
+        }
+
+        return "got something...";
     }
 
     /**
