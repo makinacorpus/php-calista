@@ -13,9 +13,11 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
+        // @codeCoverageIgnoreStart
         if (!$container->hasDefinition('udashboard.page_builder_factory')) {
             return;
         }
+        // @codeCoverageIgnoreEnd
         $definition = $container->getDefinition('udashboard.page_builder_factory');
 
         $types = [];

@@ -14,10 +14,12 @@ class ActionProviderRegisterPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
+        // @codeCoverageIgnoreStart
         if (!$container->hasDefinition('udashboard.action_provider_registry')) {
             return;
         }
         $definition = $container->getDefinition('udashboard.action_provider_registry');
+        // @codeCoverageIgnoreEnd
 
         // Register custom action providers
         $taggedServices = $container->findTaggedServiceIds('udashboard.action_provider');
@@ -33,10 +35,5 @@ class ActionProviderRegisterPass implements CompilerPassInterface
 
             $definition->addMethodCall('register', [new Reference($id)]);
         }
-
-        if (!$container->hasDefinition('udashboard.processor_registry')) {
-            return;
-        }
-        $definition = $container->getDefinition('udashboard.processor_registry');
     }
 }
