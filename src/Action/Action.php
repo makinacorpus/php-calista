@@ -92,7 +92,7 @@ class Action
         $this->group = $group;
 
         if (is_array($options)) {
-            $this->linkOptions = $options;
+            $this->routeParameters = $options;
         } else {
             switch ($options) {
 

@@ -87,8 +87,8 @@ trait ContainerAwareTestTrait
         );
 
         $twigEnv->addFunction(new \Twig_SimpleFunction('path', function ($route, $routeParameters = []) {
-            return $route . implode('&=', $routeParameters);
-        }));
+            return $route . '&' . http_build_query($routeParameters);
+        }), ['is_safe' => ['html']]);
         $twigEnv->addFunction(new \Twig_SimpleFunction('form_widget', function () {
             return 'FORM_WIDGET';
         }));

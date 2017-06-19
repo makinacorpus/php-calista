@@ -4,7 +4,7 @@
     {% if primary %}
       {% for group in primary %}
         {% for action in group %}
-          <a href="{{ path(action.route, action.routeParameters) }}" class="btn btn-default">
+          <a href="{{ path(action.route, action.routeParameters)|raw }}" class="btn btn-default">
             {% if action.icon %}
               <span class="glyphicon glyphicon-{{ action.icon }}" aria-hidden="true"></span>
             {% endif %}
@@ -44,7 +44,7 @@
             {% endif %}
             {% for action in group %}
               <li>
-                <a href="{{ path(action.route, action.routeParameters) }}" class="btn btn-default">
+                <a href="{{ path(action.route, action.routeParameters)|raw }}" class="btn btn-default">
                   {% if action.icon %}
                     <span class="glyphicon glyphicon-{{ action.icon }}" aria-hidden="true"></span>
                   {% endif %}
