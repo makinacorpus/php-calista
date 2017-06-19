@@ -6,8 +6,8 @@ use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageView;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 
 /**
  * Display pages, considering that 'page' is a variable that points to a
@@ -57,8 +57,8 @@ class PageExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('udashboardFilterDefinition', [$this, 'filterDefinition'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFilter('udashboardFilterQuery', [$this, 'filterQuery'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter('udashboard_filter_definition', [$this, 'getfilterDefinition'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter('udashboard_filter_query', [$this, 'getFilterQuery'], ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('udashboard_query_param', [$this, 'flattenQueryParam']),
         ];
     }
@@ -189,10 +189,11 @@ class PageExtension extends \Twig_Extension
      * @param \MakinaCorpus\Dashboard\Page\Filter[] $filters
      * @return string
      */
-    public function filterDefinition($filters)
+    public function getfilterDefinition($filters)
     {
         $definition = [];
 
+        /** @var \MakinaCorpus\Dashboard\Page\Filter $filter */
         foreach ($filters as $filter) {
             $definition[] = [
                 'value'   => $filter->getField(),
@@ -211,13 +212,15 @@ class PageExtension extends \Twig_Extension
      * @param string[] $query
      * @return string
      */
-    public function filterQuery($filters, $query)
+    public function getFilterQuery($filters, $query)
     {
         $filterQuery = [];
 
+        /** @var \MakinaCorpus\Dashboard\Page\Filter $filter */
         foreach ($filters as $filter) {
-            if (isset($query[$filter->getField()])) {
-                $filterQuery[$filter->getField()] = $query[$filter->getField()];
+            $field = $filter->getField();
+            if (isset($query[$field])) {
+                $filterQuery[$field] = $query[$field];
             }
         }
 

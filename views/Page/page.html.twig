@@ -75,8 +75,8 @@
     <div class="input-group">
       {% if visualFilters %}
         <div class="form-control udashboard-visual-search"
-          data-definition="{{ visualFilters|udashboardFilterDefinition()|e }}"
-          data-query="{{ visualFilters|udashboardFilterQuery(query.all)|e }}">
+          data-definition="{{ visualFilters|udashboard_filter_definition|e }}"
+          data-query="{{ visualFilters|udashboard_filter_query(query.all)|e }}">
         </div>
       {% else %}
         <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ query.searchParameter }}"
