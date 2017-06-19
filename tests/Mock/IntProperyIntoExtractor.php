@@ -27,6 +27,7 @@ class IntProperyIntoExtractor implements PropertyInfoExtractorInterface
     {
         return [
             'type',
+            'thousands',
             'title',
             'id',
             'name',
@@ -56,9 +57,14 @@ class IntProperyIntoExtractor implements PropertyInfoExtractorInterface
         }
 
         switch ($property) {
+            case 'id':
+                return [new Type(Type::BUILTIN_TYPE_INT, false)];
+
+            case 'thousands':
+                return [new Type(Type::BUILTIN_TYPE_ARRAY, false, null, true, null, new Type(Type::BUILTIN_TYPE_INT, false))];
+
             case 'type':
             case 'title':
-            case 'id':
             case 'name':
                 return [new Type(Type::BUILTIN_TYPE_STRING, false)];
 

@@ -11,10 +11,12 @@ class IntItem
     {
         $this->id = $this->title = $this->name = $value;
         $this->created = $this->changed = (new \DateTime())->format('Y-m-d H:i:s');
+        $this->thousands = [$this->id - 1000, $this->id + 1000];
     }
 
     public $type = "Integer";
     public $id;
+    public $thousands = [];
     public $title;
     public $isPublished = true;
     public $name;

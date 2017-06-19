@@ -8,6 +8,7 @@ use MakinaCorpus\Dashboard\Page\PageView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
+use Symfony\Component\PropertyInfo\Type;
 
 /**
  * Display pages, considering that 'page' is a variable that points to a
@@ -93,6 +94,70 @@ class PageExtension extends \Twig_Extension
         return $ret;
     }
 
+    private function renderInt($value, array $options = [])
+    {
+        // @todo thousand separator as options
+        return 'INT';
+    }
+
+    private function renderFloat($value, array $options = [])
+    {
+        // @todo decimals as options, thousand separator as options, round as option
+        return 'FLOAT';
+    }
+
+    private function renderBool($value, array $options = [])
+    {
+        // @todo labels as options, else use translator
+        return 'BOOL';
+    }
+
+    private function renderString($value, array $options = [])
+    {
+        // @todo summary size as option
+        return 'STRING';
+    }
+
+    private function renderSingleValue(Type $type, $value, array $options = [])
+    {
+        switch ($type->getBuiltinType()) {
+
+            case Type::BUILTIN_TYPE_INT:
+                return $this->renderInt($value, $options);
+
+            case Type::BUILTIN_TYPE_FLOAT:
+                return $this->renderFloat($value, $options);
+
+            case Type::BUILTIN_TYPE_STRING:
+                return $this->renderString($value, $options);
+
+            case Type::BUILTIN_TYPE_BOOL:
+                return $this->renderBool($value, $options);
+
+            case Type::BUILTIN_TYPE_NULL:
+                return '';
+
+            default:
+                return self::RENDER_NOT_POSSIBLE;
+        }
+    }
+
+    private function renderValueCollection(Type $type, $values, array $options = [])
+    {
+        if (!$values instanceof \Traversable && !is_array($values)) {
+            return self::RENDER_NOT_POSSIBLE;
+        }
+
+        // @todo iterate and render
+        // @todo separator as option
+        $ret = [];
+        foreach ($values as $value) {
+            $ret[] = $this->renderSingleValue($type, $value, $options);
+        }
+
+        return implode(', ', $ret);
+    }
+
     /**
      * Render a single item property
      *
@@ -120,6 +185,29 @@ class PageExtension extends \Twig_Extension
         if (!$types) {
             return self::RENDER_NOT_POSSIBLE;
         }
+
+        // @todo would there be a way to handle mixed types (more than one type)?
+        // OK just take the very first, mixed types is a bad idea overall
+        foreach ($types as $type) {
+
+            $builtin = $type->getBuiltinType();
+            $class = $type->getClassName();
+
+            if ($type->isCollection() || Type::BUILTIN_TYPE_ARRAY === $builtin) {
+                // @todo use propertyaccessor to fetch value
+                return $this->renderValueCollection($type, null);
+            }
+
+            if (Type::BUILTIN_TYPE_OBJECT === $builtin) {
+                // @todo allow per class specific/custom/user-driven
+                //   implementation for display
+                return self::RENDER_NOT_POSSIBLE;
+            }
+
+            // @todo use propertyaccessor to fetch value
+            return $this->renderSingleValue($type, null);
+        }
+
 
         return "got something...";
     }
