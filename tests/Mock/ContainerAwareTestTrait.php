@@ -6,6 +6,7 @@ use MakinaCorpus\Dashboard\Action\ActionRegistry;
 use MakinaCorpus\Dashboard\DependencyInjection\Compiler\ActionProviderRegisterPass;
 use MakinaCorpus\Dashboard\DependencyInjection\Compiler\PageDefinitionRegisterPass;
 use MakinaCorpus\Dashboard\Page\PageBuilderFactory;
+use MakinaCorpus\Dashboard\Twig\ActionExtension;
 use MakinaCorpus\Dashboard\Twig\PageExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -59,12 +60,18 @@ trait ContainerAwareTestTrait
     /**
      * Create a twig environment with the bare minimum we need
      *
+     * This is public because of the container factory
+     *
+     * @param ActionRegistry $actionRegistry
+     *
      * @return \Twig_Environment
      */
-    private function createTwigEnv()
+    public function createTwigEnv(ActionRegistry $actionRegistry = null)
     {
         $twigEnv = new \Twig_Environment(
             new \Twig_Loader_Array([
+                'module:udashboard:views/Action/action-single.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Action/action-single.html.twig'),
+                'module:udashboard:views/Action/actions.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Action/actions.html.twig'),
                 'module:udashboard:views/Page/page-dynamic-table.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-dynamic-table.html.twig'),
                 'module:udashboard:views/Page/page-grid.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-grid.html.twig'),
                 'module:udashboard:views/Page/page.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page.html.twig'),
@@ -91,9 +98,6 @@ trait ContainerAwareTestTrait
         $twigEnv->addFunction(new \Twig_SimpleFunction('form_rest', function () {
             return 'FORM_REST';
         }));
-        $twigEnv->addFunction(new \Twig_SimpleFunction('udashboard_actions', function () {
-            return 'ACTIONS';
-        }));
         $twigEnv->addFilter(new \Twig_SimpleFilter('trans', function ($string, $params = []) {
             return strtr($string, $params);
         }));
@@ -105,6 +109,13 @@ trait ContainerAwareTestTrait
         }));
 
         $twigEnv->addExtension(new PageExtension(new RequestStack(), $this->createPropertyAccessor(), $this->createPropertyInfoExtractor()));
+        if ($actionRegistry) {
+            $twigEnv->addExtension(new ActionExtension($actionRegistry));
+        } else {
+            $twigEnv->addFunction(new \Twig_SimpleFunction('udashboard_actions', function () {
+                return 'ACTIONS';
+            }));
+        }
 
         return $twigEnv;
     }
@@ -131,20 +142,47 @@ trait ContainerAwareTestTrait
     private function createContainerWithPageDefinitions()
     {
         $container = new ContainerBuilder();
+
         $container->addDefinitions([
             'event_dispatcher' => (new Definition())
                 ->setClass(EventDispatcher::class)
                 ->setPublic(true)
         ]);
+
+        // Action
         $container->addDefinitions([
             'udashboard.action_provider_registry' => (new Definition())
                 ->setClass(ActionRegistry::class)
                 ->setPublic(true)
         ]);
         $container->addDefinitions([
+            'udashboard.action_provider_int' => (new Definition())
+                ->setClass(IntActionProvider::class)
+                ->addTag('udashboard.action_provider')
+                ->setPublic(true)
+        ]);
+        $container->addCompilerPass(new ActionProviderRegisterPass());
+
+        // Twig
+        $container->addDefinitions([
+            'twig' => (new Definition())
+                ->setClass(\Twig_Environment::class)
+                ->setPublic(true)
+                ->addArgument(new Reference('udashboard.action_provider_registry'))
+                ->setFactory([$this, 'createTwigEnv'])
+        ]);
+
+        // Page
+        $container->addDefinitions([
             'udashboard.page_builder_factory' => (new Definition())
                 ->setClass(PageBuilderFactory::class)
-                ->setArguments([new Reference('service_container'), $this->createFormFactory(), new Reference('udashboard.action_provider_registry'), $this->createTwigEnv(), new Reference('event_dispatcher')])
+                ->setArguments([
+                    new Reference('service_container'),
+                    $this->createFormFactory(),
+                    new Reference('udashboard.action_provider_registry'),
+                    new Reference('twig'),
+                    new Reference('event_dispatcher'),
+                ])
                 ->setPublic(true)
         ]);
         $container->addDefinitions([
@@ -158,7 +196,6 @@ trait ContainerAwareTestTrait
                 ->setClass(IntArrayDatasource::class)
                 ->setPublic(true)
         ]);
-        $container->addCompilerPass(new ActionProviderRegisterPass());
         $container->addCompilerPass(new PageDefinitionRegisterPass());
 
         return $container;

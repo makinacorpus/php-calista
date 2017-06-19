@@ -148,6 +148,10 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testDynamicTablePageTemplate()
     {
+        // We will test the action extension at the same time
+        $container = $this->createContainerWithPageDefinitions();
+        $container->compile();
+
         $request = new Request([
             'odd_or_even' => 'odd',
             'page' => 3,
@@ -157,7 +161,7 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
 
         $configuration = new Configuration(['limit_default' => 7]);
 
-        $pageBuilder = new PageBuilder($this->createTwigEnv(), new EventDispatcher());
+        $pageBuilder = new PageBuilder($container->get('twig'), new EventDispatcher());
         $pageBuilder
             ->setDatasource(new IntArrayDatasource())
             ->setAllowedTemplates([

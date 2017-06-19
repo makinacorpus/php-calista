@@ -3,15 +3,15 @@
   <div class="btn-group udashboard-actions" role="group" aria-label="actions">
     {% if primary %}
       {% for group in primary %}
-        {% for link in group %}
-          <a href="{{ url(link.href, link.options) }}"{{ link.options.attributes|attributes }}>
-            {% if link.icon %}
-              <span class="glyphicon glyphicon-{{ link.icon }}" aria-hidden="true"></span>
+        {% for action in group %}
+          <a href="{{ path(action.route, action.routeParameters) }}" class="btn btn-default">
+            {% if action.icon %}
+              <span class="glyphicon glyphicon-{{ action.icon }}" aria-hidden="true"></span>
             {% endif %}
-            {% if link.icon and not show_title %}
-              <span class="sr-only">{{ link.title }}</span>
+            {% if action.icon and not show_title %}
+              <span class="sr-only">{{ action.title }}</span>
             {% else %}
-              {{ link.title }}
+              {{ action.title }}
             {% endif %}
           </a>
         {% endfor %}
@@ -42,13 +42,13 @@
             {% if sep %}
               <li role="separator" class="divider"></li>
             {% endif %}
-            {% for link in group %}
+            {% for action in group %}
               <li>
-                <a href="{{ url(link.href, link.options) }}"{{ link.options.attributes|attributes }}>
-                  {% if link.icon %}
-                    <span class="glyphicon glyphicon-{{ link.icon }}" aria-hidden="true"></span>
+                <a href="{{ path(action.route, action.routeParameters) }}" class="btn btn-default">
+                  {% if action.icon %}
+                    <span class="glyphicon glyphicon-{{ action.icon }}" aria-hidden="true"></span>
                   {% endif %}
-                  {{ link.title }}
+                  {{ action.title }}
                 </a>
               </li>
             {% endfor %}

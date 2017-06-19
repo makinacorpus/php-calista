@@ -186,7 +186,7 @@ class Action
      *   only missing the 'query' key, query must be fetched calling the
      *   getRouteParameters() method.
      */
-    public function getDrupalLinkOptions()
+    public function getOptions()
     {
         return $this->linkOptions;
     }

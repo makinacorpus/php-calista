@@ -3,6 +3,7 @@
  * µDashboard - Dashboard and fioritures.
  */
 
+use MakinaCorpus\Dashboard\Action\Action;
 use MakinaCorpus\Dashboard\Drupal\Controller\ActionProcessorController;
 use MakinaCorpus\Dashboard\Drupal\Controller\AjaxPageController;
 
@@ -449,24 +450,6 @@ function udashboard_drupal_goto_alter(&$path, &$options, &$http_response_code) {
  */
 function udashboard_theme() {
   return [
-    'udashboard_actions' => [
-      'variables' => [
-        'item'        => null,
-        'actions'     => [],
-        'mode'        => 'link',
-        'title'       => '',
-        'icon'        => null,
-        'show_title'  => false,
-      ],
-      'template'  => 'views/udashboard-actions',
-    ],
-    'udashboard_action_single' => [
-      'variables' => [
-        'action'      => null,
-        'show_title'  => false,
-      ],
-      'template'  => 'views/udashboard-action-single',
-    ],
     'udashboard_context' => [
       'variables' => [
         'tabs'        => [],
@@ -499,7 +482,7 @@ function udashboard_page_build(&$page) {
 
     $actions = [];
     foreach ($context->getActions() as $data) {
-      if (is_array($data['actions']) && count($data['actions']) && reset($data['actions']) instanceof \MakinaCorpus\Dashboard\Drupal\Action\Action) {
+      if (is_array($data['actions']) && count($data['actions']) && reset($data['actions']) instanceof Action) {
         $actions[] = [
           '#theme'      => 'udashboard_actions',
           '#actions'    => $data['actions'],
@@ -553,103 +536,6 @@ function udashboard_page_build(&$page) {
       ],
     ];
   }
-}
-
-/**
- * Render item actions.
- *
- * @param array $variables
- */
-function template_preprocess_udashboard_actions(&$variables) {
-  // Clean title that may be === 0
-  if (empty($variables['title'])) {
-    $variables['title'] = '';
-  }
-  if (empty($variables['icon'])) {
-    $variables['icon'] = '';
-  }
-  if (!isset($variables['show_title'])) {
-    $variables['show_title'] = empty($variables['icon']);
-  }
-
-  foreach ($variables['actions'] as $key => $action) {
-    /** @var $action \MakinaCorpus\Dashboard\Drupal\Action\Action */
-    // Remove actions for which the path is the same.
-    if (current_path() === $action->getURI()) {
-      continue;
-    }
-    if ($action->isPrimary()) {
-      $target = 'primary';
-    } else {
-      $target = 'secondary';
-    }
-
-    $item = [];
-    $item['separator'] = false;
-    $item['options']  = $action->getLinkOptions();
-    $item['options'] += ['attributes' => []];
-    if (isset($item['options']['attributes']['class'])) {
-      $item['options']['attributes']['class'] = implode(' ', $item['options']['attributes']['class']);
-    } else {
-      $item['options']['attributes']['class'] = '';
-    }
-    if ('primary' === $target) {
-      $item['options']['attributes']['class'] .= ' btn btn-default';
-    }
-    $item['title']    = $action->getTitle();
-    $item['href']     = $action->getURI();
-    $item['priority'] = $action->getPriority();
-    $item['icon']     = $action->getIcon();
-
-    $variables[$target][$action->getGroup()][$key] = $item;
-  }
-
-  foreach (['primary', 'secondary'] as $target) {
-    if (isset($variables[$target])) {
-      foreach ($variables[$target] as &$group) {
-        usort($group, function ($a, $b) {
-          return $a['priority'] - $b['priority'];
-        });
-      }
-    } else {
-      $variables[$target] = [];
-    }
-  }
-
-  if ($variables['mode']) {
-    $variables['mode'] === 'icon';
-  }
-}
-
-/**
- * Render a single item action.
- *
- * @param array $variables
- */
-function template_preprocess_udashboard_action_single(&$variables) {
-  // Clean title that may be === 0
-  if (!isset($variables['show_title'])) {
-    $variables['show_title'] = empty($variables['icon']);
-  }
-
-  /** @var $action \MakinaCorpus\Dashboard\Drupal\Action\Action */
-  $action = $variables['action'];
-
-  $item = [];
-  $item['options'] = $action->getLinkOptions();
-  $item['options'] += ['attributes' => []];
-  if (isset($item['options']['attributes']['class'])) {
-    $item['options']['attributes']['class'] = implode(' ', $item['options']['attributes']['class']);
-  } else {
-    $item['options']['attributes']['class'] = '';
-  }
-  $item['options']['attributes']['class'] .= ' btn btn-default';
-  $item['title']    = $action->getTitle();
-  $item['href']     = $action->getURI();
-  $item['priority'] = $action->getPriority();
-  $item['icon']     = $action->getIcon();
-
-  $variables['link'] = $item;
 }
 
 /**
