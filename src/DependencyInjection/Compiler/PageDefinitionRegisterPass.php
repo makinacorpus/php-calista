@@ -30,9 +30,11 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
             $class = $container->getParameterBag()->resolveValue($def->getClass());
             $refClass = new \ReflectionClass($class);
 
+            // @codeCoverageIgnoreStart
             if (!$refClass->implementsInterface(PageDefinitionInterface::class)) {
                 throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, PageDefinitionInterface::class));
             }
+            // @codeCoverageIgnoreEnd
 
             if (empty($attributes[0]['id'])) {
                 $typeId = $def->getClass();

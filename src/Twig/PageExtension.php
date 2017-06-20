@@ -3,6 +3,7 @@
 namespace MakinaCorpus\Dashboard\Twig;
 
 use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\Page\Filter;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageView;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -27,6 +28,7 @@ class PageExtension extends \Twig_Extension
      */
     const RENDER_NOT_POSSIBLE = '<em>N/A</em>';
 
+    private $debug = false;
     private $propertyAccess;
     private $propertyInfo;
     private $requestStack;
@@ -35,12 +37,16 @@ class PageExtension extends \Twig_Extension
      * Default constructor
      *
      * @param RequestStack $requestStack
+     * @param PropertyAccessor $propertyAccess
+     * @param PropertyInfoExtractorInterface $propertyInfo
+     * @param bool $debug
      */
-    public function __construct(RequestStack $requestStack, PropertyAccessor $propertyAccess, PropertyInfoExtractorInterface $propertyInfo)
+    public function __construct(RequestStack $requestStack, PropertyAccessor $propertyAccess, PropertyInfoExtractorInterface $propertyInfo, $debug = false)
     {
         $this->propertyAccess = $propertyAccess;
         $this->propertyInfo = $propertyInfo;
         $this->requestStack = $requestStack;
+        $this->debug = $debug;
     }
 
     /**
@@ -78,7 +84,9 @@ class PageExtension extends \Twig_Extension
         $ret = [];
 
         if (!$class || !class_exists($class)) {
-            // @todo Raise exception?
+            if ($this->debug) {
+                throw new PropertyTypeError("Class '%s' does not exists", $class);
+            }
             return $ret;
         }
 
@@ -94,22 +102,50 @@ class PageExtension extends \Twig_Extension
         return $ret;
     }
 
+    /**
+     * Render an integer value
+     */
     private function renderInt($value, array $options = [])
     {
         return number_format($value, 0, '.', $options['thousand_separator']);
     }
 
+    /**
+     * Render a float value
+     */
     private function renderFloat($value, array $options = [])
     {
         return number_format($value, $options['decimal_precision'], $options['decimal_separator'], $options['thousand_separator']);
     }
 
+    /**
+     * Render a boolean value
+     */
     private function renderBool($value, array $options = [])
     {
-        // @todo labels as options, else use translator
-        return 'BOOL';
+        if ($options['bool_as_int']) {
+            return $value ? "1" : "0";
+        }
+
+        if ($value) {
+            if ($options['bool_value_true']) {
+                return $options['bool_value_true'];
+            }
+
+            return "true"; // @todo translate
+
+        } else {
+            if ($options['bool_value_false']) {
+                return $options['bool_value_false'];
+            }
+
+            return "false"; // @todo translate
+        }
     }
 
+    /**
+     * Render a string value
+     */
     private function renderString($value, array $options = [])
     {
         $value = strip_tags($value);
@@ -129,6 +165,9 @@ class PageExtension extends \Twig_Extension
         return $value;
     }
 
+    /**
+     * Render a single value
+     */
     private function renderSingleValue(Type $type, $value, array $options = [])
     {
         switch ($type->getBuiltinType()) {
@@ -153,20 +192,24 @@ class PageExtension extends \Twig_Extension
         }
     }
 
+    /**
+     * Render a collection of values
+     */
     private function renderValueCollection(Type $type, $values, array $options = [])
     {
         if (!$values instanceof \Traversable && !is_array($values)) {
+            if ($this->debug) {
+                throw new PropertyTypeError("Collection value is not a \Traversable nor an array");
+            }
             return self::RENDER_NOT_POSSIBLE;
         }
 
-        // @todo iterate and render
-        // @todo separator as option
         $ret = [];
         foreach ($values as $value) {
             $ret[] = $this->renderSingleValue($type->getCollectionValueType(), $value, $options);
         }
 
-        return implode(', ', $ret);
+        return implode($options['collection_separator'], $ret);
     }
 
     /**
@@ -176,13 +219,17 @@ class PageExtension extends \Twig_Extension
      *   Item on which to find the property
      * @param string $propery
      *   Property name
+     * @param mixed[] $options
+     *   Display options for the property
      *
      * @return string
      */
-    public function renderItemProperty($item, $property)
+    public function renderItemProperty($item, $property, array $options = [])
     {
         if (!is_object($item)) {
-            // @todo Raise exception?
+            if ($this->debug) {
+                throw new PropertyTypeError(sprintf("Item is not an object %s found instead while rendering the '%s' property", gettype($item), $property));
+            }
             return self::RENDER_NOT_POSSIBLE;
         }
 
@@ -205,11 +252,15 @@ class PageExtension extends \Twig_Extension
         //      - options per class and type, where?
         //      - options per class and propery, where?
         $options = [
-            'thousand_separator'  => '&nbsp;',
-            'decimal_separator'   => ',',
-            'decimal_precision'   => 2,
-            'string_maxlength'    => 3,
-            'string_ellipsis'     => true,
+            'bool_as_int'           => false,
+            'bool_value_false'      => "Non",
+            'bool_value_true'       => "Oui",
+            'collection_separator'  => ', ',
+            'decimal_precision'     => 2,
+            'decimal_separator'     => ',',
+            'string_ellipsis'       => true,
+            'string_maxlength'      => 3,
+            'thousand_separator'    => '&nbsp;',
         ];
 
         // @todo would there be a way to handle mixed types (more than one type)?
@@ -233,7 +284,7 @@ class PageExtension extends \Twig_Extension
 
             $value = $this->propertyAccess->getValue($item, $property);
 
-            return $this->renderSingleValue($type, $value);
+            return $this->renderSingleValue($type, $value, $options);
         }
     }
 
@@ -299,7 +350,8 @@ class PageExtension extends \Twig_Extension
     /**
      * Return a JSON encoded representing the filter definition
      *
-     * @param \MakinaCorpus\Dashboard\Page\Filter[] $filters
+     * @param Filter[] $filters
+     *
      * @return string
      */
     public function getfilterDefinition($filters)
@@ -321,8 +373,9 @@ class PageExtension extends \Twig_Extension
     /**
      * Return a JSON encoded representing the initial filter query
      *
-     * @param \MakinaCorpus\Dashboard\Page\Filter[] $filters
+     * @param Filter[] $filters
      * @param string[] $query
+     *
      * @return string
      */
     public function getFilterQuery($filters, $query)

@@ -29,9 +29,11 @@ class ActionProviderRegisterPass implements CompilerPassInterface
             $class = $container->getParameterBag()->resolveValue($def->getClass());
             $refClass = new \ReflectionClass($class);
 
+            // @codeCoverageIgnoreStart
             if (!$refClass->implementsInterface(ActionProviderInterface::class)) {
                 throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, ActionProviderInterface::class));
             }
+            // @codeCoverageIgnoreEnd
 
             $definition->addMethodCall('register', [new Reference($id)]);
         }

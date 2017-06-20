@@ -15,8 +15,35 @@ class IntProperyIntoExtractor implements PropertyInfoExtractorInterface
      */
     public function getShortDescription($class, $property, array $context = [])
     {
-        if (IntItem::class === $class) {
-            return "Integer";
+        if (IntItem::class !== $class) {
+            return;
+        }
+
+        switch ($property) {
+
+            case 'id':
+                return "Id";
+
+            case 'thousands':
+                return "Stupid range";
+
+            case 'type':
+                return "Type";
+
+            case 'title':
+                return "Titre";
+
+            case 'name':
+                return "Name";
+
+            case 'isPublished':
+                return "Is published";
+
+            case 'changed':
+                return "Updated at";
+
+            case 'created':
+                return "Created at";
         }
     }
 
@@ -57,6 +84,7 @@ class IntProperyIntoExtractor implements PropertyInfoExtractorInterface
         }
 
         switch ($property) {
+
             case 'id':
                 return [new Type(Type::BUILTIN_TYPE_INT, false)];
 

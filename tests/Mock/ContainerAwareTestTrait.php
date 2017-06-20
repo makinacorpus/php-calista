@@ -108,7 +108,7 @@ trait ContainerAwareTestTrait
             return (string)$value;
         }));
 
-        $twigEnv->addExtension(new PageExtension(new RequestStack(), $this->createPropertyAccessor(), $this->createPropertyInfoExtractor()));
+        $twigEnv->addExtension(new PageExtension(new RequestStack(), $this->createPropertyAccessor(), $this->createPropertyInfoExtractor(), true));
         if ($actionRegistry) {
             $twigEnv->addExtension(new ActionExtension($actionRegistry));
         } else {
