@@ -96,14 +96,12 @@ class PageExtension extends \Twig_Extension
 
     private function renderInt($value, array $options = [])
     {
-        // @todo thousand separator as options
-        return 'INT';
+        return number_format($value, 0, '.', $options['thousand_separator']);
     }
 
     private function renderFloat($value, array $options = [])
     {
-        // @todo decimals as options, thousand separator as options, round as option
-        return 'FLOAT';
+        return number_format($value, $options['decimal_precision'], $options['decimal_separator'], $options['thousand_separator']);
     }
 
     private function renderBool($value, array $options = [])
@@ -114,8 +112,21 @@ class PageExtension extends \Twig_Extension
 
     private function renderString($value, array $options = [])
     {
-        // @todo summary size as option
-        return 'STRING';
+        $value = strip_tags($value);
+
+        if (strlen($value) > $options['string_maxlength']) {
+            $value = substr($value, 0, $options['string_maxlength']);
+
+            if ($options['string_ellipsis']) {
+                if (is_string($options['string_ellipsis'])) {
+                    $value .= $options['string_ellipsis'];
+                } else {
+                    $value .= '...';
+                }
+            }
+        }
+
+        return $value;
     }
 
     private function renderSingleValue(Type $type, $value, array $options = [])
@@ -152,7 +163,7 @@ class PageExtension extends \Twig_Extension
         // @todo separator as option
         $ret = [];
         foreach ($values as $value) {
-            $ret[] = $this->renderSingleValue($type, $value, $options);
+            $ret[] = $this->renderSingleValue($type->getCollectionValueType(), $value, $options);
         }
 
         return implode(', ', $ret);
@@ -186,6 +197,21 @@ class PageExtension extends \Twig_Extension
             return self::RENDER_NOT_POSSIBLE;
         }
 
+        // @todo dynamize this
+        //   for example:
+        //      - options in a specific yml file?
+        //      - options in parameters?
+        //      - global options per type, where?
+        //      - options per class and type, where?
+        //      - options per class and propery, where?
+        $options = [
+            'thousand_separator'  => '&nbsp;',
+            'decimal_separator'   => ',',
+            'decimal_precision'   => 2,
+            'string_maxlength'    => 3,
+            'string_ellipsis'     => true,
+        ];
+
         // @todo would there be a way to handle mixed types (more than one type)?
         // OK just take the very first, mixed types is a bad idea overall
         foreach ($types as $type) {
@@ -194,8 +220,9 @@ class PageExtension extends \Twig_Extension
             $class = $type->getClassName();
 
             if ($type->isCollection() || Type::BUILTIN_TYPE_ARRAY === $builtin) {
-                // @todo use propertyaccessor to fetch value
-                return $this->renderValueCollection($type, null);
+                $values = $this->propertyAccess->getValue($item, $property);
+
+                return $this->renderValueCollection($type, $values, $options);
             }
 
             if (Type::BUILTIN_TYPE_OBJECT === $builtin) {
@@ -204,12 +231,10 @@ class PageExtension extends \Twig_Extension
                 return self::RENDER_NOT_POSSIBLE;
             }
 
-            // @todo use propertyaccessor to fetch value
-            return $this->renderSingleValue($type, null);
+            $value = $this->propertyAccess->getValue($item, $property);
+
+            return $this->renderSingleValue($type, $value);
         }
-
-
-        return "got something...";
     }
 
     /**
