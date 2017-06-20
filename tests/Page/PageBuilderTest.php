@@ -192,7 +192,7 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
                 'odd_or_even'   => 'even',
             ],
             'configuration'     => [
-                'limit_default' => 7,
+                'limit_default' => "7",
                 'limit_allowed' => false,
             ],
             'datasource'        => '_test_datasource',

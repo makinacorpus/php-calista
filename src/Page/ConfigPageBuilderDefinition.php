@@ -73,10 +73,10 @@ class ConfigPageBuilderDefinition implements PageDefinitionInterface
         $resolver->setAllowedTypes('disabled_sorts', ['array']);
         $resolver->setAllowedTypes('enabled_filters', ['array']);
         $resolver->setAllowedTypes('disabled_filters', ['array']);
-        $resolver->setAllowedTypes('show_filters', ['int', 'bool']);
-        $resolver->setAllowedTypes('show_pager', ['int', 'bool']);
-        $resolver->setAllowedTypes('show_search', ['int', 'bool']);
-        $resolver->setAllowedTypes('show_sort', ['int', 'bool']);
+        $resolver->setAllowedTypes('show_filters', ['numeric', 'bool']);
+        $resolver->setAllowedTypes('show_pager', ['numeric', 'bool']);
+        $resolver->setAllowedTypes('show_search', ['numeric', 'bool']);
+        $resolver->setAllowedTypes('show_sort', ['numeric', 'bool']);
         $resolver->setAllowedTypes('templates', ['array']);
     }
 

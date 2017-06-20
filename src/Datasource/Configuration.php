@@ -51,14 +51,14 @@ class Configuration
         ]);
 
         $resolver->setAllowedTypes('display_param', ['string']);
-        $resolver->setAllowedTypes('limit_allowed', ['int', 'bool']);
-        $resolver->setAllowedTypes('limit_default', ['int']);
+        $resolver->setAllowedTypes('limit_allowed', ['numeric', 'bool']);
+        $resolver->setAllowedTypes('limit_default', ['numeric']);
         $resolver->setAllowedTypes('limit_param', ['string']);
-        $resolver->setAllowedTypes('pager_element', ['int']);
-        $resolver->setAllowedTypes('pager_enable', ['int', 'bool']);
+        $resolver->setAllowedTypes('pager_element', ['numeric']);
+        $resolver->setAllowedTypes('pager_enable', ['numeric', 'bool']);
         $resolver->setAllowedTypes('pager_param', ['string']);
-        $resolver->setAllowedTypes('search_enable', ['int', 'bool']);
-        $resolver->setAllowedTypes('search_parse', ['int', 'bool']);
+        $resolver->setAllowedTypes('search_enable', ['numeric', 'bool']);
+        $resolver->setAllowedTypes('search_parse', ['numeric', 'bool']);
         $resolver->setAllowedTypes('search_param', ['string']);
         $resolver->setAllowedTypes('sort_field_param', ['string']);
         $resolver->setAllowedTypes('sort_order_param', ['string']);
