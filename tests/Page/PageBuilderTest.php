@@ -4,6 +4,7 @@ namespace MakinaCorpus\Dashboard\Tests\Page;
 
 use MakinaCorpus\Dashboard\Datasource\Configuration;
 use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\Page\ConfigPageBuilderDefinition;
 use MakinaCorpus\Dashboard\Page\FormPageBuilder;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageResult;
@@ -172,6 +173,52 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
             ->enableFilter('odd_or_even')
             ->enableVisualFilter('mod3')
         ;
+
+        // Build a page, for fun
+        echo $rendered = $pageBuilder->searchAndRender($request);
+    }
+
+    /**
+     * Tests basics
+     */
+    public function testConfigPageBuilder()
+    {
+        // We will test the action extension at the same time
+        $container = $this->createContainerWithPageDefinitions();
+        $container->compile();
+
+        $definition = new ConfigPageBuilderDefinition([
+            'base_query'        => [
+                'odd_or_even'   => 'even',
+            ],
+            'configuration'     => [
+                'limit_default' => 7,
+                'limit_allowed' => false,
+            ],
+            'datasource'        => '_test_datasource',
+            'default_display'   => 'page',
+            'disabled_sorts'    => [],
+            'disabled_filters'  => ['odd_or_even'],
+            'enabled_filters'   => ['mod3'],
+            'show_filters'      => true,
+            'show_pager'        => false,
+            'show_search'       => true,
+            'show_sort'         => false,
+            'templates'         => [
+                'page'          => 'module:udashboard:views/Page/page-dynamic-table.html.twig'
+            ],
+        ]);
+        $definition->setContainer($container);
+
+        $request = new Request([
+            'mod3' => 1,
+            'page' => 1,
+            'st' => 'value',
+            'by' => Query::SORT_DESC,
+        ], [], ['_route' => '_test_route']);
+
+        $pageBuilder = new PageBuilder($container->get('twig'), new EventDispatcher());
+        $definition->build($pageBuilder, $definition->createConfiguration(), $request);
 
         // Build a page, for fun
         echo $rendered = $pageBuilder->searchAndRender($request);
