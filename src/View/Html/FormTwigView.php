@@ -320,7 +320,7 @@ class FormTwigView extends TwigView
     {
         // Fetch items
         // @todo find a better way, this will run the query twice
-        $query = $this->createQuery($request);
+        $query = $this->getInputDefinition()->createQueryFromRequest($request);
         $datasource = $this->getDatasource();
         $datasource->init($query);
         $items = $datasource->getItems($query);

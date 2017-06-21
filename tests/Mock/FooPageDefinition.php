@@ -3,15 +3,14 @@
 namespace MakinaCorpus\Dashboard\Tests\Mock;
 
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
-use MakinaCorpus\Dashboard\Page\PageDefinitionInterface;
+use MakinaCorpus\Dashboard\DependencyInjection\AbstractPageDefinition;
 use MakinaCorpus\Dashboard\View\Html\TwigView;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Tests page definition and page builder factory
+ * Tests page definition and page definition factory
  */
-class FooPageDefinition implements PageDefinitionInterface
+class FooPageDefinition extends AbstractPageDefinition
 {
     private $datasource;
 
@@ -23,7 +22,7 @@ class FooPageDefinition implements PageDefinitionInterface
     /**
      * {@inheritdoc}
      */
-    public function createInputDefinition(array $options = [])
+    public function getInputDefinition(array $options = [])
     {
         return new InputDefinition($this->datasource, array_merge($options, [
             'limit_allowed' => true,
@@ -36,19 +35,22 @@ class FooPageDefinition implements PageDefinitionInterface
     /**
      * {@inheritdoc}
      */
-    public function build(TwigView $view, InputDefinition $inputDefinition, Request $request)
+    public function getViewDefinition()
     {
-        $viewDefinition = new ViewDefinition([
+        return new ViewDefinition([
             'default_display' => 'default',
             'templates' => [
                 'default' => 'module:udashboard:views/Page/page.html.twig',
             ],
+            'view_type' => 'twig_page',
         ]);
+    }
 
-        $view
-            ->setInputDefinition($inputDefinition)
-            ->setViewDefinition($viewDefinition)
-            ->setDatasource($this->datasource)
-        ;
+    /**
+     * {@inheritdoc}
+     */
+    public function getDatasource()
+    {
+        return $this->datasource;
     }
 }

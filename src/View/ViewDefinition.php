@@ -42,7 +42,10 @@ class ViewDefinition
             'show_search'       => false,
             'show_sort'         => false,
             'templates'         => [],
+            'view_type'         => '',
         ]);
+
+        $resolver->setRequired('view_type');
 
         $resolver->setAllowedTypes('default_display', ['string']);
         $resolver->setAllowedTypes('enabled_filters', ['array']);
@@ -51,6 +54,7 @@ class ViewDefinition
         $resolver->setAllowedTypes('show_search', ['numeric', 'bool']);
         $resolver->setAllowedTypes('show_sort', ['numeric', 'bool']);
         $resolver->setAllowedTypes('templates', ['array']);
+        $resolver->setAllowedTypes('view_type', ['string']);
     }
 
     /**
@@ -124,5 +128,15 @@ class ViewDefinition
     public function getTemplates()
     {
         return $this->options['templates'];
+    }
+
+    /**
+     * Get view type
+     *
+     * @return string
+     */
+    public function getViewType()
+    {
+        return $this->options['view_type'];
     }
 }

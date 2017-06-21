@@ -31,20 +31,6 @@ services:
     arguments: ['@request_stack']
     tags: [{name: twig.extension}]
 
-  # Default node datasource, this is registered as an example only, copy/paste
-  # and adapt this to declare your datasources.
-  udashboard.datasource.node_default:
-    public: false
-    class: MakinaCorpus\Dashboard\Drupal\Page\Node\DefaultNodeDatasource
-    arguments: ["@database", "@entity.manager"]
-
-  # Default node page builder, this is registered as an example only, copy/paste
-  # and adapt this to declare your page builders.
-  udashboard.page.node_default:
-    class: MakinaCorpus\Dashboard\Drupal\Page\Node\DefaultNodeAdminPage
-    arguments: ['@udashboard.datasource.node_default', false]
-    tags: [{name: udashboard.view, id: 'node.default'}]
-
   udashboard.twig_view_event_subscriber:
     class: MakinaCorpus\Dashboard\Drupal\Event\TwigViewEventSubscriber
     tags: [{name: event_subscriber}]

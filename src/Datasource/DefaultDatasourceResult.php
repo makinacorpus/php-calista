@@ -15,10 +15,12 @@ class DefaultDatasourceResult implements \IteratorAggregate, DatasourceResultInt
     /**
      * Default constructor
      *
+     * @param string $itemClass
      * @param array|\Traversable $items
      */
-    public function __construct($items)
+    public function __construct($itemClass, $items)
     {
+        $this->itemClass = $itemClass;
         $this->items = $items;
     }
 

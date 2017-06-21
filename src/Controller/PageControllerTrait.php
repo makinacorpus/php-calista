@@ -2,11 +2,16 @@
 
 namespace MakinaCorpus\Dashboard\Controller;
 
+use MakinaCorpus\Dashboard\DependencyInjection\ViewFactory;
 use MakinaCorpus\Dashboard\Util\AdminTable;
-use MakinaCorpus\Dashboard\View\ViewFactory;
+use MakinaCorpus\Dashboard\View\ViewInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Gives a few helper methods for retrieving page builders.
+ * Gives a few helper methods for retrieving and rendering views and pagess.
  */
 trait PageControllerTrait
 {
@@ -32,13 +37,90 @@ trait PageControllerTrait
     }
 
     /**
+     * Create datasource from request
+     *
+     * @param Request $request
+     *
+     * @return ViewInterface
+     */
+    protected function getViewOrDie(Request $request)
+    {
+        $pageId = $request->get('name');
+        $page = null;
+
+        if (!$pageId) {
+            throw new NotFoundHttpException('Not Found');
+        }
+
+        try {
+            $page = $this->getViewFactory()->getView($pageId);
+        } catch (\InvalidArgumentException $e) {
+            throw new NotFoundHttpException('Not Found', $e);
+        } catch (ServiceNotFoundException $e) {
+            throw new NotFoundHttpException('Not Found', $e);
+        }
+
+        return $page;
+    }
+
+    /**
      * Get page factory
      *
      * @return ViewFactory
      */
-    protected function getWidgetFactory()
+    protected function getViewFactory()
     {
         return $this->get('udashboard.view_factory');
+    }
+
+    /**
+     * Render a page from definition
+     *
+     * @param string $page
+     *   Page class or identifier
+     * @param Request $request
+     *   Incomming request
+     * @param array $inputOptions
+     *   Overrides for the input options
+     *
+     * @return string
+     */
+    protected function renderPage($name, Request $request, array $inputOptions = [])
+    {
+        $factory = $this->getViewFactory();
+        $page = $factory->getPageDefinition($name);
+        $viewDefinition = $page->getViewDefinition();
+        $view = $factory->getView($viewDefinition->getViewType());
+        $view->setViewDefinition($viewDefinition);
+
+        return $view->render($page->getDatasource(), $page->getInputDefinition($inputOptions)->createQueryFromRequest($request));
+    }
+
+    /**
+     * Render a page from definition
+     *
+     * Using a response for rendering is the right choice when you generate
+     * outputs with large datasets, it allows the view to control the response
+     * type hence use a streamed response whenever possible.
+     *
+     * @param string $page
+     *   Page class or identifier
+     * @param Request $request
+     *   Incomming request
+     * @param array $inputOptions
+     *   Overrides for the input options
+     *
+     * @return Response
+     */
+    protected function renderPageResponse($name, Request $request, array $inputOptions = [])
+    {
+        $factory = $this->getViewFactory();
+        $page = $factory->getPageDefinition($name);
+        $viewDefinition = $page->getViewDefinition();
+        $view = $factory->getView($viewDefinition->getViewType());
+        $view->setViewDefinition($viewDefinition);
+
+        return $view->renderAsResponse($page->getDatasource(), $page->getInputDefinition($inputOptions)->createQueryFromRequest($request));
     }
 
     /**

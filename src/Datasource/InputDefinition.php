@@ -4,6 +4,7 @@ namespace MakinaCorpus\Dashboard\Datasource;
 
 use MakinaCorpus\Dashboard\Error\ConfigurationError;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Input query definition and sanitizer
@@ -249,5 +250,29 @@ class InputDefinition
     public function getSortOrderParameter()
     {
         return $this->options['sort_order_param'];
+    }
+
+    /**
+     * Create query from array
+     *
+     * @param array $input
+     *
+     * @return Query
+     */
+    public function createQueryFromArray(array $input)
+    {
+        return (new QueryFactory())->fromArray($this, $input);
+    }
+
+    /**
+     * Create query from request
+     *
+     * @param Request $request
+     *
+     * @return Query
+     */
+    public function createQueryFromRequest(Request $request)
+    {
+        return (new QueryFactory())->fromRequest($this, $request);
     }
 }

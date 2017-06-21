@@ -2,7 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\DependencyInjection\Compiler;
 
-use MakinaCorpus\Dashboard\Page\PageDefinitionInterface;
+use MakinaCorpus\Dashboard\DependencyInjection\PageDefinitionInterface;
+use MakinaCorpus\Dashboard\View\ViewInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -23,7 +24,7 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
         $types = [];
 
         // Register custom action providers
-        $taggedServices = $container->findTaggedServiceIds('udashboard.view');
+        $taggedServices = $container->findTaggedServiceIds('udashboard.page_definition');
         foreach ($taggedServices as $id => $attributes) {
             $def = $container->getDefinition($id);
 
@@ -48,6 +49,36 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
 
         if ($types) {
             $definition->addMethodCall('registerPageDefinitions', [$types]);
+        }
+
+        $types = [];
+
+        // Register custom action providers
+        $taggedServices = $container->findTaggedServiceIds('udashboard.view');
+        foreach ($taggedServices as $id => $attributes) {
+            $def = $container->getDefinition($id);
+
+            $class = $container->getParameterBag()->resolveValue($def->getClass());
+            $refClass = new \ReflectionClass($class);
+
+            // @codeCoverageIgnoreStart
+            if (!$refClass->implementsInterface(ViewInterface::class)) {
+                throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, ViewInterface::class));
+            }
+            // @codeCoverageIgnoreEnd
+
+            if (empty($attributes[0]['id'])) {
+                $typeId = $def->getClass();
+            } else {
+                $typeId = $attributes[0]['id'];
+            }
+
+            $def->setShared(false);
+            $types[$typeId] = $id;
+        }
+
+        if ($types) {
+            $definition->addMethodCall('registerViews', [$types]);
         }
     }
 }

@@ -4,7 +4,6 @@ namespace MakinaCorpus\Dashboard\Twig;
 
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Page\Filter;
-use MakinaCorpus\Dashboard\View\Html\TwigView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
@@ -12,12 +11,6 @@ use Symfony\Component\PropertyInfo\Type;
 
 /**
  * Display pages, build views, gives us helpers for it
- *
- *   {{ udashboard_page(view) }}
- *
- * Which would be equivalent to:
- *
- *   {{ view.createView(app.request).render() }}
  */
 class PageExtension extends \Twig_Extension
 {
@@ -53,7 +46,6 @@ class PageExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('udashboard_page', [$this, 'renderPage'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('udashboard_item_definition', [$this, 'getItemDefinition'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('udashboard_item_property', [$this, 'renderItemProperty'], ['is_safe' => ['html']]),
         ];
@@ -284,19 +276,6 @@ class PageExtension extends \Twig_Extension
 
             return $this->renderSingleValue($type, $value, $options);
         }
-    }
-
-    /**
-     * Render page builder
-     *
-     * @param TwigView $view
-     *
-     * @return string
-     *   Rendered page
-     */
-    public function renderPage(TwigView $view)
-    {
-        return $view->createView($this->requestStack->getCurrentRequest())->render();
     }
 
     /**

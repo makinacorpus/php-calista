@@ -11,6 +11,17 @@ namespace MakinaCorpus\Dashboard\Datasource;
 interface DatasourceResultInterface extends \Traversable, \Countable
 {
     /**
+     * Get item class
+     *
+     * Item class will enable the ProperyInfo component usage over your objects.
+     * Whenever you have very specific classes you also should write your own
+     * property extractors.
+     *
+     * @return null|string
+     */
+    public function getItemClass();
+
+    /**
      * Can this datasource stream large datasets
      *
      * Most result iterators should never preload items, and should allow items

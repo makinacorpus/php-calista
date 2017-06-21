@@ -24,7 +24,6 @@
             <directory>./src</directory>
             <exclude>
                 <directory>./src/Drupal</directory>
-                <directory>./tests</directory>
                 <directory>./vendor</directory>
                 <directory>./views</directory>
             </exclude>

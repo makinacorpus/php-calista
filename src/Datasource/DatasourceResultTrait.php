@@ -14,6 +14,14 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     /**
      * {@inheritdoc}
      */
+    public function getItemClass()
+    {
+        return $this->itemClass;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function canStream()
     {
         return true;

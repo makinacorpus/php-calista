@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Tests the page builder
+ * Tests the AJAX controller
  */
 class ControllerTest extends \PHPUnit_Framework_TestCase
 {

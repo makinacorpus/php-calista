@@ -5,9 +5,10 @@ namespace MakinaCorpus\Dashboard\Tests\Mock;
 use MakinaCorpus\Dashboard\Action\ActionRegistry;
 use MakinaCorpus\Dashboard\DependencyInjection\Compiler\ActionProviderRegisterPass;
 use MakinaCorpus\Dashboard\DependencyInjection\Compiler\PageDefinitionRegisterPass;
+use MakinaCorpus\Dashboard\DependencyInjection\ViewFactory;
 use MakinaCorpus\Dashboard\Twig\ActionExtension;
 use MakinaCorpus\Dashboard\Twig\PageExtension;
-use MakinaCorpus\Dashboard\View\ViewFactory;
+use MakinaCorpus\Dashboard\View\Html\TwigView;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -172,31 +173,38 @@ trait ContainerAwareTestTrait
                 ->setFactory([$this, 'createTwigEnv'])
         ]);
 
-        // Page
+        // Views and pages factory
         $container->addDefinitions([
             'udashboard.view_factory' => (new Definition())
                 ->setClass(ViewFactory::class)
                 ->setArguments([
                     new Reference('service_container'),
-                    $this->createFormFactory(),
-                    new Reference('udashboard.action_provider_registry'),
-                    new Reference('twig'),
-                    new Reference('event_dispatcher'),
                 ])
                 ->setPublic(true)
         ]);
+        $container->addCompilerPass(new PageDefinitionRegisterPass());
+
+        // Views
+        $container->addDefinitions([
+            'udashboard.view.twig_page' => (new Definition())
+                ->setClass(TwigView::class)
+                ->setArguments([new Reference('twig'), new Reference('event_dispatcher')])
+                ->setPublic(true)
+                ->addTag('udashboard.view', ['id' => 'twig_page'])
+        ]);
+
+        // Pages
         $container->addDefinitions([
             '_test_view' => (new Definition())
                 ->setClass(FooPageDefinition::class)
                 ->setPublic(true)
-                ->addTag('udashboard.view', ['id' => 'int_array_page'])
+                ->addTag('udashboard.page_definition', ['id' => 'int_array_page'])
         ]);
         $container->addDefinitions([
             '_test_datasource' => (new Definition())
                 ->setClass(IntArrayDatasource::class)
                 ->setPublic(true)
         ]);
-        $container->addCompilerPass(new PageDefinitionRegisterPass());
 
         return $container;
     }

@@ -3,31 +3,24 @@
 namespace MakinaCorpus\Dashboard\View\Html;
 
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
-use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Datasource\QueryFactory;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
 use MakinaCorpus\Dashboard\Event\ViewEvent;
 use MakinaCorpus\Dashboard\Page\Link;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Dashboard\View\AbstractView;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Uses a view definition and proceed to an html page display via Twig
  */
-class TwigView
+class TwigView extends AbstractView
 {
     const EVENT_VIEW = 'view:view';
     const EVENT_SEARCH = 'view:search';
 
-    private $datasource;
     private $debug = false;
     private $dispatcher;
     private $id;
-    private $inputDefinition;
-    private $viewDefinition;
     private $twig;
 
     /**
@@ -61,112 +54,19 @@ class TwigView
     }
 
     /**
-     * Set input definition
-     *
-     * @param InputDefinition $inputDefinition
-     *
-     * @return $this
-     */
-    public function setInputDefinition(InputDefinition $inputDefinition)
-    {
-        if ($this->inputDefinition) {
-            throw new ConfigurationError("you are overriding an already set input configuration");
-        }
-
-        $this->inputDefinition = $inputDefinition;
-
-        return $this;
-    }
-
-    /**
-     * Get input definition
-     *
-     * @return InputDefinition
-     */
-    public function getInputDefinition()
-    {
-        if (!$this->inputDefinition) {
-            $this->inputDefinition = new InputDefinition($this->getDatasource());
-        }
-
-        return $this->inputDefinition;
-    }
-
-    /**
-     * Set configuration
-     *
-     * @param ViewDefinition $viewDefinition
-     *
-     * @return $this
-     */
-    public function setViewDefinition(ViewDefinition $viewDefinition)
-    {
-        if ($this->viewDefinition) {
-            throw new ConfigurationError("you are overriding an already set view definition");
-        }
-
-        $this->viewDefinition = $viewDefinition;
-
-        return $this;
-    }
-
-    /**
-     * Get view definition
-     *
-     * @return ViewDefinition
-     */
-    public function getViewDefinition()
-    {
-        if (!$this->viewDefinition) {
-            $this->viewDefinition = new ViewDefinition();
-        }
-
-        return $this->viewDefinition;
-    }
-
-    /**
-     * Set datasource
-     *
-     * @param DatasourceInterface $datasource
-     *
-     * @return $this
-     */
-    public function setDatasource(DatasourceInterface $datasource)
-    {
-        $this->datasource = $datasource;
-
-        return $this;
-    }
-
-    /**
-     * Get datasource
-     *
-     * @return DatasourceInterface
-     */
-    public function getDatasource()
-    {
-        if (!$this->datasource) {
-            throw new \LogicException("Cannot build page without a datasource.");
-        }
-
-        return $this->datasource;
-    }
-
-    /**
      * Get default template
      *
      * @return string
      */
     private function getDefaultTemplate()
     {
-        $viewDefinition = $this->getViewDefinition();
-        $templates = $viewDefinition->getTemplates();
+        $templates = $this->viewDefinition->getTemplates();
 
         if (empty($templates)) {
             throw new \InvalidArgumentException("page builder has no templates");
         }
 
-        $default = $viewDefinition->getDefaultDisplay();
+        $default = $this->viewDefinition->getDefaultDisplay();
         if (isset($templates[$default])) {
             return $templates[$default];
         }
@@ -192,7 +92,7 @@ class TwigView
             return $this->getDefaultTemplate();
         }
 
-        $templates = $this->getViewDefinition()->getTemplates();
+        $templates = $this->viewDefinition->getTemplates();
 
         if (!isset($templates[$displayName])) {
             if ($this->debug) {
@@ -216,73 +116,29 @@ class TwigView
      */
     public function getId()
     {
-        if (!$this->id) {
-            return null;
-        }
-
-        // @todo do better than that...
         return $this->id;
     }
 
     /**
-     * Shortcut for controllers
+     * Create template arguments
      *
-     * @param Request $request
-     *   Incoming request
-     * @param array $arguments
-     *   Additional arguments for the template, please note they will not
-     *   override defaults
-     *
-     * @return TwigRenderer
-     */
-    public function createView(Request $request, array $arguments = [])
-    {
-        $event = new ViewEvent($this);
-        $this->dispatcher->dispatch(TwigView::EVENT_SEARCH, $event);
-
-        $query = $this->createQuery($request);
-
-        // Initialize properly datasource then execute
-        $datasource = $this->getDatasource();
-        $datasource->init($query);
-        $items = $datasource->getItems($query);
-
-        return $this->createRenderer($query, $items);
-    }
-
-    /**
-     * Create query
-     *
-     * @param Request $request
-     *
-     * @return Query
-     */
-    protected function createQuery(Request $request)
-    {
-        return (new QueryFactory())->fromRequest($this->getInputDefinition(), $request);
-    }
-
-    /**
-     * Create the renderer
-     *
+     * @param DatasourceInterface $datasource
      * @param Query $query
-     * @param DatasourceResultInterface $items
      * @param array $arguments
      *
-     * @return TwigRenderer
+     * @return array
      */
-    protected function createRenderer(Query $query, DatasourceResultInterface $items, array $arguments = [])
+    protected function createTemplateArguments(DatasourceInterface $datasource, Query $query, array $arguments = [])
     {
-        $viewDefinition = $this->getViewDefinition();
+        $items = $this->execute($datasource, $query);
+
         $display = $query->getCurrentDisplay();
-        $templates = $viewDefinition->getTemplates();
-        $datasource = $this->getDatasource();
+        $templates = $this->viewDefinition->getTemplates();
 
         // Build allowed filters arrays
-        $viewDefinition = $this->getViewDefinition();
         $enabledFilters = [];
         foreach ($datasource->getFilters() as $filter) {
-            if ($viewDefinition->isFilterDisplayed($filter->getField())) {
+            if ($this->viewDefinition->isFilterDisplayed($filter->getField())) {
                 $enabledFilters[] = $filter;
             }
         }
@@ -303,9 +159,9 @@ class TwigView
             $displayLinks[] = new Link($name, $query->getRoute(), ['display' => $name] + $query->getRouteParameters(), $display === $name, $displayIcon);
         }
 
-        $arguments = [
+        return [
             'pageId'        => $this->getId(),
-            'itemClass'     => $this->getDatasource()->getItemClass(),
+            'itemClass'     => $items->getItemClass(),
             'items'         => $items,
             'filters'       => $enabledFilters,
             'visualFilters' => [],
@@ -313,12 +169,42 @@ class TwigView
             'query'         => $query,
             'display'       => $display,
             'displays'      => $displayLinks,
-            'hasPager'      => $viewDefinition->isPagerEnabled() && $this->inputDefinition->isSearchEnabled(),
+            'hasPager'      => $this->viewDefinition->isPagerEnabled() && $this->inputDefinition->isSearchEnabled(),
         ] + $arguments;
+    }
 
+    /**
+     * Create the renderer
+     *
+     * @param DatasourceInterface $datasource
+     * @param Query $query
+     * @param array $arguments
+     *
+     * @return TwigRenderer
+     */
+    public function createRenderer(DatasourceInterface $datasource, Query $query, array $arguments = [])
+    {
         $event = new ViewEvent($this);
         $this->dispatcher->dispatch(TwigView::EVENT_VIEW, $event);
 
+        $arguments = $this->createTemplateArguments($datasource, $query, $arguments);
+
         return new TwigRenderer($this->twig, $this->getTemplateFor($arguments['display']), $arguments);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function render(DatasourceInterface $datasource, Query $query)
+    {
+        return $this->createRenderer($datasource, $query)->render();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function renderAsResponse(DatasourceInterface $datasource, Query $query)
+    {
+        return new Response($this->render($datasource, $query));
     }
 }

@@ -2,13 +2,14 @@
 
 namespace MakinaCorpus\Dashboard\Drupal\EventDispatcher;
 
-use MakinaCorpus\Dashboard\Event\TwigViewEvent;
+use MakinaCorpus\Dashboard\Event\ViewEvent;
+use MakinaCorpus\Dashboard\View\Html\TwigView;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Plugs additionnal JavaScript and CSS when using an HTML view
  */
-class TwigViewEventSubscriber implements EventSubscriberInterface
+class ViewEventSubscriber implements EventSubscriberInterface
 {
     /**
      * {@inheritDoc}
@@ -16,7 +17,7 @@ class TwigViewEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            TwigViewEvent::EVENT_VIEW => [
+            ViewEvent::EVENT_VIEW => [
                 ['onTwigView', 0],
             ],
         ];
@@ -25,11 +26,13 @@ class TwigViewEventSubscriber implements EventSubscriberInterface
     /**
      * Add JS libraries
      *
-     * @param \MakinaCorpus\Dashboard\Event\TwigViewEvent $event
+     * @param ViewEvent $event
      */
-    public function onTwigView(TwigViewEvent $event)
+    public function onTwigView(ViewEvent $event)
     {
-        if (function_exists('drupal_add_library')) {
+        $view = $event->getView();
+
+        if (function_exists('drupal_add_library') && $view instanceof TwigView) {
             drupal_add_library('udashboard', 'udashboard_page');
 
             $seven = variable_get('udashboard.seven_force');
