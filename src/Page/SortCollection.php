@@ -6,8 +6,6 @@ use MakinaCorpus\Dashboard\Datasource\Query;
 
 /**
  * Sort manager, it worthes the shot to have a decicated class for this
- *
- * All constants are compatible with Drupal DBTNG sorts.
  */
 class SortCollection implements \Countable
 {

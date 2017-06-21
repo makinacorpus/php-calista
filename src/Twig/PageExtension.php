@@ -4,22 +4,20 @@ namespace MakinaCorpus\Dashboard\Twig;
 
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Page\Filter;
-use MakinaCorpus\Dashboard\Page\PageBuilder;
-use MakinaCorpus\Dashboard\Page\PageView;
+use MakinaCorpus\Dashboard\View\Html\TwigView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\PropertyInfo\Type;
 
 /**
- * Display pages, considering that 'page' is a variable that points to a
- * PageBuilder instance that was properly setup:
+ * Display pages, build views, gives us helpers for it
  *
- *   {{ udashboard_page(page) }}
+ *   {{ udashboard_page(view) }}
  *
  * Which would be equivalent to:
  *
- *   {{ page.searchAndRender(app.request) }}
+ *   {{ view.createView(app.request).render() }}
  */
 class PageExtension extends \Twig_Extension
 {
@@ -291,46 +289,14 @@ class PageExtension extends \Twig_Extension
     /**
      * Render page builder
      *
-     * @param PageBuilder $pageBuilder
+     * @param TwigView $view
      *
      * @return string
      *   Rendered page
      */
-    public function renderPageBuilder(PageBuilder $pageBuilder)
+    public function renderPage(TwigView $view)
     {
-        return $pageBuilder->searchAndRender($this->requestStack->getCurrentRequest());
-    }
-
-    /**
-     * Render page builder
-     *
-     * @param PageView $pageView
-     *
-     * @return string
-     *   Rendered page
-     */
-    public function renderPageView(PageView $pageView)
-    {
-        return $pageView->render();
-    }
-
-    /**
-     * Render page builder
-     *
-     * @param PageBuilder|PageView $page
-     *
-     * @return string
-     *   Rendered page
-     */
-    public function renderPage($page)
-    {
-        if ($page instanceof PageBuilder) {
-            return $this->renderPageBuilder($page);
-        } else if ($page instanceof PageView) {
-            return $this->renderPageView($page);
-        } else {
-            return '';
-        }
+        return $view->createView($this->requestStack->getCurrentRequest())->render();
     }
 
     /**

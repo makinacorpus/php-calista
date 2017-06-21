@@ -2,8 +2,9 @@
 
 namespace MakinaCorpus\Dashboard\Page;
 
-use Symfony\Component\HttpFoundation\Request;
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
+use MakinaCorpus\Dashboard\View\Html\TwigView;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * A page type is a re-usable specific page builder, that will allow you to,
@@ -28,9 +29,9 @@ interface PageDefinitionInterface
     /**
      * Build the page parameters
      *
-     * @param PageBuilder $builder
+     * @param TwigView $view
      * @param InputDefinition $inputDefinition
      * @param Request $request
      */
-    public function build(PageBuilder $builder, InputDefinition $inputDefinition, Request $request);
+    public function build(TwigView $view, InputDefinition $inputDefinition, Request $request);
 }

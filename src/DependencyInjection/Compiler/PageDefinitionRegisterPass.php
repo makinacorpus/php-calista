@@ -14,16 +14,16 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         // @codeCoverageIgnoreStart
-        if (!$container->hasDefinition('udashboard.page_builder_factory')) {
+        if (!$container->hasDefinition('udashboard.view_factory')) {
             return;
         }
         // @codeCoverageIgnoreEnd
-        $definition = $container->getDefinition('udashboard.page_builder_factory');
+        $definition = $container->getDefinition('udashboard.view_factory');
 
         $types = [];
 
         // Register custom action providers
-        $taggedServices = $container->findTaggedServiceIds('udashboard.page_definition');
+        $taggedServices = $container->findTaggedServiceIds('udashboard.view');
         foreach ($taggedServices as $id => $attributes) {
             $def = $container->getDefinition($id);
 

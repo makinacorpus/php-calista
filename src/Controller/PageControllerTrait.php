@@ -2,11 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\Controller;
 
-use MakinaCorpus\Dashboard\Page\PageBuilder;
-use MakinaCorpus\Dashboard\Page\PageBuilderFactory;
 use MakinaCorpus\Dashboard\Util\AdminTable;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use MakinaCorpus\Dashboard\View\ViewFactory;
 
 /**
  * Gives a few helper methods for retrieving page builders.
@@ -23,17 +20,6 @@ trait PageControllerTrait
     protected abstract function get($id);
 
     /**
-     * Renders a view.
-     *
-     * @param string $view
-     * @param array $parameters
-     * @param Response $response
-     *
-     * @return Response
-     */
-    protected abstract function render($view, array $parameters = [], Response $response = null);
-
-    /**
      * Escape string for HTML
      *
      * @param string $string
@@ -48,26 +34,11 @@ trait PageControllerTrait
     /**
      * Get page factory
      *
-     * @return PageBuilderFactory
+     * @return ViewFactory
      */
     protected function getWidgetFactory()
     {
-        return $this->get('udashboard.page_builder_factory');
-    }
-
-    /**
-     * Create a page builder with or without type
-     *
-     * @param string $name
-     *   If given will use the given page type
-     * @param Request $request
-     *   Mandatory when name is given
-     *
-     * @return PageBuilder
-     */
-    protected function createPageBuilder($name = null, Request $request = null)
-    {
-        return $this->getWidgetFactory()->createPageBuilder($name, $request);
+        return $this->get('udashboard.view_factory');
     }
 
     /**

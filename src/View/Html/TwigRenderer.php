@@ -1,11 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\View\Html;
 
 /**
  * Context variable for twig templates and main renderer for pages
  */
-class PageView
+class TwigRenderer
 {
     private $twig;
     private $template;
@@ -35,6 +35,16 @@ class PageView
     public function renderPartial($block)
     {
         return $this->twig->load($this->template)->renderBlock($block, $this->arguments);
+    }
+
+    /**
+     * Get arguments
+     *
+     * @return mixed[]
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 
     /**

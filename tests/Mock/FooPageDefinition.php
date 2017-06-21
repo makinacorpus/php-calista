@@ -3,8 +3,8 @@
 namespace MakinaCorpus\Dashboard\Tests\Mock;
 
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
-use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageDefinitionInterface;
+use MakinaCorpus\Dashboard\View\Html\TwigView;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -36,7 +36,7 @@ class FooPageDefinition implements PageDefinitionInterface
     /**
      * {@inheritdoc}
      */
-    public function build(PageBuilder $builder, InputDefinition $inputDefinition, Request $request)
+    public function build(TwigView $view, InputDefinition $inputDefinition, Request $request)
     {
         $viewDefinition = new ViewDefinition([
             'default_display' => 'default',
@@ -45,7 +45,7 @@ class FooPageDefinition implements PageDefinitionInterface
             ],
         ]);
 
-        $builder
+        $view
             ->setInputDefinition($inputDefinition)
             ->setViewDefinition($viewDefinition)
             ->setDatasource($this->datasource)

@@ -1,8 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\View;
 
 use MakinaCorpus\Dashboard\Action\ActionRegistry;
+use MakinaCorpus\Dashboard\Page\PageDefinitionInterface;
+use MakinaCorpus\Dashboard\View\Html\FormTwigView;
+use MakinaCorpus\Dashboard\View\Html\TwigView;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -16,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
  * dependencies that we should inject into pages, and only this allows
  * us to do it properly
  */
-final class PageBuilderFactory
+final class ViewFactory
 {
     private $container;
     private $formFactory;
@@ -109,7 +112,7 @@ final class PageBuilderFactory
     /**
      * Initialize page builder
      */
-    private function initializeBuilder(PageBuilder $builder, $name = null, Request $request = null)
+    private function initializeBuilder(TwigView $builder, $name = null, Request $request = null)
     {
        if ($name) {
             if (!$request) {
@@ -133,11 +136,11 @@ final class PageBuilderFactory
      * @param Request $request
      *   Mandatory when name is given
      *
-     * @return PageBuilder
+     * @return TwigView
      */
-    public function createPageBuilder($name = null, Request $request = null)
+    public function createTwigView($name = null, Request $request = null)
     {
-        $builder = new PageBuilder($this->twig, $this->eventDispatcher);
+        $builder = new TwigView($this->twig, $this->eventDispatcher);
         $this->initializeBuilder($builder, $name, $request);
 
         return $builder;
@@ -151,11 +154,11 @@ final class PageBuilderFactory
      * @param Request $request
      *   Mandatory when name is given
      *
-     * @return FormPageBuilder
+     * @return FormTwigView
      */
-    public function createFormPageBuilder($name = null, Request $request = null)
+    public function createFormTwigView($name = null, Request $request = null)
     {
-        $builder = new FormPageBuilder($this->twig, $this->eventDispatcher, $this->formFactory);
+        $builder = new FormTwigView($this->twig, $this->eventDispatcher, $this->formFactory);
         $this->initializeBuilder($builder, $name, $request);
 
         return $builder;

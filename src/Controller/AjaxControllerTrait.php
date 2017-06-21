@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\Dashboard\Controller;
 
-use MakinaCorpus\Dashboard\Page\PageBuilder;
+use MakinaCorpus\Dashboard\View\Html\TwigView;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,9 +22,9 @@ trait AjaxControllerTrait
      *
      * @param Request $request
      *
-     * @return PageBuilder
+     * @return TwigView
      */
-    private function getPageBuilderOrDie(Request $request)
+    private function getTwigViewOrDie(Request $request)
     {
         $pageId = $request->get('name');
         $page = null;
@@ -34,7 +34,7 @@ trait AjaxControllerTrait
         }
 
         try {
-            $page = $this->createPageBuilder($pageId, $request);
+            $page = $this->getWidgetFactory()->createTwigView($pageId, $request);
         } catch (\InvalidArgumentException $e) {
             throw new NotFoundHttpException('Not Found', $e);
         } catch (ServiceNotFoundException $e) {
@@ -57,12 +57,12 @@ trait AjaxControllerTrait
      */
     public function refreshAction(Request $request)
     {
-        $builder  = $this->getPageBuilderOrDie($request);
-        $result   = $builder->search($request);
-        $page     = $builder->createPageView($result);
+        $view = $this->getTwigViewOrDie($request);
+        $page = $view->createView($request);
 
         return new JsonResponse([
-            'query' => $result->getQuery()->all(),
+            // @todo this is ugly, find a better way
+            'query' => $page->getArguments()['query']->all(),
             'blocks' => [
                 'filters'       => $page->renderPartial('filters'),
                 'display_mode'  => $page->renderPartial('display_mode'),

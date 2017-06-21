@@ -1,25 +1,26 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\View\Html;
 
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
+use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
+use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Datasource\QueryFactory;
 use MakinaCorpus\Dashboard\Error\ConfigurationError;
-use MakinaCorpus\Dashboard\Event\PageBuilderEvent;
+use MakinaCorpus\Dashboard\Event\ViewEvent;
+use MakinaCorpus\Dashboard\Page\Link;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @todo
- *   - Remove buiseness methods from this oibject and move them to "Page"
- *   - widget factory should return a page, not a builder
+ * Uses a view definition and proceed to an html page display via Twig
  */
-class PageBuilder
+class TwigView
 {
-    const EVENT_VIEW = 'pagebuilder:view';
-    const EVENT_SEARCH = 'pagebuilder:search';
+    const EVENT_VIEW = 'view:view';
+    const EVENT_SEARCH = 'view:search';
 
     private $datasource;
     private $debug = false;
@@ -224,26 +225,58 @@ class PageBuilder
     }
 
     /**
-     * Proceed to search and fetch state
+     * Shortcut for controllers
      *
      * @param Request $request
      *   Incoming request
+     * @param array $arguments
+     *   Additional arguments for the template, please note they will not
+     *   override defaults
      *
-     * @return PageResult
+     * @return TwigRenderer
      */
-    public function search(Request $request)
+    public function createView(Request $request, array $arguments = [])
     {
-        $event = new PageBuilderEvent($this);
-        $this->dispatcher->dispatch(PageBuilder::EVENT_SEARCH, $event);
+        $event = new ViewEvent($this);
+        $this->dispatcher->dispatch(TwigView::EVENT_SEARCH, $event);
 
-        // Build query from configuration
-        $inputDefinition = $this->getInputDefinition();
-        $query = (new QueryFactory())->fromRequest($inputDefinition, $request);
+        $query = $this->createQuery($request);
 
         // Initialize properly datasource then execute
         $datasource = $this->getDatasource();
         $datasource->init($query);
         $items = $datasource->getItems($query);
+
+        return $this->createRenderer($query, $items);
+    }
+
+    /**
+     * Create query
+     *
+     * @param Request $request
+     *
+     * @return Query
+     */
+    protected function createQuery(Request $request)
+    {
+        return (new QueryFactory())->fromRequest($this->getInputDefinition(), $request);
+    }
+
+    /**
+     * Create the renderer
+     *
+     * @param Query $query
+     * @param DatasourceResultInterface $items
+     * @param array $arguments
+     *
+     * @return TwigRenderer
+     */
+    protected function createRenderer(Query $query, DatasourceResultInterface $items, array $arguments = [])
+    {
+        $viewDefinition = $this->getViewDefinition();
+        $display = $query->getCurrentDisplay();
+        $templates = $viewDefinition->getTemplates();
+        $datasource = $this->getDatasource();
 
         // Build allowed filters arrays
         $viewDefinition = $this->getViewDefinition();
@@ -253,27 +286,6 @@ class PageBuilder
                 $enabledFilters[] = $filter;
             }
         }
-
-        return new PageResult($inputDefinition, $query, $items, $datasource->getSorts(), $enabledFilters, []);
-    }
-
-    /**
-     * Create the page view
-     *
-     * @param PageResult $result
-     *   Page result from the search() method
-     * @param array $arguments
-     *   Additional arguments for the template, please note they will not
-     *   override defaults
-     *
-     * @return PageView
-     */
-    public function createPageView(PageResult $result, array $arguments = [])
-    {
-        $query = $result->getQuery();
-        $display = $query->getCurrentDisplay();
-        $viewDefinition = $this->getViewDefinition();
-        $templates = $viewDefinition->getTemplates();
 
         // Build display links
         // @todo Do it better...
@@ -294,36 +306,19 @@ class PageBuilder
         $arguments = [
             'pageId'        => $this->getId(),
             'itemClass'     => $this->getDatasource()->getItemClass(),
-            'result'        => $result,
-            'items'         => $result->getItems(),
-            'filters'       => $viewDefinition->getEnabledFilters() ? $result->getFilters() : [],
+            'items'         => $items,
+            'filters'       => $enabledFilters,
             'visualFilters' => [],
-            'sorts'         => $result->getSortCollection(),
+            'sorts'         => $datasource->getSorts(),
             'query'         => $query,
             'display'       => $display,
             'displays'      => $displayLinks,
             'hasPager'      => $viewDefinition->isPagerEnabled() && $this->inputDefinition->isSearchEnabled(),
         ] + $arguments;
 
-        $event = new PageBuilderEvent($this);
-        $this->dispatcher->dispatch(PageBuilder::EVENT_VIEW, $event);
+        $event = new ViewEvent($this);
+        $this->dispatcher->dispatch(TwigView::EVENT_VIEW, $event);
 
-        return new PageView($this->twig, $this->getTemplateFor($arguments['display']), $arguments);
-    }
-
-    /**
-     * Shortcut for controllers
-     *
-     * @param Request $request
-     *   Incoming request
-     * @param array $arguments
-     *   Additional arguments for the template, please note they will not
-     *   override defaults
-     *
-     * @return string
-     */
-    public function searchAndRender(Request $request, array $arguments = [])
-    {
-        return $this->createPageView($this->search($request), $arguments)->render();
+        return new TwigRenderer($this->twig, $this->getTemplateFor($arguments['display']), $arguments);
     }
 }

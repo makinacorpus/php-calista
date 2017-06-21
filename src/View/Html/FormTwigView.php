@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\View\Html;
 
 use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Dashboard\Form\Type\SelectionFormType;
@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * Extends the page builder to add an embedded form feature, that allows items
  * selection and usage in a more global Symfony form.
  */
-class FormPageBuilder extends PageBuilder
+class FormTwigView extends TwigView
 {
     /**
      * @var FormInterface
@@ -64,9 +64,9 @@ class FormPageBuilder extends PageBuilder
      */
     public function __construct(\Twig_Environment $twig, EventDispatcherInterface $dispatcher, FormFactoryInterface $formFactory)
     {
-        $this->formFactory = $formFactory;
-
         parent::__construct($twig, $dispatcher);
+
+        $this->formFactory = $formFactory;
     }
 
     /**
@@ -260,15 +260,13 @@ class FormPageBuilder extends PageBuilder
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * Also include the form for display
+     * {@inheritdoc}
      */
-    public function createPageView(PageResult $result, array $arguments = [])
+    public function createView(Request $request, array $arguments = [])
     {
         $arguments['form'] = $this->getForm()->createView();
 
-        return parent::createPageView($result, $arguments);
+        return parent::createView($request, $arguments);
     }
 
     /**
@@ -320,9 +318,15 @@ class FormPageBuilder extends PageBuilder
      */
     public function handleRequest(Request $request, callable $callback = null)
     {
+        // Fetch items
+        // @todo find a better way, this will run the query twice
+        $query = $this->createQuery($request);
+        $datasource = $this->getDatasource();
+        $datasource->init($query);
+        $items = $datasource->getItems($query);
+
         // Get items to work on
         $form = $this->getForm();
-        $items = $this->search($request)->getItems();
 
         // Bind initial data
         $form->setData(['items' => $this->getItemIdentifierList($items, $callback)])->handleRequest($request);

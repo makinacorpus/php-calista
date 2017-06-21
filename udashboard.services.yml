@@ -4,8 +4,8 @@ services:
     class: MakinaCorpus\Dashboard\Drupal\Context\ContextPane
     arguments: ['@event_dispatcher', '@request_stack']
 
-  udashboard.page_builder_factory:
-    class: MakinaCorpus\Dashboard\Page\PageBuilderFactory
+  udashboard.view_factory:
+    class: MakinaCorpus\Dashboard\View\ViewFactory
     arguments: ['@service_container', '@form.factory', '@udashboard.action_provider_registry', '@twig', '@event_dispatcher']
 
   udashboard.processor_registry:
@@ -31,12 +31,6 @@ services:
     arguments: ['@request_stack']
     tags: [{name: twig.extension}]
 
-  udashboard.empty_page_builder:
-    public: false
-    shared: false
-    class: MakinaCorpus\Dashboard\\PageBuilder
-    factory: ['@udashboard.page_builder_factory', createPageBuilder]
-
   # Default node datasource, this is registered as an example only, copy/paste
   # and adapt this to declare your datasources.
   udashboard.datasource.node_default:
@@ -49,8 +43,8 @@ services:
   udashboard.page.node_default:
     class: MakinaCorpus\Dashboard\Drupal\Page\Node\DefaultNodeAdminPage
     arguments: ['@udashboard.datasource.node_default', false]
-    tags: [{name: udashboard.page_definition, id: 'node.default'}]
+    tags: [{name: udashboard.view, id: 'node.default'}]
 
-  udashboard.pagebuilder_event_subscriber:
-    class: MakinaCorpus\Dashboard\Drupal\Event\PageBuilderEventSubscriber
+  udashboard.twig_view_event_subscriber:
+    class: MakinaCorpus\Dashboard\Drupal\Event\TwigViewEventSubscriber
     tags: [{name: event_subscriber}]

@@ -2,14 +2,13 @@
 
 namespace MakinaCorpus\Dashboard\Drupal\EventDispatcher;
 
-use MakinaCorpus\Dashboard\Event\PageBuilderEvent;
-use MakinaCorpus\Dashboard\Page\PageBuilder;
+use MakinaCorpus\Dashboard\Event\TwigViewEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Plugs page builders onto Drupal page build process
+ * Plugs additionnal JavaScript and CSS when using an HTML view
  */
-class PageBuilderEventSubscriber implements EventSubscriberInterface
+class TwigViewEventSubscriber implements EventSubscriberInterface
 {
     /**
      * {@inheritDoc}
@@ -17,8 +16,8 @@ class PageBuilderEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            PageBuilder::EVENT_VIEW => [
-                ['onPageBuilderView', 0],
+            TwigViewEvent::EVENT_VIEW => [
+                ['onTwigView', 0],
             ],
         ];
     }
@@ -26,9 +25,9 @@ class PageBuilderEventSubscriber implements EventSubscriberInterface
     /**
      * Add JS libraries
      *
-     * @param \MakinaCorpus\Dashboard\Event\PageBuilderEvent $event
+     * @param \MakinaCorpus\Dashboard\Event\TwigViewEvent $event
      */
-    public function onPageBuilderView(PageBuilderEvent $event)
+    public function onTwigView(TwigViewEvent $event)
     {
         if (function_exists('drupal_add_library')) {
             drupal_add_library('udashboard', 'udashboard_page');
@@ -40,9 +39,11 @@ class PageBuilderEventSubscriber implements EventSubscriberInterface
                 drupal_add_library('udashboard', 'udashboard_seven');
             }
 
-            if ($event->getPageBuilder()->visualSearchIsEnabled()) {
+            /*
+            if ($event->getView()->visualSearchIsEnabled()) {
                 drupal_add_library('udashboard', 'udashboard_search');
             }
+             */
         }
     }
 }

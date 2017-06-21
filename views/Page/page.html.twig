@@ -4,7 +4,6 @@
  #
  #  Variables:
  #    pageId: page uuid, for security and ajax queries
- #    result: PageResult
  #    sorts: SortCollection
  #    filters: Filter[]
  #    filters.ID.title: string (title)
@@ -374,7 +373,7 @@
 {% endblock %}
 
 {% block page %}
-  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ result.queryToJson|escape }}"{% endif %} data-page-search="{{ query.inputDefinition.searchParameter }}">
+  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ query.inputDefinition.routeParameters|json_encode|e }}"{% endif %} data-page-search="{{ query.inputDefinition.searchParameter|e }}">
     {{ block('page_layout') }}
   </div>
 {% endblock %}
