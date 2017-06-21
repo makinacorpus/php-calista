@@ -32,10 +32,14 @@ class QueryTest extends \PHPUnit_Framework_TestCase
 
         $factory = new QueryFactory();
 
-        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
-            'limit_allowed' => false,
-            'limit_param'   => '_limit',
-        ]);
+        $inputDefinition = new InputDefinition(
+            new EmptyDatasource(['foo', 'test', 'bar', 'baz', 'some']),
+            [
+                'limit_allowed' => false,
+                'limit_param'   => '_limit',
+            ]
+        );
+
         $query = $factory->fromRequest($inputDefinition, $request);
         // Limit is not overridable per default
         $this->assertSame(Query::LIMIT_DEFAULT, $query->getLimit());
@@ -46,14 +50,17 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $query->getPageNumber());
         $this->assertSame(0, $query->getOffset());
 
-        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
-            'limit_allowed'     => true,
-            'limit_param'       => '_limit',
-            'pager_enable'      => true,
-            'pager_param'       => '_page',
-            'sort_field_param'  => '_st',
-            'sort_order_param'  => '_by'
-        ]);
+        $inputDefinition = new InputDefinition(
+            new EmptyDatasource(['foo', 'test', 'bar', 'baz', 'some']),
+            [
+                'limit_allowed'     => true,
+                'limit_param'       => '_limit',
+                'pager_enable'      => true,
+                'pager_param'       => '_page',
+                'sort_field_param'  => '_st',
+                'sort_order_param'  => '_by'
+            ]
+        );
         $query = $factory->fromRequest($inputDefinition, $request);
         // Limit is not overridable per default
         $this->assertSame(12, $query->getLimit());
@@ -87,11 +94,14 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             'search'  => $search,
         ]);
 
-        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
-            'search_enable' => true,
-            'search_param'  => 'search',
-            'search_parse'  => true,
-        ]);
+        $inputDefinition = new InputDefinition(
+            new EmptyDatasource(['foo', 'test', 'bar', 'baz', 'some']),
+            [
+                'search_enable' => true,
+                'search_param'  => 'search',
+                'search_parse'  => true,
+            ]
+        );
 
         $factory = new QueryFactory();
         $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['c', 'd', 'e'], 'bar' => 'baz', 'search' => $search]);
@@ -114,8 +124,6 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             $this->assertContains('f', $all['foo']);
             // Search only driven query is there, and flattened since there's only one element
             $this->assertSame('other', $all['some']);
-            // Search is flattened
-            $this->assertSame('fulltext search', $all['search']);
 
             // Test the "route parameters" query
             $params = $query->getRouteParameters();
@@ -148,11 +156,14 @@ class QueryTest extends \PHPUnit_Framework_TestCase
 
         $baseQuery = ['foo' => ['a', 'b', 'c']];
 
-        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
-            'search_enable' => true,
-            'search_param'  => 'search',
-            'search_parse'  => true,
-        ]);
+        $inputDefinition = new InputDefinition(
+            new EmptyDatasource(['foo', 'test', 'bar', 'baz', 'some']),
+            [
+                'search_enable' => true,
+                'search_param'  => 'search',
+                'search_parse'  => true,
+            ]
+        );
 
         $factory = new QueryFactory();
         $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['b', 'c', 'd', 'e'], 'bar' => 'baz'], $baseQuery);
@@ -206,11 +217,14 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             'search'  => $search,
         ]);
 
-        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
-            'search_enable' => true,
-            'search_param'  => 'search',
-            'search_parse'  => false,
-        ]);
+        $inputDefinition = new InputDefinition(
+            new EmptyDatasource(['foo', 'test', 'bar', 'baz', 'some']),
+            [
+                'search_enable' => true,
+                'search_param'  => 'search',
+                'search_parse'  => false,
+            ]
+        );
 
         $factory = new QueryFactory();
         $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['c', 'd', 'e'], 'bar' => 'baz', 'search' => $search]);
@@ -234,7 +248,8 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             $this->assertContains('e', $all['foo']);
             // 'f' is only visible in parsed search, drop it
             $this->assertNotContains('f', $all['foo']);
-            $this->assertSame($search, $all['search']);
+            // Search is not a filter, thus is is not in there
+            $this->assertNotContains('search', $all['foo']);
 
             // Test the "route parameters" query
             $params = $query->getRouteParameters();
@@ -249,6 +264,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             $this->assertContains('d', $params['foo']);
             $this->assertContains('e', $params['foo']);
             // Search is flattened
+            $this->assertSame($search, $params['search']);
             $this->assertSame($search, $params['search']);
         }
     }

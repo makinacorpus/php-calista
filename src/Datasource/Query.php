@@ -3,7 +3,7 @@
 namespace MakinaCorpus\Dashboard\Datasource;
 
 /**
- * Parses and cleanups the incomming query from a Symfony request
+ * Sanitized version of an incomming query for a datasource
  */
 class Query
 {
@@ -12,7 +12,6 @@ class Query
     const SORT_DESC = 'desc';
     const URL_VALUE_SEP = '|';
 
-    private $allowedFilters = [];
     private $baseQuery = [];
     private $currentDisplay = '';
     private $filters = [];
@@ -49,6 +48,14 @@ class Query
         $this->findRange();
         $this->findSearch();
         $this->findSort();
+
+        // Now for security, prevent anything that is not a filter from
+        // existing into the filter array
+        foreach (array_keys($this->filters) as $name) {
+            if (!$inputDefinition->isFilterAllowed($name)) {
+                unset($this->filters[$name]);
+            }
+        }
     }
 
     /**
