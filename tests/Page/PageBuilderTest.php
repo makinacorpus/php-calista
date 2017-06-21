@@ -185,6 +185,8 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testConfigPageBuilder()
     {
+        $this->markTestSkipped("this api is being rewrote");
+
         // We will test the action extension at the same time
         $container = $this->createContainerWithPageDefinitions();
         $container->compile();

@@ -19,7 +19,6 @@ class PageBuilder
     const EVENT_VIEW = 'pagebuilder:view';
     const EVENT_SEARCH = 'pagebuilder:search';
 
-    private $baseQuery = [];
     private $datasource;
     private $debug = false;
     private $defaultDisplay = 'table';
@@ -157,35 +156,6 @@ class PageBuilder
     public function setAllowedTemplates(array $displays)
     {
         $this->templates = $displays;
-
-        return $this;
-    }
-
-    /**
-     * Set base query
-     *
-     * @param array $query
-     *
-     * @return $this
-     */
-    public function setBaseQuery(array $query)
-    {
-        $this->baseQuery = $query;
-
-        return $this;
-    }
-
-    /**
-     * Add base query parameter
-     *
-     * @param string $name
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function addBaseQueryParameter($name, $value)
-    {
-        $this->baseQuery[$name] = $value;
 
         return $this;
     }
@@ -486,7 +456,7 @@ class PageBuilder
 
         // Build query from configuration
         $inputDefinition = $this->getInputDefinition();
-        $query = (new QueryFactory())->fromRequest($inputDefinition, $request, $this->baseQuery);
+        $query = (new QueryFactory())->fromRequest($inputDefinition, $request);
 
         // Initialize properly datasource then execute
         $datasource = $this->getDatasource();

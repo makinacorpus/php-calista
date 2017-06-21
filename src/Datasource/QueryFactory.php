@@ -16,12 +16,10 @@ class QueryFactory
      *   Current search configuration
      * @param array $request
      *   Incomming request
-     * @param string[] $baseQuery
-     *   Base filter query
      *
      * @return Query
      */
-    public function fromArray(InputDefinition $inputDefinition, array $input, array $baseQuery = [], $route = null)
+    public function fromArray(InputDefinition $inputDefinition, array $input, $route = null)
     {
         $rawSearchString = '';
         $searchParameter = $inputDefinition->getSearchParameter();
@@ -57,9 +55,8 @@ class QueryFactory
             $routeParameters[$searchParameter] = $rawSearchString;
         }
 
-        // This is a very specific use case, but datasource awaits for a single
-        // query string for full text search, so just flatten this query
-        // parameter
+        $baseQuery = $inputDefinition->getBaseQuery();
+
         return new Query(
             $inputDefinition,
             $route,
@@ -76,17 +73,15 @@ class QueryFactory
      *   Current search configuration
      * @param Request $request
      *   Incomming request
-     * @param string[] $baseQuery
-     *   Base filter query
      *
      * @return Query
      */
-    public function fromRequest(InputDefinition $inputDefinition, Request $request, array $baseQuery = [])
+    public function fromRequest(InputDefinition $inputDefinition, Request $request)
     {
         $route = $request->attributes->get('_route');
         $input = array_merge($request->query->all(), $request->attributes->get('_route_params', []));
 
-        return $this->fromArray($inputDefinition, $input, $baseQuery, $route);
+        return $this->fromArray($inputDefinition, $input, $route);
     }
 
     /**

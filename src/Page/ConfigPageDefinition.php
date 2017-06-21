@@ -45,42 +45,7 @@ class ConfigPageDefinition implements PageDefinitionInterface
         }
     }
 
-    /**
-     * InputDefinition option resolver
-     *
-     * @param OptionsResolver $resolver
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults([
-            'base_query'        => [],
-            'configuration'     => null,
-            'default_display'   => 'default',
-            'disabled_sorts'    => [],
-            'disabled_filters'  => [],
-            'enabled_filters'   => [],
-            'show_filters'      => false,
-            'show_pager'        => false,
-            'show_search'       => false,
-            'show_sort'         => false,
-            'templates'         => [],
-        ]);
 
-        $resolver->setRequired('datasource', 'templates');
-
-        $resolver->setAllowedTypes('base_query', ['array']);
-        $resolver->setAllowedTypes('configuration', ['array', InputDefinition::class]);
-        $resolver->setAllowedTypes('datasource', ['string', DatasourceInterface::class]);
-        $resolver->setAllowedTypes('default_display', ['string']);
-        $resolver->setAllowedTypes('disabled_sorts', ['array']);
-        $resolver->setAllowedTypes('enabled_filters', ['array']);
-        $resolver->setAllowedTypes('disabled_filters', ['array']);
-        $resolver->setAllowedTypes('show_filters', ['numeric', 'bool']);
-        $resolver->setAllowedTypes('show_pager', ['numeric', 'bool']);
-        $resolver->setAllowedTypes('show_search', ['numeric', 'bool']);
-        $resolver->setAllowedTypes('show_sort', ['numeric', 'bool']);
-        $resolver->setAllowedTypes('templates', ['array']);
-    }
 
     /**
      * Create configuration
@@ -134,7 +99,6 @@ class ConfigPageDefinition implements PageDefinitionInterface
     {
         $builder
             ->setDatasource($this->datasource)
-            ->setBaseQuery($this->definition['base_query'])
             ->setAllowedTemplates($this->definition['templates'])
             ->setDefaultDisplay($this->definition['default_display'])
         ;

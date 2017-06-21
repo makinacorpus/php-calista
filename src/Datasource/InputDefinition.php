@@ -2,6 +2,7 @@
 
 namespace MakinaCorpus\Dashboard\Datasource;
 
+use MakinaCorpus\Dashboard\Error\ConfigurationError;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -31,17 +32,21 @@ class InputDefinition
 
         if (!$datasource->supportsFulltextSearch()) {
             if ($this->options['search_enable'] && !$this->options['search_parse']) {
-                // @todo should it be fatal?
-                trigger_error("datasource cannot do fulltext search, yet it is enabled, but search parse is disabled", E_USER_WARNING);
-                $this->options['search_enable'] = false;
+                throw new ConfigurationError("datasource cannot do fulltext search, yet it is enabled, but search parse is disabled");
             }
         }
 
         if (!$datasource->supportsPagination()) {
             if ($this->options['pager_enable']) {
-                // @todo should it be fatal?
-                trigger_error("datasource cannot do paging, yet it is enabled", E_USER_WARNING);
-                $this->options['search_enable'] = false;
+                throw new ConfigurationError("datasource cannot do paging, yet it is enabled");
+            }
+        }
+
+        if ($this->options['base_query']) {
+            foreach (array_keys($this->options['base_query']) as $name) {
+                if (!in_array($name, $this->allowedFilters)) {
+                    throw new ConfigurationError(sprintf("'%s' base query filter is not a datasource allowed filter", $name));
+                }
             }
         }
     }
@@ -54,6 +59,7 @@ class InputDefinition
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'base_query'        => [],
             'display_param'     => 'display',
             'limit_allowed'     => false,
             'limit_default'     => Query::LIMIT_DEFAULT,
@@ -67,6 +73,7 @@ class InputDefinition
             'sort_order_param'  => 'by',
         ]);
 
+        $resolver->setAllowedTypes('base_query', ['array']);
         $resolver->setAllowedTypes('display_param', ['string']);
         $resolver->setAllowedTypes('limit_allowed', ['numeric', 'bool']);
         $resolver->setAllowedTypes('limit_default', ['numeric']);
@@ -78,6 +85,16 @@ class InputDefinition
         $resolver->setAllowedTypes('search_param', ['string']);
         $resolver->setAllowedTypes('sort_field_param', ['string']);
         $resolver->setAllowedTypes('sort_order_param', ['string']);
+    }
+
+    /**
+     * Get base query
+     *
+     * @return string[]
+     */
+    public function getBaseQuery()
+    {
+        return $this->options['base_query'];
     }
 
     /**

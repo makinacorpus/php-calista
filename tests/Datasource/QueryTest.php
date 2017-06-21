@@ -159,6 +159,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $inputDefinition = new InputDefinition(
             new EmptyDatasource(['foo', 'test', 'bar', 'baz', 'some']),
             [
+                'base_query'    => $baseQuery,
                 'search_enable' => true,
                 'search_param'  => 'search',
                 'search_parse'  => true,
@@ -166,8 +167,8 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         );
 
         $factory = new QueryFactory();
-        $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['b', 'c', 'd', 'e'], 'bar' => 'baz'], $baseQuery);
-        $queryFromRequest = $factory->fromRequest($inputDefinition, $request, $baseQuery);
+        $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['b', 'c', 'd', 'e'], 'bar' => 'baz']);
+        $queryFromRequest = $factory->fromRequest($inputDefinition, $request);
 
         foreach ([$queryFromArray, $queryFromRequest] as $query) {
             $this->assertInstanceOf(Query::class, $query);
@@ -198,7 +199,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             $this->assertNotContains('d', $params['foo']);
             $this->assertNotContains('e', $params['foo']);
 
-            $this->assertSame($baseQuery, $query->getBaseQuery());
+            $this->assertSame($baseQuery, $inputDefinition->getBaseQuery());
         }
     }
 

@@ -84,8 +84,12 @@ class DefaultNodeAdminPage implements PageDefinitionInterface
             ->setDatasource($this->getDatasource())
         ;
 
+        /*
+         * @todo this must happen in createInputDefinition()
+         *
         foreach ($this->getQueryFilters() as $name => $value) {
             $builder->addBaseQueryParameter($name, $value);
         }
+         */
     }
 }

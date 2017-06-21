@@ -12,7 +12,6 @@ class Query
     const SORT_DESC = 'desc';
     const URL_VALUE_SEP = '|';
 
-    private $baseQuery = [];
     private $currentDisplay = '';
     private $filters = [];
     private $inputDefinition;
@@ -36,9 +35,8 @@ class Query
      * @param string[] $filters
      *   Current filters (including defaults)
      */
-    public function __construct(InputDefinition $inputDefinition, $route, array $filters = [], array $routeParameters = [], array $baseQuery = [])
+    public function __construct(InputDefinition $inputDefinition, $route, array $filters = [], array $routeParameters = [])
     {
-        $this->baseQuery = $baseQuery;
         $this->inputDefinition = $inputDefinition;
         $this->filters = $filters;
         $this->route = $route;
@@ -169,16 +167,6 @@ class Query
     public function getInputDefinition()
     {
         return $this->inputDefinition;
-    }
-
-    /**
-     * Get base query
-     *
-     * @return array
-     */
-    public function getBaseQuery()
-    {
-        return $this->baseQuery;
     }
 
     /**
