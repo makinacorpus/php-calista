@@ -96,6 +96,9 @@ class Query
      */
     private function findSort()
     {
+        $this->sortField = $this->inputDefinition->getDefaultSortField();
+        $this->sortOrder = $this->inputDefinition->getDefaultSortOrder();
+
         $sortFieldParameter = $this->inputDefinition->getSortFieldParameter();
         if ($sortFieldParameter && isset($this->routeParameters[$sortFieldParameter])) {
             $sortField = $this->routeParameters[$sortFieldParameter];

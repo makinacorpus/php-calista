@@ -15,6 +15,22 @@ use Symfony\Component\HttpFoundation\Request;
 class QueryTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * Tests basics
+     */
+    public function testSortHandling()
+    {
+        $request = new Request(['st' => 'b', 'by' => 'asc', 'foo' => 'barr'], [], ['_route' => 'my_route']);
+        $inputDefinition = new InputDefinition(new EmptyDatasource([], ['a', 'b', 'c']));
+        $query = (new QueryFactory())->fromRequest($inputDefinition, $request);
+
+        $this->assertSame(3, count($inputDefinition->getAllowedSorts()));
+        $this->assertSame(Query::SORT_DESC, $inputDefinition->getDefaultSortOrder());
+        $this->assertSame('a', $inputDefinition->getDefaultSortField());
+        $this->assertSame(Query::SORT_ASC, $query->getSortOrder());
+        $this->assertSame('b', $query->getSortField());
+    }
+
+    /**
      * Tests basic accesors
      */
     public function testQueryBasics()

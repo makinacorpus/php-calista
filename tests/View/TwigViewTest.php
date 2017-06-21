@@ -7,7 +7,6 @@ use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
 use MakinaCorpus\Dashboard\Tests\Mock\FooPageDefinition;
 use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
-use MakinaCorpus\Dashboard\Util\SortCollection;
 use MakinaCorpus\Dashboard\View\Html\FormTwigView;
 use MakinaCorpus\Dashboard\View\Html\TwigView;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
@@ -123,9 +122,6 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         // Ensure sorting was OK
         $itemsArray = iterator_to_array($items);
         $this->assertGreaterThan($itemsArray[1], $itemsArray[0]);
-
-        // Is sort collection OK?
-        $this->assertInstanceOf(SortCollection::class, $result->getSortCollection());
 
         // Build a page, for fun
         $renderer = $view->createPageView($result);

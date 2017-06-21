@@ -2,9 +2,6 @@
 
 namespace MakinaCorpus\Dashboard\Datasource;
 
-use MakinaCorpus\Dashboard\Util\Filter;
-use MakinaCorpus\Dashboard\Util\SortCollection;
-
 /**
  * Base implementation which leaves null a few mathods
  */
@@ -28,30 +25,9 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * {@inheritdoc}
      */
-    public function getAllowedFilters()
-    {
-        return array_map(
-            function (Filter $filter) {
-                return $filter->getField();
-            },
-            $this->getFilters()
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSorts()
     {
-        return new SortCollection();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAllowedSorts()
-    {
-        return array_keys($this->getSorts()->getAllowedSorts());
+        return [];
     }
 
     /**

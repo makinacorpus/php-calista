@@ -161,6 +161,7 @@ class TwigView extends AbstractView
 
         return [
             'pageId'        => $this->getId(),
+            'input'         => $query->getInputDefinition(),
             'itemClass'     => $items->getItemClass(),
             'items'         => $items,
             'filters'       => $enabledFilters,

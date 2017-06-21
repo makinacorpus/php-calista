@@ -6,7 +6,6 @@ use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
 use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Util\Filter;
-use MakinaCorpus\Dashboard\Util\SortCollection;
 
 /**
  * Uses an array as datasource
@@ -54,13 +53,7 @@ class IntArrayDatasource extends AbstractDatasource
      */
     public function getSorts()
     {
-        return new SortCollection(
-            [
-                'value' => "Value",
-            ],
-            'value',
-            Query::SORT_ASC
-        );
+        return ['value' => "Value"];
     }
 
     /**

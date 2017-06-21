@@ -13,9 +13,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class InputDefinition
 {
-    private $allowedFilters = [];
-    private $allowedSorts = [];
+    private $filterLabels = [];
+    private $filters = [];
     private $options = [];
+    private $sortLabels = [];
 
     /**
      * Build an instance from an array
@@ -28,26 +29,41 @@ class InputDefinition
         $this->configureOptions($resolver);
         $this->options = $resolver->resolve($options);
 
-        $this->allowedFilters = $datasource->getAllowedFilters();
-        $this->allowedSorts = $datasource->getAllowedSorts();
+        // Normalize filters and sorts
+        $this->filters = $datasource->getFilters();
+        foreach ($this->filters as $filter) {
+            $this->filterLabels[$filter->getField()] = $filter->getTitle();
+        }
+        $this->sortLabels = $datasource->getSorts();
 
+        // Do a few consistency checks based upon the datasource capabilities
         if (!$datasource->supportsFulltextSearch()) {
             if ($this->options['search_enable'] && !$this->options['search_parse']) {
                 throw new ConfigurationError("datasource cannot do fulltext search, yet it is enabled, but search parse is disabled");
             }
         }
-
         if (!$datasource->supportsPagination()) {
             if ($this->options['pager_enable']) {
                 throw new ConfigurationError("datasource cannot do paging, yet it is enabled");
             }
         }
 
+        // Ensure given base query only contains legitimate field names
         if ($this->options['base_query']) {
             foreach (array_keys($this->options['base_query']) as $name) {
-                if (!in_array($name, $this->allowedFilters)) {
+                if (!$this->isFilterAllowed($name)) {
                     throw new ConfigurationError(sprintf("'%s' base query filter is not a datasource allowed filter", $name));
                 }
+            }
+        }
+
+        // Set the default sort if none was given by the user, yell if user
+        // gave one which is not supported by the datasource
+        if (empty($this->options['sort_default_field'])) {
+            $this->options['sort_default_field'] = key($this->sortLabels);
+        } else {
+            if (!$this->isSortAllowed($this->options['sort_default_field'])) {
+                throw new ConfigurationError(sprintf("'%s' sort field is not a datasource allowed sort field", $this->options['sort_default_field']));
             }
         }
     }
@@ -60,18 +76,20 @@ class InputDefinition
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'base_query'        => [],
-            'display_param'     => 'display',
-            'limit_allowed'     => false,
-            'limit_default'     => Query::LIMIT_DEFAULT,
-            'limit_param'       => 'limit',
-            'pager_enable'      => true,
-            'pager_param'       => 'page',
-            'search_enable'     => false,
-            'search_parse'      => false,
-            'search_param'      => 's',
-            'sort_field_param'  => 'st',
-            'sort_order_param'  => 'by',
+            'base_query'          => [],
+            'display_param'       => 'display',
+            'limit_allowed'       => false,
+            'limit_default'       => Query::LIMIT_DEFAULT,
+            'limit_param'         => 'limit',
+            'pager_enable'        => true,
+            'pager_param'         => 'page',
+            'search_enable'       => false,
+            'search_param'        => 's',
+            'search_parse'        => false,
+            'sort_default_field'  => '',
+            'sort_default_order'  => Query::SORT_DESC,
+            'sort_field_param'    => 'st',
+            'sort_order_param'    => 'by',
         ]);
 
         $resolver->setAllowedTypes('base_query', ['array']);
@@ -82,8 +100,10 @@ class InputDefinition
         $resolver->setAllowedTypes('pager_enable', ['numeric', 'bool']);
         $resolver->setAllowedTypes('pager_param', ['string']);
         $resolver->setAllowedTypes('search_enable', ['numeric', 'bool']);
-        $resolver->setAllowedTypes('search_parse', ['numeric', 'bool']);
         $resolver->setAllowedTypes('search_param', ['string']);
+        $resolver->setAllowedTypes('search_parse', ['numeric', 'bool']);
+        $resolver->setAllowedTypes('sort_default_field', ['string']);
+        $resolver->setAllowedTypes('sort_default_order', ['string']);
         $resolver->setAllowedTypes('sort_field_param', ['string']);
         $resolver->setAllowedTypes('sort_order_param', ['string']);
     }
@@ -102,10 +122,11 @@ class InputDefinition
      * Get allowed filterable field list
      *
      * @return string[]
+     *   Keys are field name, values are human readable labels
      */
     public function getAllowedFilters()
     {
-        return $this->allowedFilters;
+        return $this->filterLabels;
     }
 
     /**
@@ -117,17 +138,18 @@ class InputDefinition
      */
     public function isFilterAllowed($name)
     {
-        return in_array($name, $this->allowedFilters);
+        return isset($this->filterLabels[$name]);
     }
 
     /**
      * Get allowed sort field list
      *
      * @return string[]
+     *   Keys are field name, values are human readable labels
      */
     public function getAllowedSorts()
     {
-        return $this->allowedSorts;
+        return $this->sortLabels;
     }
 
     /**
@@ -139,7 +161,7 @@ class InputDefinition
      */
     public function isSortAllowed($name)
     {
-        return in_array($name, $this->allowedSorts);
+        return isset($this->sortLabels[$name]);
     }
 
     /**
@@ -250,6 +272,26 @@ class InputDefinition
     public function getSortOrderParameter()
     {
         return $this->options['sort_order_param'];
+    }
+
+    /**
+     * Get default sort field
+     *
+     * @return string
+     */
+    public function getDefaultSortField()
+    {
+        return $this->options['sort_default_field'];
+    }
+
+    /**
+     * Get default sort order
+     *
+     * @return string
+     */
+    public function getDefaultSortOrder()
+    {
+        return $this->options['sort_default_order'];
     }
 
     /**

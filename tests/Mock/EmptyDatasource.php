@@ -5,7 +5,7 @@ namespace MakinaCorpus\Dashboard\Tests\Mock;
 use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
 use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Util\SortCollection;
+use MakinaCorpus\Dashboard\Util\Filter;
 
 /**
  * Empty datasource
@@ -35,12 +35,14 @@ class EmptyDatasource extends AbstractDatasource
         return \stdClass::class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAllowedFilters()
+    public function getFilters()
     {
-        return $this->allowedFilters;
+        return array_map(
+            function ($name) {
+                return new Filter($name);
+            },
+            $this->allowedFilters
+        );
     }
 
     /**
@@ -48,17 +50,8 @@ class EmptyDatasource extends AbstractDatasource
      */
     public function getSorts()
     {
-        return new SortCollection($this->allowedSorts);
+        return array_combine($this->allowedSorts, $this->allowedSorts);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAllowedSorts()
-    {
-        return $this->getSorts()->getAllowedSorts();
-    }
-
 
     /**
      * {@inheritdoc}

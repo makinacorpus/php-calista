@@ -4,7 +4,6 @@
  #
  #  Variables:
  #    pageId: page uuid, for security and ajax queries
- #    sorts: SortCollection
  #    filters: Filter[]
  #    filters.ID.title: string (title)
  #    filters.ID.links: Link[]
@@ -12,18 +11,14 @@
  #    visualFilters.ID.title: string (title)
  #    visualFilters.ID.links: Link[]
  #    displays: Link[]
+ #    input: InputDefinition
  #    query: Query
- #    query.inputDefinition: InputDefinition
  #    query.searchParam: string
  #    query.rawSearchString: string (raw user input)
  #    query.route: string (current internal route)
  #    query.routeParameters: string[] (current get query)
  #    query.sortField: string (current sort field)
- #    sorts.sortOrder: string (current sort order)
- #    sorts.fieldLinks: Link[] (keyed with field names)
- #    sorts.orderLinks: Link[]
- #    sorts.getLink(NAME): Link
- #    sort.count: int (number of sort fields)
+ #    query.sortOrder: string (current sort order)
  #    hasPager: should we show pager or not
  #    items: DatasourceResultInterface|mixed[] the items
  #}
@@ -122,6 +117,17 @@
  # example. For more information see https://github.com/TFD7/TFD7/issues/43
  #}
 {% block sort_link_shortcut %}
+    {# Order to use #}
+    {% if field == query.sortField %}
+      {% if 'asc' == query.sortOrder %}
+        {% set order = 'desc' %}
+      {% else %}
+        {% set order = 'asc' %}
+      {% endif %}
+    {% else %}
+      {% set order = query.sortOrder %}
+    {% endif %}
+  {# The rest #}
   {% set param = query.sortOrderParameter %}
   {% set link = sorts.getLink(field) %}
   {% set suffix = '' %}
@@ -141,22 +147,33 @@
   {% endspaceless %}
 {% endblock %}
 
-{# A normal sort link #}
+{#
+ # A normal sort link
+ #}
 {% block sort_link %}
   {% spaceless %}
-    <a href="{{ path(link.route, link.routeParameters) }}" data-page-link>
-      {{ link.title }}
+    {% set mergeParams = {(input.sortFieldParameter): field, (input.sortOrderParameter): query.sortOrder} %}
+    <a href="{{ path(query.route, query.routeParameters|merge(mergeParams)) }}" {% if field == query.sortField %}class="active"{% endif %} data-page-link>
+      {{ label }}
     </a>
   {% endspaceless %}
 {% endblock %}
 
 {% block sort_links_field %}
+  {% set allowedSorts = input.allowedSorts %}
   <span class="text-muted">{{ "Sort by:"|trans }}</span>
   <a href="#" class="dropdown-toggle" title="{{ "Sort by:"|trans }}" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
-    {{ sorts.currentFieldTitle(query) }}&nbsp;<span class="caret"></span>
+    {% spaceless %}
+      {% if query.hasSortField %}
+        {{ allowedSorts[(query.sortField)] }}
+      {% else %}
+        WTF
+      {% endif %}
+      &nbsp;<span class="caret"></span>
+    {% endspaceless %}
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
-    {% for link in sorts.fieldLinks(query) %}
+    {% for field, label in allowedSorts %}
       <li>{{ block('sort_link') }}</li>
     {% endfor %}
   </ul>
@@ -164,12 +181,15 @@
 
 {% block sort_links_order %}
   <a href="#" class="dropdown-toggle" title="{{ "Order by:"|trans }}" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
-    {{ sorts.currentOrderTitle(query) }}&nbsp;<span class="caret"></span>
+   {% if 'asc' == query.sortOrder %}{{ "ascending"|t }}{% else %}{{ "descending"|t }}{% endif %}&nbsp;<span class="caret"></span>
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
-    {% for link in sorts.orderLinks(query) %}
-      <li>{{ block('sort_link') }}</li>
-    {% endfor %}
+    <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'asc'})) }}" {% if 'asc' == query.sortOrder %}class="active"{% endif %} data-page-link>
+      {{ "ascending"|t }}
+    </a>
+    <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'desc'})) }}" {% if 'desc' == query.sortOrder %}class="active"{% endif %} data-page-link>
+      {{ "descending"|t }}
+    </a>
   </ul>
 {% endblock %}
 
@@ -244,7 +264,7 @@
  #}
 {%- block pager_href -%}
   {% if index is defined %}
-    {{ path(query.route, routeParameters|merge({(query.inputDefinition.pageParameter): index})) }}
+    {{ path(query.route, routeParameters|merge({(input.pageParameter): index})) }}
   {% else %}
     #
   {% endif %}
@@ -297,14 +317,14 @@
 
 {% block page_content %}
   <div class="container-fluid">
-    {% if query.inputDefinition.isSearchEnabled or visualFilters %}
+    {% if input.isSearchEnabled or visualFilters %}
       <div class="row">
         <div class="col-md-12" data-page-block="search_form">
           {{ block('search_form') }}
         </div>
       </div>
     {% endif %}
-    {% if 1 < sorts.count %}
+    {% if 1 < input.allowedSorts|length %}
       <div class="row">
         <div class="col-md-12" data-page-block="sort_links">
           {{ block('sort_links') }}
@@ -373,7 +393,7 @@
 {% endblock %}
 
 {% block page %}
-  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ query.inputDefinition.routeParameters|json_encode|e }}"{% endif %} data-page-search="{{ query.inputDefinition.searchParameter|e }}">
+  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ query.routeParameters|json_encode|e }}"{% endif %} data-page-search="{{ input.searchParameter|e }}">
     {{ block('page_layout') }}
   </div>
 {% endblock %}

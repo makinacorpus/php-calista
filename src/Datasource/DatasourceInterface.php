@@ -3,7 +3,6 @@
 namespace MakinaCorpus\Dashboard\Datasource;
 
 use MakinaCorpus\Dashboard\Util\Filter;
-use MakinaCorpus\Dashboard\Util\SortCollection;
 
 /**
  * Use this class to interface with the main dashboard page layout
@@ -39,28 +38,15 @@ interface DatasourceInterface
     public function getFilters();
 
     /**
-     * Get allowed filterable field list
-     *
-     * @return string[]
-     */
-    public function getAllowedFilters();
-
-    /**
      * Get sort fields
      *
      * @param Query $query
      *   Incoming query parameters
      *
-     * @return SortCollection
+     * @return string
+     *   Keys are fields, values are human readable labels
      */
     public function getSorts();
-
-    /**
-     * Get allowed sort field list
-     *
-     * @return string[]
-     */
-    public function getAllowedSorts();
 
     /**
      * Does this datasource supports pagination

@@ -47,7 +47,7 @@ trait AjaxControllerTrait
         }
 
         $renderer = $view->createRenderer($page->getDatasource(), $page->getInputDefinition()->createQueryFromRequest($request));
-
+echo $renderer->renderPartial('sort_links');
         return new JsonResponse([
             // @todo this is ugly, find a better way
             'query' => $renderer->getArguments()['query']->all(),
