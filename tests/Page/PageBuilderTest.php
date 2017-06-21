@@ -4,7 +4,6 @@ namespace MakinaCorpus\Dashboard\Tests\Page;
 
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Page\ConfigPageDefinition;
 use MakinaCorpus\Dashboard\Page\FormPageBuilder;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageResult;
@@ -14,6 +13,7 @@ use MakinaCorpus\Dashboard\Tests\Mock\FooPageDefinition;
 use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
+use MakinaCorpus\Dashboard\View\ViewDefinition;
 
 /**
  * Tests the page builder
@@ -102,16 +102,19 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $datasource = new IntArrayDatasource();
         $inputDefinition = new InputDefinition($datasource, ['limit_default' => 7]);
 
+        $viewDefinition = new ViewDefinition([
+            'default_display' => 'page',
+            'enabled_filters' => ['odd_or_even'],
+            'templates' => [
+                'page' => 'module:udashboard:views/Page/page.html.twig',
+            ],
+        ]);
         $pageBuilder = new PageBuilder($this->createTwigEnv(), new EventDispatcher());
         $pageBuilder
             ->setDatasource($datasource)
-            ->setAllowedTemplates([
-                'page' => 'module:udashboard:views/Page/page.html.twig',
-            ])
-            ->setDefaultDisplay('page')
             ->setInputDefinition($inputDefinition)
-            ->enableFilter('odd_or_even')
-            ->enableVisualFilter('mod3')
+            ->setViewDefinition($viewDefinition)
+            //->enableVisualFilter('mod3')
         ;
 
         $result = $pageBuilder->search($request);
@@ -122,9 +125,9 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $filters = $result->getFilters();
         $this->assertSame('odd_or_even', reset($filters)->getField());
         $this->assertSame('Odd or Even', reset($filters)->getTitle());
-        $visualFilters = $result->getVisualFilters();
-        $this->assertSame('mod3', reset($visualFilters)->getField());
-        $this->assertSame('Modulo 3', reset($visualFilters)->getTitle());
+//         $visualFilters = $result->getVisualFilters();
+//         $this->assertSame('mod3', reset($visualFilters)->getField());
+//         $this->assertSame('Modulo 3', reset($visualFilters)->getTitle());
 
         $items = $result->getItems();
         $query = $result->getQuery();
@@ -164,67 +167,21 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $datasource = new IntArrayDatasource();
         $inputDefinition = new InputDefinition($datasource, ['limit_default' => 7]);
 
+        $viewDefinition = new ViewDefinition([
+            'default_display' => 'page',
+            'enabled_filters' => ['odd_or_even'],
+            'templates' => [
+                'page' => 'module:udashboard:views/Page/page-dynamic-table.html.twig',
+            ],
+        ]);
+
         $pageBuilder = new PageBuilder($container->get('twig'), new EventDispatcher());
         $pageBuilder
             ->setDatasource($datasource)
-            ->setAllowedTemplates([
-                'page' => 'module:udashboard:views/Page/page-dynamic-table.html.twig',
-            ])
-            ->setDefaultDisplay('page')
+            ->setViewDefinition($viewDefinition)
             ->setInputDefinition($inputDefinition)
-            ->enableFilter('odd_or_even')
-            ->enableVisualFilter('mod3')
+            //->enableVisualFilter('mod3')
         ;
-
-        // Build a page, for fun
-        $rendered = $pageBuilder->searchAndRender($request);
-    }
-
-    /**
-     * Tests basics
-     */
-    public function testConfigPageBuilder()
-    {
-        $this->markTestSkipped("this api is being rewrote");
-
-        // We will test the action extension at the same time
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
-
-        $definition = new ConfigPageDefinition([
-            'base_query'        => [
-                'odd_or_even'   => 'even',
-            ],
-            'configuration'     => [
-                'limit_default' => "7",
-                'limit_allowed' => false,
-            ],
-            // @todo fixme, container must be in constructor for this to work...
-            //'datasource'        => '_test_datasource',
-            'datasource'        => new IntArrayDatasource(),
-            'default_display'   => 'page',
-            'disabled_sorts'    => [],
-            'disabled_filters'  => ['odd_or_even'],
-            'enabled_filters'   => ['mod3'],
-            'show_filters'      => true,
-            'show_pager'        => false,
-            'show_search'       => true,
-            'show_sort'         => false,
-            'templates'         => [
-                'page'          => 'module:udashboard:views/Page/page-dynamic-table.html.twig'
-            ],
-        ]);
-        $definition->setContainer($container);
-
-        $request = new Request([
-            'mod3' => 1,
-            'page' => 1,
-            'st' => 'value',
-            'by' => Query::SORT_DESC,
-        ], [], ['_route' => '_test_route']);
-
-        $pageBuilder = new PageBuilder($container->get('twig'), new EventDispatcher());
-        $definition->build($pageBuilder, $definition->createInputDefinition(), $request);
 
         // Build a page, for fun
         $rendered = $pageBuilder->searchAndRender($request);
@@ -245,16 +202,20 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $datasource = new IntArrayDatasource();
         $inputDefinition = new InputDefinition($datasource, ['limit_default' => 7]);
 
+        $viewDefinition = new ViewDefinition([
+            'default_display' => 'page',
+            'enabled_filters' => ['odd_or_even'],
+            'templates' => [
+                'page' => 'module:udashboard:views/Page/page.html.twig',
+            ],
+        ]);
+
         $pageBuilder = new FormPageBuilder($this->createTwigEnv(), new EventDispatcher(), $this->createFormFactory());
         $pageBuilder
             ->setDatasource($datasource)
-            ->setAllowedTemplates([
-                'page' => 'module:udashboard:views/Page/page.html.twig',
-            ])
-            ->setDefaultDisplay('page')
+            ->setViewDefinition($viewDefinition)
             ->setInputDefinition($inputDefinition)
-            ->enableFilter('odd_or_even')
-            ->enableVisualFilter('mod3')
+            //->enableVisualFilter('mod3')
             ->handleRequest($request)
         ;
 

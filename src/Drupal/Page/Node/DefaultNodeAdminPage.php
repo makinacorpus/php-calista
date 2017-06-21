@@ -3,10 +3,11 @@
 namespace MakinaCorpus\Dashboard\Drupal\Page\Node;
 
 use Drupal\Core\Session\AccountInterface;
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageDefinitionInterface;
+use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -75,12 +76,17 @@ class DefaultNodeAdminPage implements PageDefinitionInterface
      */
     public function build(PageBuilder $builder, InputDefinition $inputDefinition, Request $request)
     {
-        $builder
-            ->setAllowedTemplates([
+        $viewDefinition = new ViewDefinition([
+            'default_display' => 'page',
+            'templates' => [
                 'grid' => 'module:udashboard:views/Page/page-grid.html.twig',
                 'table' => 'module:udashboard:views/Page/page.html.twig',
-            ])
-            ->setDefaultDisplay('table')
+            ],
+        ]);
+
+        $builder
+            ->setInputDefinition($inputDefinition)
+            ->setViewDefinition($viewDefinition)
             ->setDatasource($this->getDatasource())
         ;
 

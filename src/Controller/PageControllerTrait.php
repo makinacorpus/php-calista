@@ -2,7 +2,6 @@
 
 namespace MakinaCorpus\Dashboard\Controller;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageBuilderFactory;
 use MakinaCorpus\Dashboard\Util\AdminTable;
@@ -69,20 +68,6 @@ trait PageControllerTrait
     protected function createPageBuilder($name = null, Request $request = null)
     {
         return $this->getWidgetFactory()->createPageBuilder($name, $request);
-    }
-
-    /**
-     * Render page
-     */
-    protected function renderPage(Request $request, DatasourceInterface $datasource, $templateName = null, array $arguments = [])
-    {
-        // @todo This will work in Drupal, but not in Symfony since it does
-        //   not return a real Response object, but a string instead
-        return $this
-            ->createPageBuilder()
-            ->setAllowedTemplates(['default' => $templateName])
-            ->searchAndRender($request, $arguments)
-        ;
     }
 
     /**

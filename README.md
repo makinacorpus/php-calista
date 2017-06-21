@@ -96,51 +96,6 @@ function mymodule_menu_alter(&$items) {
 ```
 The `AccountController::actionListAction` method will be called when hitting `admin/people`.
 
-### Controller
-
-```php
-<?php
-
-use MakinaCorpus\Dashboard\Controller\PageControllerTrait;
-use MakinaCorpus\Drupal\Sf\Controller;
-use Symfony\Component\HttpFoundation\Request;
-
-/**
- * User admin
- */
-class AccountController extends Controller
-{
-    /**
-     * Main list
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return string
-     */
-    public function accountListAction(Request $request)
-    {
-        /** @var \MakinaCorpus\Dashboard\Drupal\Datasource\DatasourceInterface $datasource */
-        $datasource = $this->get('mymodule.datasource.account');
-
-        return $this
-            ->createPageBuilder()
-            ->setDatasource($datasource)
-            ->setAllowedTemplates(
-                [
-                    'table' => 'module:mymodule:Page/page-account.html.twig',
-                ]
-            )
-            ->showFilters()
-            ->showSort()
-            ->showSearch()
-            ->setDefaultDisplay('table')
-            ->searchAndRender($request)
-        ;
-    }
-}
-```
-As you can see, our controller depends on a datasource and a template.
-
-
 ### Datasource
 
 A `DefaultAccountDatasource` is available and abstracts the main part of querying the `users` table, but you can add you own sorts for example
@@ -163,9 +118,9 @@ class AccountDatasource extends DefaultAccountDatasource
      *
      * @inheritdoc
      */
-    public function getSortFields($query)
+    public function getSortFields()
     {
-        $sortFields = parent::getSortFields($query);
+        $sortFields = parent::getSortFields();
 
         $sortFields['m.myfield_value'] = "my field";
 

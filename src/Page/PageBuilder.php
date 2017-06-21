@@ -2,10 +2,12 @@
 
 namespace MakinaCorpus\Dashboard\Page;
 
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\QueryFactory;
+use MakinaCorpus\Dashboard\Error\ConfigurationError;
 use MakinaCorpus\Dashboard\Event\PageBuilderEvent;
+use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -21,19 +23,10 @@ class PageBuilder
 
     private $datasource;
     private $debug = false;
-    private $defaultDisplay = 'table';
-    private $disabledSorts = [];
     private $dispatcher;
-    private $displayFilters = true;
-    private $displayPager = true;
-    private $displaySearch = true;
-    private $displaySort = true;
-    private $displayVisualSearch = false;
-    private $enabledFilters = [];
-    private $enabledVisualFilters = [];
     private $id;
     private $inputDefinition;
-    private $templates = [];
+    private $viewDefinition;
     private $twig;
 
     /**
@@ -67,7 +60,7 @@ class PageBuilder
     }
 
     /**
-     * Set configuration
+     * Set input definition
      *
      * @param InputDefinition $inputDefinition
      *
@@ -75,13 +68,8 @@ class PageBuilder
      */
     public function setInputDefinition(InputDefinition $inputDefinition)
     {
-        // In most cases, configuration will automatically be created only by
-        // setting the default limit, or if you set it manually, which means
-        // that overriding it will loose information: better throw an exception
-        // here and make the potential user error explicit; it'll save more
-        // lives that it will make developpers angry
         if ($this->inputDefinition) {
-            throw new \LogicException("you are overriding an already set configuration");
+            throw new ConfigurationError("you are overriding an already set input configuration");
         }
 
         $this->inputDefinition = $inputDefinition;
@@ -90,7 +78,7 @@ class PageBuilder
     }
 
     /**
-     * Get configuration
+     * Get input definition
      *
      * @return InputDefinition
      */
@@ -101,6 +89,38 @@ class PageBuilder
         }
 
         return $this->inputDefinition;
+    }
+
+    /**
+     * Set configuration
+     *
+     * @param ViewDefinition $viewDefinition
+     *
+     * @return $this
+     */
+    public function setViewDefinition(ViewDefinition $viewDefinition)
+    {
+        if ($this->viewDefinition) {
+            throw new ConfigurationError("you are overriding an already set view definition");
+        }
+
+        $this->viewDefinition = $viewDefinition;
+
+        return $this;
+    }
+
+    /**
+     * Get view definition
+     *
+     * @return ViewDefinition
+     */
+    public function getViewDefinition()
+    {
+        if (!$this->viewDefinition) {
+            $this->viewDefinition = new ViewDefinition();
+        }
+
+        return $this->viewDefinition;
     }
 
     /**
@@ -132,269 +152,29 @@ class PageBuilder
     }
 
     /**
-     * Set default display
-     *
-     * @param string $display
-     *   Display identifier
-     *
-     * @return $this
-     */
-    public function setDefaultDisplay($display)
-    {
-        $this->defaultDisplay = $display;
-
-        return $this;
-    }
-
-    /**
-     * Set allowed templates
-     *
-     * @param string[] $displays
-     *
-     * @return $this
-     */
-    public function setAllowedTemplates(array $displays)
-    {
-        $this->templates = $displays;
-
-        return $this;
-    }
-
-    /**
-     * Enable user filter display
-     *
-     * This has no effect if datasource don't provide filters
-     *
-     * @return $this
-     */
-    public function showFilters()
-    {
-        $this->displayFilters = true;
-
-        return $this;
-    }
-
-    /**
-     * Disable user filter display
-     *
-     * Filters will remain enabled, at least for base query set ones
-     *
-     * @return $this
-     */
-    public function hideFilters()
-    {
-        $this->displayFilters = false;
-
-        return $this;
-    }
-
-    /**
-     * Add filter from datasource
-     *
-     * @param string $filter
-     *
-     * @return $this
-     */
-    public function enableFilter($filter)
-    {
-        $this->enabledFilters[$filter] = true;
-
-        return $this;
-    }
-
-    /**
-     * Remove filter from datasource
-     *
-     * @param string $filter
-     *   The field from filter
-     *
-     * @return $this
-     */
-    public function disableFilter($filter)
-    {
-        unset($this->enabledFilters[$filter]);
-
-        return $this;
-    }
-
-    /**
-     * Enable pagination
-     *
-     * @return $this
-     */
-    public function showPager()
-    {
-        $this->displayPager = true;
-
-        return $this;
-    }
-
-    /**
-     * Disable pagination
-     *
-     * @return $this
-     */
-    public function hidePager()
-    {
-        $this->displayPager = false;
-
-        return $this;
-    }
-
-    /**
-     * Enable user search
-     *
-     * This has no effect if datasource don't support search
-     *
-     * @return $this
-     */
-    public function showSearch()
-    {
-        $this->displaySearch = true;
-
-        return $this;
-    }
-
-    /**
-     * Disable user search
-     *
-     * This will completely disable search
-     *
-     * @return $this
-     */
-    public function hideSearch()
-    {
-        $this->displaySearch = false;
-        $this->displayVisualSearch = false;
-
-        return $this;
-    }
-
-    /**
-     * Set the display of visual search filter.
-     *
-     * @return $this
-     */
-    public function showVisualSearch()
-    {
-        $this->displaySearch = true;
-        $this->displayVisualSearch = true;
-
-        return $this;
-    }
-
-    /**
-     * Set the display of visual search filter.
-     *
-     * @return $this
-     */
-    public function hideVisualSearch()
-    {
-        $this->displayVisualSearch = false;
-
-        return $this;
-    }
-
-    /**
-     * Is visual search filter enabled?
-     */
-    public function visualSearchIsEnabled()
-    {
-        return $this->displayVisualSearch;
-    }
-
-    /**
-     * Add visual filter from datasource
-     *
-     * @param string $filter
-     *
-     * @return $this
-     */
-    public function enableVisualFilter($filter)
-    {
-        $this->enabledVisualFilters[$filter] = true;
-
-        return $this;
-    }
-
-    /**
-     * Remove visual filter from datasource
-     *
-     * @param string $filter
-     *
-     * @return $this
-     */
-    public function disableVisualFilter($filter)
-    {
-        unset($this->enabledVisualFilters[$filter]);
-
-        return $this;
-    }
-
-    /**
-     * Enable user sorting
-     *
-     * This has no effect if datasource don't support sorting
-     *
-     * @return $this
-     */
-    public function showSort()
-    {
-        $this->displaySort = true;
-
-        return $this;
-    }
-
-    /**
-     * Disable user sorting
-     *
-     * This will completely disable sorting, only default will act
-     *
-     * @return $this
-     */
-    public function hideSort()
-    {
-        $this->displaySort = false;
-
-        return $this;
-    }
-
-    /**
-     * Disable a sort.
-     *
-     * Sorts are enabled by default but you can disable some.
-     *
-     * @param string $sort
-     *
-     * @return $this
-     */
-    public function disableSort($sort)
-    {
-        $this->disabledSorts[] = $sort;
-
-        return $this;
-    }
-
-    /**
      * Get default template
      *
      * @return string
      */
     private function getDefaultTemplate()
     {
-        if (empty($this->templates)) {
+        $viewDefinition = $this->getViewDefinition();
+        $templates = $viewDefinition->getTemplates();
+
+        if (empty($templates)) {
             throw new \InvalidArgumentException("page builder has no templates");
         }
 
-        if (isset($this->templates[$this->defaultDisplay])) {
-            return $this->templates[$this->defaultDisplay];
+        $default = $viewDefinition->getDefaultDisplay();
+        if (isset($templates[$default])) {
+            return $templates[$default];
         }
 
         if ($this->debug) {
             trigger_error("page builder has no explicit 'default' template set, using first in array", E_USER_WARNING);
         }
 
-        return reset($this->templates);
+        return reset($templates);
     }
 
     /**
@@ -411,7 +191,9 @@ class PageBuilder
             return $this->getDefaultTemplate();
         }
 
-        if (!isset($this->templates[$displayName])) {
+        $templates = $this->getViewDefinition()->getTemplates();
+
+        if (!isset($templates[$displayName])) {
             if ($this->debug) {
                 trigger_error(sprintf("%s: display has no associated template, switching to default", $displayName), E_USER_WARNING);
             }
@@ -423,7 +205,7 @@ class PageBuilder
             return $this->getDefaultTemplate();
         }
 
-        return $this->templates[$displayName];
+        return $templates[$displayName];
     }
 
     /**
@@ -464,19 +246,15 @@ class PageBuilder
         $items = $datasource->getItems($query);
 
         // Build allowed filters arrays
-        $filters = $visualFilters = [];
-        if ($baseFilters = $datasource->getFilters()) {
-            foreach ($baseFilters as $filter) {
-                if (array_key_exists($filter->getField(), $this->enabledFilters)) {
-                    $filters[] = $filter;
-                }
-                if (array_key_exists($filter->getField(), $this->enabledVisualFilters)) {
-                    $visualFilters[] = $filter;
-                }
+        $viewDefinition = $this->getViewDefinition();
+        $enabledFilters = [];
+        foreach ($datasource->getFilters() as $filter) {
+            if ($viewDefinition->isFilterDisplayed($filter->getField())) {
+                $enabledFilters[] = $filter;
             }
         }
 
-        return new PageResult($inputDefinition, $query, $items, $datasource->getSorts(), $filters, $visualFilters);
+        return new PageResult($inputDefinition, $query, $items, $datasource->getSorts(), $enabledFilters, []);
     }
 
     /**
@@ -494,11 +272,13 @@ class PageBuilder
     {
         $query = $result->getQuery();
         $display = $query->getCurrentDisplay();
+        $viewDefinition = $this->getViewDefinition();
+        $templates = $viewDefinition->getTemplates();
 
         // Build display links
         // @todo Do it better...
         $displayLinks = [];
-        foreach (array_keys($this->templates) as $name) {
+        foreach (array_keys($templates) as $name) {
             switch ($name) {
                 case 'grid':
                     $displayIcon = 'th';
@@ -516,13 +296,13 @@ class PageBuilder
             'itemClass'     => $this->getDatasource()->getItemClass(),
             'result'        => $result,
             'items'         => $result->getItems(),
-            'filters'       => $this->displayFilters ? $result->getFilters() : [],
-            'visualFilters' => $this->displayVisualSearch ? $result->getVisualFilters() : [],
+            'filters'       => $viewDefinition->getEnabledFilters() ? $result->getFilters() : [],
+            'visualFilters' => [],
             'sorts'         => $result->getSortCollection(),
             'query'         => $query,
             'display'       => $display,
             'displays'      => $displayLinks,
-            'hasPager'      => $this->displayPager && $this->inputDefinition->isSearchEnabled(),
+            'hasPager'      => $viewDefinition->isPagerEnabled() && $this->inputDefinition->isSearchEnabled(),
         ] + $arguments;
 
         $event = new PageBuilderEvent($this);

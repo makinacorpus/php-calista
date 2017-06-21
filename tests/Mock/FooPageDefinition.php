@@ -5,6 +5,7 @@ namespace MakinaCorpus\Dashboard\Tests\Mock;
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageDefinitionInterface;
+use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -37,13 +38,17 @@ class FooPageDefinition implements PageDefinitionInterface
      */
     public function build(PageBuilder $builder, InputDefinition $inputDefinition, Request $request)
     {
+        $viewDefinition = new ViewDefinition([
+            'default_display' => 'default',
+            'templates' => [
+                'default' => 'module:udashboard:views/Page/page.html.twig',
+            ],
+        ]);
+
         $builder
             ->setInputDefinition($inputDefinition)
+            ->setViewDefinition($viewDefinition)
             ->setDatasource($this->datasource)
-            ->setAllowedTemplates([
-                'default' => 'module:udashboard:views/Page/page.html.twig',
-            ])
-            ->setDefaultDisplay('default')
         ;
     }
 }
