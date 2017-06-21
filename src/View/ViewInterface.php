@@ -2,9 +2,9 @@
 
 namespace MakinaCorpus\Dashboard\View;
 
-use Symfony\Component\HttpFoundation\Response;
-use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
+use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Dashboard\Datasource\Query;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Represents a view, anything that can be displayed from datasource data
@@ -12,23 +12,28 @@ use MakinaCorpus\Dashboard\Datasource\Query;
 interface ViewInterface
 {
     /**
-     * Set view definition
-     *
-     * @param ViewDefinition $viewDefinition
-     */
-    public function setViewDefinition(ViewDefinition $viewDefinition);
-
-    /**
      * Render the view
      *
-     * @return string
+     * @param ViewDefinition $viewDefinition
+     *   The view configuration
+     * @param DatasourceResultInterface $items
+     *   Items from a datasource
+     * @param Query $query
+     *   Incoming query that was given to the datasource
      */
-    public function render(DatasourceInterface $datasource, Query $query);
+    public function render(ViewDefinition $viewDefinition, DatasourceResultInterface $items, Query $query);
 
     /**
      * Render the view as a response
      *
+     * @param ViewDefinition $viewDefinition
+     *   The view configuration
+     * @param DatasourceResultInterface $items
+     *   Items from a datasource
+     * @param Query $query
+     *   Incoming query that was given to the datasource
+     *
      * @return Response
      */
-    public function renderAsResponse(DatasourceInterface $datasource, Query $query);
+    public function renderAsResponse(ViewDefinition $viewDefinition, DatasourceResultInterface $items, Query $query);
 }

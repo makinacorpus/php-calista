@@ -91,9 +91,11 @@ trait PageControllerTrait
         $page = $factory->getPageDefinition($name);
         $viewDefinition = $page->getViewDefinition();
         $view = $factory->getView($viewDefinition->getViewType());
-        $view->setViewDefinition($viewDefinition);
 
-        return $view->render($page->getDatasource(), $page->getInputDefinition($inputOptions)->createQueryFromRequest($request));
+        $query = $page->getInputDefinition($inputOptions)->createQueryFromRequest($request);
+        $items = $page->getDatasource()->getItems($query);
+
+        return $view->render($viewDefinition, $items, $query);
     }
 
     /**
@@ -118,9 +120,11 @@ trait PageControllerTrait
         $page = $factory->getPageDefinition($name);
         $viewDefinition = $page->getViewDefinition();
         $view = $factory->getView($viewDefinition->getViewType());
-        $view->setViewDefinition($viewDefinition);
 
-        return $view->renderAsResponse($page->getDatasource(), $page->getInputDefinition($inputOptions)->createQueryFromRequest($request));
+        $query = $page->getInputDefinition($inputOptions)->createQueryFromRequest($request);
+        $items = $page->getDatasource()->getItems($query);
+
+        return $view->renderAsResponse($viewDefinition, $items, $query);
     }
 
     /**

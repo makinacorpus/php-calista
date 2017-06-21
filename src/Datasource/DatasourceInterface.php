@@ -63,16 +63,6 @@ interface DatasourceInterface
     public function supportsFulltextSearch();
 
     /**
-     * This method is called before all others, if some operations such as the
-     * filters building needing a request to the backend, then this is the place
-     * where you should probably do it
-     *
-     * @param Query $query
-     *   Incoming query parameters
-     */
-    public function init(Query $query);
-
-    /**
      * Get items to display
      *
      * This should NOT return rendered items but loaded items or item

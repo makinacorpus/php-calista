@@ -100,7 +100,6 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
             ],
         ]);
         $view = new TwigView($this->createTwigEnv(), new EventDispatcher());
-        $view->setViewDefinition($viewDefinition);//->enableVisualFilter('mod3')
 
         $this->markTestIncomplete("this needs to be fixed");
 
@@ -156,9 +155,10 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $view = new TwigView($container->get('twig'), new EventDispatcher());
-        $view->setViewDefinition($viewDefinition); //->enableVisualFilter('mod3')
+        $query = $inputDefinition->createQueryFromRequest($request);
+        $items = $datasource->getItems($query);
 
-        $output = $view->render($datasource, $inputDefinition->createQueryFromRequest($request));
+        $output = $view->render($viewDefinition, $items, $query);
     }
 
     /**
@@ -184,11 +184,13 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
             ],
         ]);
 
+        $query = $inputDefinition->createQueryFromRequest($request);
+        $items = $datasource->getItems($query);
+
         $view = new FormTwigView($this->createTwigEnv(), new EventDispatcher(), $this->createFormFactory());
-        $view->setViewDefinition($viewDefinition); //->enableVisualFilter('mod3')
         $view->handleRequest($request);
 
-        $renderer = $view->render($datasource, $inputDefinition->createQueryFromRequest($request));
+        $renderer = $view->render($viewDefinition, $items, $query);
         $output = $renderer->render();
     }
 }

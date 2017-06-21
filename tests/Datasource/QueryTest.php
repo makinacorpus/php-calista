@@ -61,7 +61,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(Query::LIMIT_DEFAULT, $query->getLimit());
         // Parameters are not changed
         $this->assertFalse($query->hasSortField());
-        $this->assertSame('', $query->getSortField());
+        $this->assertSame($inputDefinition->getDefaultSortField(), $query->getSortField());
         $this->assertSame(Query::SORT_DESC, $query->getSortOrder());
         $this->assertSame(1, $query->getPageNumber());
         $this->assertSame(0, $query->getOffset());

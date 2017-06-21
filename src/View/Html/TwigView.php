@@ -2,18 +2,19 @@
 
 namespace MakinaCorpus\Dashboard\View\Html;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
+use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Event\ViewEvent;
 use MakinaCorpus\Dashboard\Util\Link;
-use MakinaCorpus\Dashboard\View\AbstractView;
+use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Dashboard\View\ViewInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Uses a view definition and proceed to an html page display via Twig
  */
-class TwigView extends AbstractView
+class TwigView implements ViewInterface
 {
     const EVENT_VIEW = 'view:view';
     const EVENT_SEARCH = 'view:search';
@@ -58,15 +59,15 @@ class TwigView extends AbstractView
      *
      * @return string
      */
-    private function getDefaultTemplate()
+    private function getDefaultTemplate(ViewDefinition $viewDefinition)
     {
-        $templates = $this->viewDefinition->getTemplates();
+        $templates = $viewDefinition->getTemplates();
 
         if (empty($templates)) {
             throw new \InvalidArgumentException("page builder has no templates");
         }
 
-        $default = $this->viewDefinition->getDefaultDisplay();
+        $default = $viewDefinition->getDefaultDisplay();
         if (isset($templates[$default])) {
             return $templates[$default];
         }
@@ -86,13 +87,13 @@ class TwigView extends AbstractView
      *
      * @return string
      */
-    private function getTemplateFor($displayName = null, $fallback = null)
+    private function getTemplateFor(ViewDefinition $viewDefinition, $displayName = null, $fallback = null)
     {
         if (empty($displayName)) {
-            return $this->getDefaultTemplate();
+            return $this->getDefaultTemplate($viewDefinition);
         }
 
-        $templates = $this->viewDefinition->getTemplates();
+        $templates = $viewDefinition->getTemplates();
 
         if (!isset($templates[$displayName])) {
             if ($this->debug) {
@@ -103,7 +104,7 @@ class TwigView extends AbstractView
                 return $this->getTemplateFor($fallback);
             }
 
-            return $this->getDefaultTemplate();
+            return $this->getDefaultTemplate($viewDefinition);
         }
 
         return $templates[$displayName];
@@ -122,26 +123,27 @@ class TwigView extends AbstractView
     /**
      * Create template arguments
      *
-     * @param DatasourceInterface $datasource
+     * @param ViewDefinition $viewDefinition
+     * @param DatasourceResultInterface $items
      * @param Query $query
-     * @param array $arguments
      *
      * @return array
      */
-    protected function createTemplateArguments(DatasourceInterface $datasource, Query $query, array $arguments = [])
+    protected function createTemplateArguments(ViewDefinition $viewDefinition, DatasourceResultInterface $items, Query $query, array $arguments = [])
     {
-        $items = $this->execute($datasource, $query);
-
+        $inputDefinition = $query->getInputDefinition();
         $display = $query->getCurrentDisplay();
-        $templates = $this->viewDefinition->getTemplates();
+        $templates = $viewDefinition->getTemplates();
 
         // Build allowed filters arrays
         $enabledFilters = [];
+        /*
         foreach ($datasource->getFilters() as $filter) {
-            if ($this->viewDefinition->isFilterDisplayed($filter->getField())) {
+            if ($viewDefinition->isFilterDisplayed($filter->getField())) {
                 $enabledFilters[] = $filter;
             }
         }
+         */
 
         // Build display links
         // @todo Do it better...
@@ -161,51 +163,51 @@ class TwigView extends AbstractView
 
         return [
             'pageId'        => $this->getId(),
-            'input'         => $query->getInputDefinition(),
+            'input'         => $inputDefinition,
             'itemClass'     => $items->getItemClass(),
             'items'         => $items,
             'filters'       => $enabledFilters,
             'visualFilters' => [],
-            'sorts'         => $datasource->getSorts(),
+            'sorts'         => $inputDefinition->getAllowedSorts(),
             'query'         => $query,
             'display'       => $display,
             'displays'      => $displayLinks,
-            'hasPager'      => $this->viewDefinition->isPagerEnabled() && $this->inputDefinition->isSearchEnabled(),
+            'hasPager'      => $viewDefinition->isPagerEnabled() && $inputDefinition->isSearchEnabled(),
         ] + $arguments;
     }
 
     /**
      * Create the renderer
      *
-     * @param DatasourceInterface $datasource
+     * @param ViewDefinition $viewDefinition
+     * @param DatasourceResultInterface $items
      * @param Query $query
-     * @param array $arguments
      *
      * @return TwigRenderer
      */
-    public function createRenderer(DatasourceInterface $datasource, Query $query, array $arguments = [])
+    public function createRenderer(ViewDefinition $viewDefinition, DatasourceResultInterface $items, Query $query, array $arguments = [])
     {
         $event = new ViewEvent($this);
         $this->dispatcher->dispatch(TwigView::EVENT_VIEW, $event);
 
-        $arguments = $this->createTemplateArguments($datasource, $query, $arguments);
+        $arguments = $this->createTemplateArguments($viewDefinition, $items, $query, $arguments);
 
-        return new TwigRenderer($this->twig, $this->getTemplateFor($arguments['display']), $arguments);
+        return new TwigRenderer($this->twig, $this->getTemplateFor($viewDefinition, $arguments['display']), $arguments);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function render(DatasourceInterface $datasource, Query $query)
+    public function render(ViewDefinition $viewDefinition, DatasourceResultInterface $items, Query $query)
     {
-        return $this->createRenderer($datasource, $query)->render();
+        return $this->createRenderer($viewDefinition, $items, $query)->render();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function renderAsResponse(DatasourceInterface $datasource, Query $query)
+    public function renderAsResponse(ViewDefinition $viewDefinition, DatasourceResultInterface $items, Query $query)
     {
-        return new Response($this->render($datasource, $query));
+        return new Response($this->render($viewDefinition, $items, $query));
     }
 }

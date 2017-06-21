@@ -35,7 +35,6 @@ trait AjaxControllerTrait
             $page = $factory->getPageDefinition($request->get('name'));
             $viewDefinition = $page->getViewDefinition();
             $view = $factory->getView($viewDefinition->getViewType());
-            $view->setViewDefinition($viewDefinition);
         } catch (ServiceNotFoundException $e) {
             throw new NotFoundHttpException('Not Found');
         } catch (\InvalidArgumentException $e) {
@@ -46,8 +45,11 @@ trait AjaxControllerTrait
             throw new NotFoundHttpException('Not Found');
         }
 
-        $renderer = $view->createRenderer($page->getDatasource(), $page->getInputDefinition()->createQueryFromRequest($request));
-echo $renderer->renderPartial('sort_links');
+        $query = $page->getInputDefinition()->createQueryFromRequest($request);
+        $items = $page->getDatasource()->getItems($query);
+
+        $renderer = $view->createRenderer($viewDefinition, $items, $query);
+
         return new JsonResponse([
             // @todo this is ugly, find a better way
             'query' => $renderer->getArguments()['query']->all(),
