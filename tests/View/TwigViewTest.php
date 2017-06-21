@@ -12,6 +12,7 @@ use MakinaCorpus\Dashboard\View\Html\TwigView;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Tests the views
@@ -101,18 +102,16 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         ]);
         $view = new TwigView($this->createTwigEnv(), new EventDispatcher());
 
-        $this->markTestIncomplete("this needs to be fixed");
-
         // Ensure filters etc
-        $filters = $result->getFilters();
+        $filters = $inputDefinition->getFilters();
         $this->assertSame('odd_or_even', reset($filters)->getField());
         $this->assertSame('Odd or Even', reset($filters)->getTitle());
 //         $visualFilters = $result->getVisualFilters();
 //         $this->assertSame('mod3', reset($visualFilters)->getField());
 //         $this->assertSame('Modulo 3', reset($visualFilters)->getTitle());
 
-        $items = $result->getItems();
-        $query = $result->getQuery();
+        $query = $inputDefinition->createQueryFromRequest($request);
+        $items = $datasource->getItems($query);
 
         $this->assertCount(7, $items);
         $this->assertSame(3, $query->getPageNumber());
@@ -123,8 +122,8 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThan($itemsArray[1], $itemsArray[0]);
 
         // Build a page, for fun
-        $renderer = $view->createPageView($result);
-        $output = $pageView->render();
+        $response = $view->renderAsResponse($viewDefinition, $items, $query);
+        $this->assertInstanceOf(Response::class, $response);
     }
 
     /**
@@ -179,6 +178,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         $viewDefinition = new ViewDefinition([
             'default_display' => 'page',
             'enabled_filters' => ['odd_or_even'],
+            'show_sort' => true,
             'templates' => [
                 'page' => 'module:udashboard:views/Page/page.html.twig',
             ],
@@ -188,9 +188,8 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         $items = $datasource->getItems($query);
 
         $view = new FormTwigView($this->createTwigEnv(), new EventDispatcher(), $this->createFormFactory());
-        $view->handleRequest($request);
+        $view->handleRequest($request, $items);
 
-        $renderer = $view->render($viewDefinition, $items, $query);
-        $output = $renderer->render();
+        $output = $view->render($viewDefinition, $items, $query);
     }
 }

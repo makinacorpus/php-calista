@@ -4,8 +4,8 @@ namespace MakinaCorpus\Dashboard\Tests\Mock;
 
 use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
 use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
+use MakinaCorpus\Dashboard\Datasource\Filter;
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Util\Filter;
 
 /**
  * Uses an array as datasource
@@ -53,7 +53,10 @@ class IntArrayDatasource extends AbstractDatasource
      */
     public function getSorts()
     {
-        return ['value' => "Value"];
+        return [
+            'value' => "Value",
+            'odd_or_even' => 'Odd first',
+        ];
     }
 
     /**
@@ -107,9 +110,18 @@ class IntArrayDatasource extends AbstractDatasource
             }
         }
 
-        if ($query->hasSortField() && 'value' === $query->getSortField()) {
-            if (Query::SORT_DESC === $query->getSortOrder()) {
-                $allowedValues = array_reverse($allowedValues);
+        if ($query->hasSortField()) {
+            if ('value' === $query->getSortField()) {
+                if (Query::SORT_DESC === $query->getSortOrder()) {
+                    $allowedValues = array_reverse($allowedValues);
+                }
+            }
+            if ('odd_or_even' === $query->getSortField()) {
+                if (Query::SORT_DESC === $query->getSortOrder()) {
+                    // Not implemented yet
+                } else {
+                    // Not implemented yet
+                }
             }
         }
 

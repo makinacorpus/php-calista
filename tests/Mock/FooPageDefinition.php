@@ -42,7 +42,7 @@ class FooPageDefinition extends AbstractPageDefinition
             'templates' => [
                 'default' => 'module:udashboard:views/Page/page.html.twig',
             ],
-            'view_type' => 'twig_page',
+            'view_type' => TwigView::class,
         ]);
     }
 

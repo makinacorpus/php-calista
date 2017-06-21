@@ -137,13 +137,11 @@ class TwigView implements ViewInterface
 
         // Build allowed filters arrays
         $enabledFilters = [];
-        /*
-        foreach ($datasource->getFilters() as $filter) {
+        foreach ($inputDefinition->getFilters() as $filter) {
             if ($viewDefinition->isFilterDisplayed($filter->getField())) {
                 $enabledFilters[] = $filter;
             }
         }
-         */
 
         // Build display links
         // @todo Do it better...

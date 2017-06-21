@@ -2,8 +2,6 @@
 
 namespace MakinaCorpus\Dashboard\Datasource;
 
-use MakinaCorpus\Dashboard\Util\Filter;
-
 /**
  * Use this class to interface with the main dashboard page layout
  *

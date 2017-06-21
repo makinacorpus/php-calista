@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Util;
+namespace MakinaCorpus\Dashboard\Datasource;
 
-use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\Util\Link;
 
 /**
  * Default implementation that will convert a single hashmap to a set of links

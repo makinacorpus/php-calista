@@ -5,9 +5,9 @@ namespace MakinaCorpus\Dashboard\Drupal\Datasource\Account;
 use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
+use MakinaCorpus\Dashboard\Datasource\Filter;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Drupal\Datasource\QueryExtender\DrupalPager;
-use MakinaCorpus\Dashboard\Util\Filter;
 
 /**
  * Default data source for accounts

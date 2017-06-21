@@ -3,7 +3,9 @@
 namespace MakinaCorpus\Dashboard\View\Html;
 
 use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
+use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Form\Type\SelectionFormType;
+use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\LogicException;
@@ -262,11 +264,11 @@ class FormTwigView extends TwigView
     /**
      * {@inheritdoc}
      */
-    public function createView(Request $request, array $arguments = [])
+    public function createRenderer(ViewDefinition $viewDefinition, DatasourceResultInterface $items, Query $query, array $arguments = [])
     {
         $arguments['form'] = $this->getForm()->createView();
 
-        return parent::createView($request, $arguments);
+        return parent::createRenderer($viewDefinition, $items, $query, $arguments);
     }
 
     /**
@@ -310,20 +312,16 @@ class FormTwigView extends TwigView
      *
      * @param Request $request
      *   Incomming request
+     * @param DatasourceResultInterface $items
+     *   Current datasource result
      * @param callable $callback
      *   A callback accepting an item array as argument and that return an
      *   ordered array of identifier list (order should be the same as the
      *   input item array); Please note that the input argument is a valid
      *   DatasourceResultInterface instance
      */
-    public function handleRequest(Request $request, callable $callback = null)
+    public function handleRequest(Request $request, DatasourceResultInterface $items, callable $callback = null)
     {
-        // Fetch items
-        // @todo find a better way, this will run the query twice
-        $query = $this->getInputDefinition()->createQueryFromRequest($request);
-        $datasource = $this->getDatasource();
-        $items = $datasource->getItems($query);
-
         // Get items to work on
         $form = $this->getForm();
 

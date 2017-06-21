@@ -21,7 +21,7 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
         // @codeCoverageIgnoreEnd
         $definition = $container->getDefinition('udashboard.view_factory');
 
-        $types = [];
+        $types = $classes = [];
 
         // Register custom action providers
         $taggedServices = $container->findTaggedServiceIds('udashboard.page_definition');
@@ -45,13 +45,14 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
 
             $def->setShared(false);
             $types[$typeId] = $id;
+            $classes[$class] = $id;
         }
 
         if ($types) {
-            $definition->addMethodCall('registerPageDefinitions', [$types]);
+            $definition->addMethodCall('registerPageDefinitions', [$types, $classes]);
         }
 
-        $types = [];
+        $types = $classes = [];
 
         // Register custom action providers
         $taggedServices = $container->findTaggedServiceIds('udashboard.view');
@@ -75,10 +76,11 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
 
             $def->setShared(false);
             $types[$typeId] = $id;
+            $classes[$class] = $id;
         }
 
         if ($types) {
-            $definition->addMethodCall('registerViews', [$types]);
+            $definition->addMethodCall('registerViews', [$types, $classes]);
         }
     }
 }

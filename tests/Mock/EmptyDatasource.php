@@ -4,8 +4,8 @@ namespace MakinaCorpus\Dashboard\Tests\Mock;
 
 use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
 use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
+use MakinaCorpus\Dashboard\Datasource\Filter;
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Util\Filter;
 
 /**
  * Empty datasource

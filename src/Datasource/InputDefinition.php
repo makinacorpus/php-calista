@@ -3,8 +3,8 @@
 namespace MakinaCorpus\Dashboard\Datasource;
 
 use MakinaCorpus\Dashboard\Error\ConfigurationError;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Input query definition and sanitizer
@@ -127,6 +127,16 @@ class InputDefinition
     public function getAllowedFilters()
     {
         return $this->filterLabels;
+    }
+
+    /**
+     * Get filter instances
+     *
+     * @return Filter[]
+     */
+    public function getFilters()
+    {
+        return $this->filters;
     }
 
     /**
