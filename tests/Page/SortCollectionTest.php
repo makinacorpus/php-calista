@@ -32,7 +32,7 @@ class SortCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, count($sortCollection));
 
         $request = new Request(['st' => 'b', 'by' => 'asc', 'foo' => 'barr'], [], ['_route' => 'my_route']);
-        $query = (new QueryFactory())->fromRequest(new InputDefinition(new EmptyDatasource()), $request);
+        $query = (new QueryFactory())->fromRequest(new InputDefinition(new EmptyDatasource([], ['a', 'b', 'c'])), $request);
 
         $links = $sortCollection->getFieldLinks($query);
         $this->assertCount(3, $links);

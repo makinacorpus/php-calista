@@ -51,7 +51,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(0, $query->getOffset());
 
         $inputDefinition = new InputDefinition(
-            new EmptyDatasource(['foo', 'test', 'bar', 'baz', 'some']),
+            new EmptyDatasource(['foo', 'test', 'bar', 'baz', 'some'], ['toto']),
             [
                 'limit_allowed'     => true,
                 'limit_param'       => '_limit',

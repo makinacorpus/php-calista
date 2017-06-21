@@ -51,7 +51,7 @@ abstract class AbstractDatasource implements DatasourceInterface
      */
     public function getAllowedSorts()
     {
-        return $this->getSorts()->getAllowedSorts();
+        return array_keys($this->getSorts()->getAllowedSorts());
     }
 
     /**

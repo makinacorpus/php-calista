@@ -100,7 +100,10 @@ class Query
     {
         $sortFieldParameter = $this->inputDefinition->getSortFieldParameter();
         if ($sortFieldParameter && isset($this->routeParameters[$sortFieldParameter])) {
-            $this->sortField = (string)$this->routeParameters[$sortFieldParameter];
+            $sortField = $this->routeParameters[$sortFieldParameter];
+            if ($this->inputDefinition->isSortAllowed($sortField)) {
+                $this->sortField = (string)$this->routeParameters[$sortFieldParameter];
+            }
         }
 
         $sortOrderParameter = $this->inputDefinition->getSortOrderParameter();
