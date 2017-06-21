@@ -5,7 +5,7 @@ namespace MakinaCorpus\Dashboard\View\Html;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Event\ViewEvent;
-use MakinaCorpus\Dashboard\Page\Link;
+use MakinaCorpus\Dashboard\Util\Link;
 use MakinaCorpus\Dashboard\View\AbstractView;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;

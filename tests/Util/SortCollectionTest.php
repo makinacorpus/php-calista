@@ -1,12 +1,12 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Page\Tests;
+namespace MakinaCorpus\Dashboard\Util\Tests;
 
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Datasource\QueryFactory;
-use MakinaCorpus\Dashboard\Page\SortCollection;
 use MakinaCorpus\Dashboard\Tests\Mock\EmptyDatasource;
+use MakinaCorpus\Dashboard\Util\SortCollection;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

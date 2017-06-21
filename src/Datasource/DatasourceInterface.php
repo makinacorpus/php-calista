@@ -2,8 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\Datasource;
 
-use MakinaCorpus\Dashboard\Page\Filter;
-use MakinaCorpus\Dashboard\Page\SortCollection;
+use MakinaCorpus\Dashboard\Util\Filter;
+use MakinaCorpus\Dashboard\Util\SortCollection;
 
 /**
  * Use this class to interface with the main dashboard page layout

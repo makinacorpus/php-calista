@@ -5,8 +5,8 @@ namespace MakinaCorpus\Dashboard\Tests\Mock;
 use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
 use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Page\Filter;
-use MakinaCorpus\Dashboard\Page\SortCollection;
+use MakinaCorpus\Dashboard\Util\Filter;
+use MakinaCorpus\Dashboard\Util\SortCollection;
 
 /**
  * Uses an array as datasource

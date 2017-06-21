@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Page;
+namespace MakinaCorpus\Dashboard\Util;
 
 use MakinaCorpus\Dashboard\Datasource\Query;
 

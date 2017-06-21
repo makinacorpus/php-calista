@@ -4,10 +4,10 @@ namespace MakinaCorpus\Dashboard\Tests\View;
 
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Page\SortCollection;
 use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
 use MakinaCorpus\Dashboard\Tests\Mock\FooPageDefinition;
 use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
+use MakinaCorpus\Dashboard\Util\SortCollection;
 use MakinaCorpus\Dashboard\View\Html\FormTwigView;
 use MakinaCorpus\Dashboard\View\Html\TwigView;
 use MakinaCorpus\Dashboard\View\ViewDefinition;

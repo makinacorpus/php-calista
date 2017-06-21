@@ -7,7 +7,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Drupal\Datasource\QueryExtender\DrupalPager;
-use MakinaCorpus\Dashboard\Page\Filter;
+use MakinaCorpus\Dashboard\Util\Filter;
 
 /**
  * Default data source for accounts

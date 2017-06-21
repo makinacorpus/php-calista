@@ -2,8 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\Datasource;
 
-use MakinaCorpus\Dashboard\Page\SortCollection;
-use MakinaCorpus\Dashboard\Page\Filter;
+use MakinaCorpus\Dashboard\Util\Filter;
+use MakinaCorpus\Dashboard\Util\SortCollection;
 
 /**
  * Base implementation which leaves null a few mathods

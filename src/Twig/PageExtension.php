@@ -3,7 +3,7 @@
 namespace MakinaCorpus\Dashboard\Twig;
 
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Page\Filter;
+use MakinaCorpus\Dashboard\Util\Filter;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
@@ -303,7 +303,7 @@ class PageExtension extends \Twig_Extension
     {
         $definition = [];
 
-        /** @var \MakinaCorpus\Dashboard\Page\Filter $filter */
+        /** @var \MakinaCorpus\Dashboard\Util\Filter $filter */
         foreach ($filters as $filter) {
             $definition[] = [
                 'value'   => $filter->getField(),
@@ -327,7 +327,7 @@ class PageExtension extends \Twig_Extension
     {
         $filterQuery = [];
 
-        /** @var \MakinaCorpus\Dashboard\Page\Filter $filter */
+        /** @var \MakinaCorpus\Dashboard\Util\Filter $filter */
         foreach ($filters as $filter) {
             $field = $filter->getField();
             if (isset($query[$field])) {
