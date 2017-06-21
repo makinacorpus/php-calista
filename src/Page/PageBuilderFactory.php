@@ -119,9 +119,9 @@ final class PageBuilderFactory
             $builder->setId($name);
 
             $definition = $this->getPageDefinition($name);
-            $configuration = $definition->createConfiguration();
+            $inputDefinition = $definition->createInputDefinition();
 
-            $definition->build($builder, $configuration, $request);
+            $definition->build($builder, $inputDefinition, $request);
         }
     }
 

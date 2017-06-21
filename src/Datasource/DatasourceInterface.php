@@ -36,7 +36,14 @@ interface DatasourceInterface
      * @return Filter[]
      *   Keys does not matter, while values should be render arrays
      */
-    public function getFilters(Query $query);
+    public function getFilters();
+
+    /**
+     * Get allowed filterable field list
+     *
+     * @return string[]
+     */
+    public function getAllowedFilters();
 
     /**
      * Get sort fields
@@ -46,7 +53,28 @@ interface DatasourceInterface
      *
      * @return SortCollection
      */
-    public function getSorts(Query $query);
+    public function getSorts();
+
+    /**
+     * Get allowed sort field list
+     *
+     * @return string[]
+     */
+    public function getAllowedSorts();
+
+    /**
+     * Does this datasource supports pagination
+     *
+     * @return bool
+     */
+    public function supportsPagination();
+
+    /**
+     * Does this datasource supports full text search
+     *
+     * @return bool
+     */
+    public function supportsFulltextSearch();
 
     /**
      * This method is called before all others, if some operations such as the

@@ -2,9 +2,10 @@
 
 namespace MakinaCorpus\Dashboard\Page\Tests;
 
-use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\QueryFactory;
 use MakinaCorpus\Dashboard\Page\Filter;
+use MakinaCorpus\Dashboard\Tests\Mock\EmptyDatasource;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -34,7 +35,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(4, $filter->getChoicesMap());
 
         $request = new Request(['foo' => 'a|c'], [], ['_route' => 'where/should/I/go']);
-        $query = (new QueryFactory())->fromRequest(new Configuration(), $request);
+        $query = (new QueryFactory())->fromRequest(new InputDefinition(new EmptyDatasource()), $request);
 
         $links = $filter->getLinks($query);
         $this->assertCount(4, $links);

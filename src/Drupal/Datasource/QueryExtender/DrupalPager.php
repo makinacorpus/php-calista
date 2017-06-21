@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\Dashboard\Drupal\Datasource\QueryExtender;
 
-use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 
 /**
  * Query extender for Drupal paging that will override the element using
@@ -86,7 +86,7 @@ class DrupalPager extends \SelectQueryExtender
      *
      * @return $this
      */
-    public function setState(Configuration $state)
+    public function setState(InputDefinition $state)
     {
         $this->state = $state;
 

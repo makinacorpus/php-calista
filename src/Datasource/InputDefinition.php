@@ -5,15 +5,14 @@ namespace MakinaCorpus\Dashboard\Datasource;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Configuration for the query
+ * Input query definition and sanitizer
  *
  * @codeCoverageIgnore
  */
-class Configuration
+class InputDefinition
 {
-    /**
-     * @var mixed[]
-     */
+    private $allowedFilters = [];
+    private $allowedSorts = [];
     private $options = [];
 
     /**
@@ -21,15 +20,34 @@ class Configuration
      *
      * @param mixed[] $options
      */
-    public function __construct(array $options = [])
+    public function __construct(DatasourceInterface $datasource, array $options = [])
     {
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
         $this->options = $resolver->resolve($options);
+
+        $this->allowedFilters = $datasource->getAllowedFilters();
+        $this->allowedSorts = $datasource->getAllowedSorts();
+
+        if (!$datasource->supportsFulltextSearch()) {
+            if ($this->options['search_enable'] && !$this->options['search_parse']) {
+                // @todo should it be fatal?
+                trigger_error("datasource cannot do fulltext search, yet it is enabled, but search parse is disabled", E_USER_WARNING);
+                $this->options['search_enable'] = false;
+            }
+        }
+
+        if (!$datasource->supportsPagination()) {
+            if ($this->options['pager_enable']) {
+                // @todo should it be fatal?
+                trigger_error("datasource cannot do paging, yet it is enabled", E_USER_WARNING);
+                $this->options['search_enable'] = false;
+            }
+        }
     }
 
     /**
-     * Configuration option resolver
+     * Build options resolver
      *
      * @param OptionsResolver $resolver
      */
@@ -40,7 +58,6 @@ class Configuration
             'limit_allowed'     => false,
             'limit_default'     => Query::LIMIT_DEFAULT,
             'limit_param'       => 'limit',
-            'pager_element'     => 0,
             'pager_enable'      => true,
             'pager_param'       => 'page',
             'search_enable'     => false,
@@ -54,7 +71,6 @@ class Configuration
         $resolver->setAllowedTypes('limit_allowed', ['numeric', 'bool']);
         $resolver->setAllowedTypes('limit_default', ['numeric']);
         $resolver->setAllowedTypes('limit_param', ['string']);
-        $resolver->setAllowedTypes('pager_element', ['numeric']);
         $resolver->setAllowedTypes('pager_enable', ['numeric', 'bool']);
         $resolver->setAllowedTypes('pager_param', ['string']);
         $resolver->setAllowedTypes('search_enable', ['numeric', 'bool']);
@@ -62,6 +78,50 @@ class Configuration
         $resolver->setAllowedTypes('search_param', ['string']);
         $resolver->setAllowedTypes('sort_field_param', ['string']);
         $resolver->setAllowedTypes('sort_order_param', ['string']);
+    }
+
+    /**
+     * Get allowed filterable field list
+     *
+     * @return string[]
+     */
+    public function getAllowedFilters()
+    {
+        return $this->allowedFilters;
+    }
+
+    /**
+     * Is the given filter field allowed
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function isFilterAllowed($name)
+    {
+        return in_array($name, $this->allowedFilters);
+    }
+
+    /**
+     * Get allowed sort field list
+     *
+     * @return string[]
+     */
+    public function getAllowedSorts()
+    {
+        return $this->allowedSorts;
+    }
+
+    /**
+     * Is the given sort field allowed
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function isSortAllowed($name)
+    {
+        return in_array($name, $this->allowedSorts);
     }
 
     /**
@@ -122,19 +182,6 @@ class Configuration
     public function getPagerParameter()
     {
         return $this->options['pager_param'];
-    }
-
-    /**
-     * Get pager element
-     *
-     * @return int
-     *
-     * @deprecated
-     *   This is a Drupal only addition
-     */
-    public function getPagerElement()
-    {
-        return $this->options['pager_element'];
     }
 
     /**

@@ -12,7 +12,7 @@ class QueryFactory
     /**
      * Create query from array
      *
-     * @param Configuration $configuration
+     * @param InputDefinition $inputDefinition
      *   Current search configuration
      * @param array $request
      *   Incomming request
@@ -21,10 +21,10 @@ class QueryFactory
      *
      * @return Query
      */
-    public function fromArray(Configuration $configuration, array $input, array $baseQuery = [], $route = null)
+    public function fromArray(InputDefinition $inputDefinition, array $input, array $baseQuery = [], $route = null)
     {
         $rawSearchString = '';
-        $searchParameter = $configuration->getSearchParameter();
+        $searchParameter = $inputDefinition->getSearchParameter();
 
         // Append filter values from the request into the query
         $input = $this->normalizeInput($input);
@@ -34,11 +34,11 @@ class QueryFactory
         $routeParameters = $input;
 
         // Deal with search
-        if ($configuration->isSearchEnabled() && $searchParameter && !empty($input[$searchParameter])) {
+        if ($inputDefinition->isSearchEnabled() && $searchParameter && !empty($input[$searchParameter])) {
             $rawSearchString = $input[$searchParameter];
 
             // Parse search and merge it properly to the incomming query
-            if ($configuration->isSearchParsed()) {
+            if ($inputDefinition->isSearchParsed()) {
                 $parsedSearch = (new QueryStringParser())->parse($rawSearchString, $searchParameter);
 
                 if ($parsedSearch) {
@@ -61,7 +61,7 @@ class QueryFactory
         // query string for full text search, so just flatten this query
         // parameter
         return new Query(
-            $configuration,
+            $inputDefinition,
             $route,
             $this->flattenQuery($this->applyBaseQuery($input, $baseQuery), [$searchParameter]),
             $this->flattenQuery($this->applyBaseQuery($routeParameters, $baseQuery), [$searchParameter]),
@@ -72,7 +72,7 @@ class QueryFactory
     /**
      * Create query from request
      *
-     * @param Configuration $configuration
+     * @param InputDefinition $inputDefinition
      *   Current search configuration
      * @param Request $request
      *   Incomming request
@@ -81,12 +81,12 @@ class QueryFactory
      *
      * @return Query
      */
-    public function fromRequest(Configuration $configuration, Request $request, array $baseQuery = [])
+    public function fromRequest(InputDefinition $inputDefinition, Request $request, array $baseQuery = [])
     {
         $route = $request->attributes->get('_route');
         $input = array_merge($request->query->all(), $request->attributes->get('_route_params', []));
 
-        return $this->fromArray($configuration, $input, $baseQuery, $route);
+        return $this->fromArray($inputDefinition, $input, $baseQuery, $route);
     }
 
     /**

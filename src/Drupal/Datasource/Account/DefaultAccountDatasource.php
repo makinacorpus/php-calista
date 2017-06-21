@@ -36,7 +36,7 @@ class DefaultAccountDatasource extends AbstractDatasource
      *
      * {@inheritdoc}
      */
-    public function getFilters($query)
+    public function getFilters()
     {
         $roles = user_roles(true);
         unset($roles[DRUPAL_AUTHENTICATED_RID]);

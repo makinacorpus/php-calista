@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\Dashboard\Page;
 
-use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,11 +13,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * This is a very basic implementation, it will need some work.
  */
-class ConfigPageBuilderDefinition implements PageDefinitionInterface
+class ConfigPageDefinition implements PageDefinitionInterface
 {
     use ContainerAwareTrait;
 
-    private $configuration;
+    private $datasource;
+    private $inputDefinition;
     private $definition;
 
     /**
@@ -30,21 +31,22 @@ class ConfigPageBuilderDefinition implements PageDefinitionInterface
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
         $this->definition = $resolver->resolve($definition);
+        $this->datasource = $this->resolveDatasource();
 
         // Resolve query/datasource configuration from array
         if ($this->definition['configuration']) {
-            if ($this->definition['configuration'] instanceof Configuration) {
-                $this->configuration = $this->definition['configuration'];
+            if ($this->definition['configuration'] instanceof InputDefinition) {
+                $this->inputDefinition = $this->definition['configuration'];
             } else {
-                $this->configuration = new Configuration($this->definition['configuration']);
+                $this->inputDefinition = new InputDefinition($this->datasource, $this->definition['configuration']);
             }
         } else {
-            $this->configuration = new Configuration();
+            $this->inputDefinition = new InputDefinition($this->datasource);
         }
     }
 
     /**
-     * Configuration option resolver
+     * InputDefinition option resolver
      *
      * @param OptionsResolver $resolver
      */
@@ -67,7 +69,7 @@ class ConfigPageBuilderDefinition implements PageDefinitionInterface
         $resolver->setRequired('datasource', 'templates');
 
         $resolver->setAllowedTypes('base_query', ['array']);
-        $resolver->setAllowedTypes('configuration', ['array', Configuration::class]);
+        $resolver->setAllowedTypes('configuration', ['array', InputDefinition::class]);
         $resolver->setAllowedTypes('datasource', ['string', DatasourceInterface::class]);
         $resolver->setAllowedTypes('default_display', ['string']);
         $resolver->setAllowedTypes('disabled_sorts', ['array']);
@@ -86,11 +88,11 @@ class ConfigPageBuilderDefinition implements PageDefinitionInterface
      * @param mixed[] $options = []
      *   Options overrides
      *
-     * @return Configuration
+     * @return InputDefinition
      */
-    public function createConfiguration(array $options = [])
+    public function createInputDefinition(array $options = [])
     {
-        return $this->configuration;
+        return $this->inputDefinition;
     }
 
     /**
@@ -98,7 +100,7 @@ class ConfigPageBuilderDefinition implements PageDefinitionInterface
      *
      * @return DatasourceInterface
      */
-    private function findDatasource()
+    private function resolveDatasource()
     {
         $datasourceOrId = $this->definition['datasource'];
 
@@ -125,15 +127,13 @@ class ConfigPageBuilderDefinition implements PageDefinitionInterface
      * Build the page parameters
      *
      * @param PageBuilder $builder
-     * @param Configuration $configuration
+     * @param InputDefinition $inputDefinition
      * @param Request $request
      */
-    public function build(PageBuilder $builder, Configuration $configuration, Request $request)
+    public function build(PageBuilder $builder, InputDefinition $inputDefinition, Request $request)
     {
-        $datasource = $this->findDatasource();
-
         $builder
-            ->setDatasource($datasource)
+            ->setDatasource($this->datasource)
             ->setBaseQuery($this->definition['base_query'])
             ->setAllowedTemplates($this->definition['templates'])
             ->setDefaultDisplay($this->definition['default_display'])

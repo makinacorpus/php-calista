@@ -2,9 +2,9 @@
 
 namespace MakinaCorpus\Dashboard\Tests\Page;
 
-use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Page\ConfigPageBuilderDefinition;
+use MakinaCorpus\Dashboard\Page\ConfigPageDefinition;
 use MakinaCorpus\Dashboard\Page\FormPageBuilder;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageResult;
@@ -38,7 +38,7 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(PageBuilder::class, $builder);
         $this->assertSame('_test_page_definition', $builder->getId());
         $this->assertInstanceOf(IntArrayDatasource::class, $builder->getDatasource());
-        $this->assertSame('_limit', $builder->getConfiguration()->getLimitParameter());
+        $this->assertSame('_limit', $builder->getInputDefinition()->getLimitParameter());
 
         // And by identifier, and ensure the identifier is not the same as
         // the service identifier, but the one we added in the tag
@@ -46,14 +46,14 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(PageBuilder::class, $builder);
         $this->assertSame('int_array_page', $builder->getId());
         $this->assertInstanceOf(IntArrayDatasource::class, $builder->getDatasource());
-        $this->assertSame('_limit', $builder->getConfiguration()->getLimitParameter());
+        $this->assertSame('_limit', $builder->getInputDefinition()->getLimitParameter());
 
         // And by class
         $builder = $factory->createPageBuilder(FooPageDefinition::class, $request);
         $this->assertSame(FooPageDefinition::class, $builder->getId());
         $this->assertInstanceOf(PageBuilder::class, $builder);
         $this->assertInstanceOf(IntArrayDatasource::class, $builder->getDatasource());
-        $this->assertSame('_limit', $builder->getConfiguration()->getLimitParameter());
+        $this->assertSame('_limit', $builder->getInputDefinition()->getLimitParameter());
 
         // Ensure we have some stuff that do not work
         try {
@@ -99,23 +99,24 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
             'by' => Query::SORT_DESC,
         ], [], ['_route' => '_test_route']);
 
-        $configuration = new Configuration(['limit_default' => 7]);
+        $datasource = new IntArrayDatasource();
+        $inputDefinition = new InputDefinition($datasource, ['limit_default' => 7]);
 
         $pageBuilder = new PageBuilder($this->createTwigEnv(), new EventDispatcher());
         $pageBuilder
-            ->setDatasource(new IntArrayDatasource())
+            ->setDatasource($datasource)
             ->setAllowedTemplates([
                 'page' => 'module:udashboard:views/Page/page.html.twig',
             ])
             ->setDefaultDisplay('page')
-            ->setConfiguration($configuration)
+            ->setInputDefinition($inputDefinition)
             ->enableFilter('odd_or_even')
             ->enableVisualFilter('mod3')
         ;
 
         $result = $pageBuilder->search($request);
         $this->assertInstanceOf(PageResult::class, $result);
-        $this->assertSame($configuration, $pageBuilder->getConfiguration());
+        $this->assertSame($inputDefinition, $pageBuilder->getInputDefinition());
 
         // Ensure filters etc
         $filters = $result->getFilters();
@@ -160,22 +161,23 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
             'by' => Query::SORT_DESC,
         ], [], ['_route' => '_test_route']);
 
-        $configuration = new Configuration(['limit_default' => 7]);
+        $datasource = new IntArrayDatasource();
+        $inputDefinition = new InputDefinition($datasource, ['limit_default' => 7]);
 
         $pageBuilder = new PageBuilder($container->get('twig'), new EventDispatcher());
         $pageBuilder
-            ->setDatasource(new IntArrayDatasource())
+            ->setDatasource($datasource)
             ->setAllowedTemplates([
                 'page' => 'module:udashboard:views/Page/page-dynamic-table.html.twig',
             ])
             ->setDefaultDisplay('page')
-            ->setConfiguration($configuration)
+            ->setInputDefinition($inputDefinition)
             ->enableFilter('odd_or_even')
             ->enableVisualFilter('mod3')
         ;
 
         // Build a page, for fun
-        echo $rendered = $pageBuilder->searchAndRender($request);
+        $rendered = $pageBuilder->searchAndRender($request);
     }
 
     /**
@@ -187,7 +189,7 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         $container = $this->createContainerWithPageDefinitions();
         $container->compile();
 
-        $definition = new ConfigPageBuilderDefinition([
+        $definition = new ConfigPageDefinition([
             'base_query'        => [
                 'odd_or_even'   => 'even',
             ],
@@ -195,7 +197,9 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
                 'limit_default' => "7",
                 'limit_allowed' => false,
             ],
-            'datasource'        => '_test_datasource',
+            // @todo fixme, container must be in constructor for this to work...
+            //'datasource'        => '_test_datasource',
+            'datasource'        => new IntArrayDatasource(),
             'default_display'   => 'page',
             'disabled_sorts'    => [],
             'disabled_filters'  => ['odd_or_even'],
@@ -218,10 +222,10 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
         ], [], ['_route' => '_test_route']);
 
         $pageBuilder = new PageBuilder($container->get('twig'), new EventDispatcher());
-        $definition->build($pageBuilder, $definition->createConfiguration(), $request);
+        $definition->build($pageBuilder, $definition->createInputDefinition(), $request);
 
         // Build a page, for fun
-        echo $rendered = $pageBuilder->searchAndRender($request);
+        $rendered = $pageBuilder->searchAndRender($request);
     }
 
     /**
@@ -236,16 +240,17 @@ class PageBuilderTest extends \PHPUnit_Framework_TestCase
             'by' => Query::SORT_DESC,
         ], [], ['_route' => '_test_route']);
 
-        $configuration = new Configuration(['limit_default' => 7]);
+        $datasource = new IntArrayDatasource();
+        $inputDefinition = new InputDefinition($datasource, ['limit_default' => 7]);
 
         $pageBuilder = new FormPageBuilder($this->createTwigEnv(), new EventDispatcher(), $this->createFormFactory());
         $pageBuilder
-            ->setDatasource(new IntArrayDatasource())
+            ->setDatasource($datasource)
             ->setAllowedTemplates([
                 'page' => 'module:udashboard:views/Page/page.html.twig',
             ])
             ->setDefaultDisplay('page')
-            ->setConfiguration($configuration)
+            ->setInputDefinition($inputDefinition)
             ->enableFilter('odd_or_even')
             ->enableVisualFilter('mod3')
             ->handleRequest($request)

@@ -14,9 +14,9 @@ class Query
 
     private $allowedFilters = [];
     private $baseQuery = [];
-    private $configuration;
     private $currentDisplay = '';
     private $filters = [];
+    private $inputDefinition;
     private $limit = self::LIMIT_DEFAULT;
     private $page = 1;
     private $rawSearchString = '';
@@ -28,7 +28,7 @@ class Query
     /**
      * Default constructor
      *
-     * @param Configuration $configuration
+     * @param InputDefinition $inputDefinition
      *   Current configuration
      * @param string $route
      *   Current route
@@ -37,10 +37,10 @@ class Query
      * @param string[] $filters
      *   Current filters (including defaults)
      */
-    public function __construct(Configuration $configuration, $route, array $filters = [], array $routeParameters = [], array $baseQuery = [])
+    public function __construct(InputDefinition $inputDefinition, $route, array $filters = [], array $routeParameters = [], array $baseQuery = [])
     {
         $this->baseQuery = $baseQuery;
-        $this->configuration = $configuration;
+        $this->inputDefinition = $inputDefinition;
         $this->filters = $filters;
         $this->route = $route;
         $this->routeParameters = $routeParameters;
@@ -56,25 +56,25 @@ class Query
      */
     private function findRange()
     {
-        if (!$this->configuration->isLimitAllowed()) {
+        if (!$this->inputDefinition->isLimitAllowed()) {
             // Limit cannot be changed
-            $this->limit = $this->configuration->getDefaultLimit();
+            $this->limit = $this->inputDefinition->getDefaultLimit();
         } else {
             // Limit can be changed, we must find it from the parameters
-            $limitParameter = $this->configuration->getLimitParameter();
+            $limitParameter = $this->inputDefinition->getLimitParameter();
             if ($limitParameter && isset($this->routeParameters[$limitParameter])) {
                 $this->limit = (int)$this->routeParameters[$limitParameter];
             }
 
             // Additional security, do not allow negative or 0 limit
             if ($this->limit <= 0) {
-                $this->limit = $this->configuration->getDefaultLimit();
+                $this->limit = $this->inputDefinition->getDefaultLimit();
             }
         }
 
         // Pager initialization, only if enabled
-        if ($this->configuration->isPagerEnabled()) {
-            $pageParameter = $this->configuration->getPagerParameter();
+        if ($this->inputDefinition->isPagerEnabled()) {
+            $pageParameter = $this->inputDefinition->getPagerParameter();
             if ($pageParameter && isset($this->routeParameters[$pageParameter])) {
                 $this->page = (int)$this->routeParameters[$pageParameter];
             }
@@ -91,12 +91,12 @@ class Query
      */
     private function findSort()
     {
-        $sortFieldParameter = $this->configuration->getSortFieldParameter();
+        $sortFieldParameter = $this->inputDefinition->getSortFieldParameter();
         if ($sortFieldParameter && isset($this->routeParameters[$sortFieldParameter])) {
             $this->sortField = (string)$this->routeParameters[$sortFieldParameter];
         }
 
-        $sortOrderParameter = $this->configuration->getSortOrderParameter();
+        $sortOrderParameter = $this->inputDefinition->getSortOrderParameter();
         if ($sortOrderParameter && isset($this->routeParameters[$sortOrderParameter])) {
             $this->sortOrder = strtolower($this->routeParameters[$sortOrderParameter]) === self::SORT_DESC ? self::SORT_DESC : self::SORT_ASC;
         }
@@ -107,8 +107,8 @@ class Query
      */
     private function findSearch()
     {
-        if ($this->configuration->isSearchEnabled()) {
-            $searchParameter = $this->configuration->getSearchParameter();
+        if ($this->inputDefinition->isSearchEnabled()) {
+            $searchParameter = $this->inputDefinition->getSearchParameter();
             if ($searchParameter && isset($this->routeParameters[$searchParameter])) {
                 $this->rawSearchString = (string)$this->routeParameters[$searchParameter];
             }
@@ -120,7 +120,7 @@ class Query
      */
     private function findCurrentDisplay()
     {
-        $displayParameter = $this->configuration->getDisplayParameter();
+        $displayParameter = $this->inputDefinition->getDisplayParameter();
         if ($displayParameter && isset($this->routeParameters[$displayParameter])) {
             $this->currentDisplay = (string)$this->routeParameters[$displayParameter];
         }
@@ -152,13 +152,13 @@ class Query
     }
 
     /**
-     * Get configuration
+     * Get input definition
      *
-     * @return Configuration
+     * @return InputDefinition
      */
-    public function getConfiguration()
+    public function getInputDefinition()
     {
-        return $this->configuration;
+        return $this->inputDefinition;
     }
 
     /**

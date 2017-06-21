@@ -34,7 +34,7 @@ class IntArrayDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function getFilters(Query $query)
+    public function getFilters()
     {
         return [
             (new Filter('odd_or_even', "Odd or Even"))->setChoicesMap([
@@ -52,7 +52,7 @@ class IntArrayDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function getSorts(Query $query)
+    public function getSorts()
     {
         return new SortCollection(
             [

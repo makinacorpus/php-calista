@@ -56,7 +56,7 @@ class DefaultNodeDatasource extends AbstractDatasource
      *
      * {@inheritdoc}
      */
-    public function getFilters($query)
+    public function getFilters()
     {
         // @todo build commong database filters for node datasource into some
         //   trait or abstract implemetnation to avoid duplicates

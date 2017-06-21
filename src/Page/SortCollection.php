@@ -39,6 +39,16 @@ class SortCollection implements \Countable
     }
 
     /**
+     * Get allowed sort field list
+     *
+     * @return string[]
+     */
+    public function getAllowedSorts()
+    {
+        return $this->allowed;
+    }
+
+    /**
      * Get current page sort field
      *
      * @param Query $query
@@ -118,7 +128,7 @@ class SortCollection implements \Countable
         $route    = $query->getRoute();
         $params   = $query->getRouteParameters();
         $current  = $query->getSortField();
-        $param    = $query->getConfiguration()->getSortFieldParameter();
+        $param    = $query->getInputDefinition()->getSortFieldParameter();
 
         foreach ($this->allowed as $value => $label) {
             $this->links[] = $this->buildLink($params, $route, $param, $value, $label, $current, $this->defaultField);
@@ -139,7 +149,7 @@ class SortCollection implements \Countable
         $route    = $query->getRoute();
         $params   = $query->getRouteParameters();
         $current  = $query->getSortField();
-        $param    = $query->getConfiguration()->getSortOrderParameter();
+        $param    = $query->getInputDefinition()->getSortOrderParameter();
 
         foreach ([
             Query::SORT_ASC   => "ascending",

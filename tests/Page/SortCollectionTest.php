@@ -2,10 +2,11 @@
 
 namespace MakinaCorpus\Dashboard\Page\Tests;
 
-use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Datasource\QueryFactory;
 use MakinaCorpus\Dashboard\Page\SortCollection;
+use MakinaCorpus\Dashboard\Tests\Mock\EmptyDatasource;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -31,7 +32,7 @@ class SortCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, count($sortCollection));
 
         $request = new Request(['st' => 'b', 'by' => 'asc', 'foo' => 'barr'], [], ['_route' => 'my_route']);
-        $query = (new QueryFactory())->fromRequest(new Configuration(), $request);
+        $query = (new QueryFactory())->fromRequest(new InputDefinition(new EmptyDatasource()), $request);
 
         $links = $sortCollection->getFieldLinks($query);
         $this->assertCount(3, $links);

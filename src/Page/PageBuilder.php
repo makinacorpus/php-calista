@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\Dashboard\Page;
 
-use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use MakinaCorpus\Dashboard\Datasource\QueryFactory;
 use MakinaCorpus\Dashboard\Event\PageBuilderEvent;
@@ -20,7 +20,6 @@ class PageBuilder
     const EVENT_SEARCH = 'pagebuilder:search';
 
     private $baseQuery = [];
-    private $configuration;
     private $datasource;
     private $debug = false;
     private $defaultDisplay = 'table';
@@ -34,6 +33,7 @@ class PageBuilder
     private $enabledFilters = [];
     private $enabledVisualFilters = [];
     private $id;
+    private $inputDefinition;
     private $templates = [];
     private $twig;
 
@@ -70,22 +70,22 @@ class PageBuilder
     /**
      * Set configuration
      *
-     * @param Configuration $configuration
+     * @param InputDefinition $inputDefinition
      *
      * @return $this
      */
-    public function setConfiguration(Configuration $configuration)
+    public function setInputDefinition(InputDefinition $inputDefinition)
     {
         // In most cases, configuration will automatically be created only by
         // setting the default limit, or if you set it manually, which means
         // that overriding it will loose information: better throw an exception
         // here and make the potential user error explicit; it'll save more
         // lives that it will make developpers angry
-        if ($this->configuration) {
+        if ($this->inputDefinition) {
             throw new \LogicException("you are overriding an already set configuration");
         }
 
-        $this->configuration = $configuration;
+        $this->inputDefinition = $inputDefinition;
 
         return $this;
     }
@@ -93,15 +93,15 @@ class PageBuilder
     /**
      * Get configuration
      *
-     * @return Configuration
+     * @return InputDefinition
      */
-    public function getConfiguration()
+    public function getInputDefinition()
     {
-        if (!$this->configuration) {
-            $this->configuration = new Configuration();
+        if (!$this->inputDefinition) {
+            $this->inputDefinition = new InputDefinition($this->getDatasource());
         }
 
-        return $this->configuration;
+        return $this->inputDefinition;
     }
 
     /**
@@ -476,8 +476,6 @@ class PageBuilder
      *
      * @param Request $request
      *   Incoming request
-     * @param Configuration $configuration
-     *   Configuration
      *
      * @return PageResult
      */
@@ -487,8 +485,8 @@ class PageBuilder
         $this->dispatcher->dispatch(PageBuilder::EVENT_SEARCH, $event);
 
         // Build query from configuration
-        $configuration = $this->getConfiguration();
-        $query = (new QueryFactory())->fromRequest($configuration, $request, $this->baseQuery);
+        $inputDefinition = $this->getInputDefinition();
+        $query = (new QueryFactory())->fromRequest($inputDefinition, $request, $this->baseQuery);
 
         // Initialize properly datasource then execute
         $datasource = $this->getDatasource();
@@ -497,7 +495,7 @@ class PageBuilder
 
         // Build allowed filters arrays
         $filters = $visualFilters = [];
-        if ($baseFilters = $datasource->getFilters($query)) {
+        if ($baseFilters = $datasource->getFilters()) {
             foreach ($baseFilters as $filter) {
                 if (array_key_exists($filter->getField(), $this->enabledFilters)) {
                     $filters[] = $filter;
@@ -508,7 +506,7 @@ class PageBuilder
             }
         }
 
-        return new PageResult($configuration, $query, $items, $datasource->getSorts($query), $filters, $visualFilters);
+        return new PageResult($inputDefinition, $query, $items, $datasource->getSorts(), $filters, $visualFilters);
     }
 
     /**
@@ -554,7 +552,7 @@ class PageBuilder
             'query'         => $query,
             'display'       => $display,
             'displays'      => $displayLinks,
-            'hasPager'      => $this->displayPager && $this->configuration->isSearchEnabled(),
+            'hasPager'      => $this->displayPager && $this->inputDefinition->isSearchEnabled(),
         ] + $arguments;
 
         $event = new PageBuilderEvent($this);

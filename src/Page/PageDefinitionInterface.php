@@ -3,7 +3,7 @@
 namespace MakinaCorpus\Dashboard\Page;
 
 use Symfony\Component\HttpFoundation\Request;
-use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 
 /**
  * A page type is a re-usable specific page builder, that will allow you to,
@@ -21,16 +21,16 @@ interface PageDefinitionInterface
      * @param mixed[] $options = []
      *   Options overrides
      *
-     * @return Configuration
+     * @return InputDefinition
      */
-    public function createConfiguration(array $options = []);
+    public function createInputDefinition(array $options = []);
 
     /**
      * Build the page parameters
      *
      * @param PageBuilder $builder
-     * @param Configuration $configuration
+     * @param InputDefinition $inputDefinition
      * @param Request $request
      */
-    public function build(PageBuilder $builder, Configuration $configuration, Request $request);
+    public function build(PageBuilder $builder, InputDefinition $inputDefinition, Request $request);
 }

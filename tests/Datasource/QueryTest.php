@@ -2,10 +2,11 @@
 
 namespace MakinaCorpus\Dashboard\Tests\Datasource;
 
-use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Datasource\QueryFactory;
 use MakinaCorpus\Dashboard\Datasource\QueryStringParser;
+use MakinaCorpus\Dashboard\Tests\Mock\EmptyDatasource;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -31,11 +32,11 @@ class QueryTest extends \PHPUnit_Framework_TestCase
 
         $factory = new QueryFactory();
 
-        $configuration = new Configuration([
+        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
             'limit_allowed' => false,
             'limit_param'   => '_limit',
         ]);
-        $query = $factory->fromRequest($configuration, $request);
+        $query = $factory->fromRequest($inputDefinition, $request);
         // Limit is not overridable per default
         $this->assertSame(Query::LIMIT_DEFAULT, $query->getLimit());
         // Parameters are not changed
@@ -45,7 +46,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $query->getPageNumber());
         $this->assertSame(0, $query->getOffset());
 
-        $configuration = new Configuration([
+        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
             'limit_allowed'     => true,
             'limit_param'       => '_limit',
             'pager_enable'      => true,
@@ -53,7 +54,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             'sort_field_param'  => '_st',
             'sort_order_param'  => '_by'
         ]);
-        $query = $factory->fromRequest($configuration, $request);
+        $query = $factory->fromRequest($inputDefinition, $request);
         // Limit is not overridable per default
         $this->assertSame(12, $query->getLimit());
         $this->assertTrue($query->hasSortField());
@@ -86,15 +87,15 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             'search'  => $search,
         ]);
 
-        $configuration = new Configuration([
+        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
             'search_enable' => true,
             'search_param'  => 'search',
             'search_parse'  => true,
         ]);
 
         $factory = new QueryFactory();
-        $queryFromArray = $factory->fromArray($configuration, ['foo' => ['c', 'd', 'e'], 'bar' => 'baz', 'search' => $search]);
-        $queryFromRequest = $factory->fromRequest($configuration, $request);
+        $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['c', 'd', 'e'], 'bar' => 'baz', 'search' => $search]);
+        $queryFromRequest = $factory->fromRequest($inputDefinition, $request);
 
         foreach ([$queryFromArray, $queryFromRequest] as $query) {
             $this->assertInstanceOf(Query::class, $query);
@@ -147,15 +148,15 @@ class QueryTest extends \PHPUnit_Framework_TestCase
 
         $baseQuery = ['foo' => ['a', 'b', 'c']];
 
-        $configuration = new Configuration([
+        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
             'search_enable' => true,
             'search_param'  => 'search',
             'search_parse'  => true,
         ]);
 
         $factory = new QueryFactory();
-        $queryFromArray = $factory->fromArray($configuration, ['foo' => ['b', 'c', 'd', 'e'], 'bar' => 'baz'], $baseQuery);
-        $queryFromRequest = $factory->fromRequest($configuration, $request, $baseQuery);
+        $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['b', 'c', 'd', 'e'], 'bar' => 'baz'], $baseQuery);
+        $queryFromRequest = $factory->fromRequest($inputDefinition, $request, $baseQuery);
 
         foreach ([$queryFromArray, $queryFromRequest] as $query) {
             $this->assertInstanceOf(Query::class, $query);
@@ -205,15 +206,15 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             'search'  => $search,
         ]);
 
-        $configuration = new Configuration([
+        $inputDefinition = new InputDefinition(new EmptyDatasource(), [
             'search_enable' => true,
             'search_param'  => 'search',
             'search_parse'  => false,
         ]);
 
         $factory = new QueryFactory();
-        $queryFromArray = $factory->fromArray($configuration, ['foo' => ['c', 'd', 'e'], 'bar' => 'baz', 'search' => $search]);
-        $queryFromRequest = $factory->fromRequest($configuration, $request);
+        $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['c', 'd', 'e'], 'bar' => 'baz', 'search' => $search]);
+        $queryFromRequest = $factory->fromRequest($inputDefinition, $request);
 
         foreach ([$queryFromArray, $queryFromRequest] as $query) {
             $this->assertInstanceOf(Query::class, $query);

@@ -3,7 +3,7 @@
 namespace MakinaCorpus\Dashboard\Drupal\Page\Node;
 
 use Drupal\Core\Session\AccountInterface;
-use MakinaCorpus\Dashboard\Datasource\Configuration;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use MakinaCorpus\Dashboard\Page\PageBuilder;
 use MakinaCorpus\Dashboard\Page\PageDefinitionInterface;
@@ -73,15 +73,7 @@ class DefaultNodeAdminPage implements PageDefinitionInterface
     /**
      * {@inheritdoc}
      */
-    public function createConfiguration(array $options = [])
-    {
-        return new Configuration($options);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function build(PageBuilder $builder, Configuration $configuration, Request $request)
+    public function build(PageBuilder $builder, InputDefinition $inputDefinition, Request $request)
     {
         $builder
             ->setAllowedTemplates([

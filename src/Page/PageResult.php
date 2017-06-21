@@ -2,8 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\Page;
 
-use MakinaCorpus\Dashboard\Datasource\Configuration;
 use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
+use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Datasource\Query;
 
 /**
@@ -12,9 +12,9 @@ use MakinaCorpus\Dashboard\Datasource\Query;
 class PageResult
 {
     /**
-     * @var Configuration
+     * @var InputDefinition
      */
-    private $configuration;
+    private $inputDefinition;
 
     /**
      * @var Query
@@ -44,15 +44,15 @@ class PageResult
     /**
      * Default constructor
      *
-     * @param Configuration $configuration
+     * @param InputDefinition $inputDefinition
      * @param Query $query
      * @param DatasourceResultInterface $items
      * @param Filter[] $filters
      * @param Filter[] $visualFilters
      */
-    public function __construct(Configuration $configuration, Query $query, DatasourceResultInterface $items, SortCollection $sortCollection, array $enabledFilters = [], array $enabledVisualFilters = [])
+    public function __construct(InputDefinition $inputDefinition, Query $query, DatasourceResultInterface $items, SortCollection $sortCollection, array $enabledFilters = [], array $enabledVisualFilters = [])
     {
-        $this->configuration = $configuration;
+        $this->inputDefinition = $inputDefinition;
         $this->query = $query;
         $this->items = $items;
         $this->sortCollection = $sortCollection;
@@ -63,11 +63,11 @@ class PageResult
     /**
      * Get current configuration
      *
-     * @return Configuration
+     * @return InputDefinition
      */
-    public function getConfiguration()
+    public function getInputDefinition()
     {
-        return $this->configuration;
+        return $this->inputDefinition;
     }
 
     /**

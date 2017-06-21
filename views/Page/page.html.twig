@@ -14,7 +14,7 @@
  #    visualFilters.ID.links: Link[]
  #    displays: Link[]
  #    query: Query
- #    query.configuration: Configuration
+ #    query.inputDefinition: InputDefinition
  #    query.searchParam: string
  #    query.rawSearchString: string (raw user input)
  #    query.route: string (current internal route)
@@ -245,7 +245,7 @@
  #}
 {%- block pager_href -%}
   {% if index is defined %}
-    {{ path(query.route, routeParameters|merge({(configuration.pageParameter): index})) }}
+    {{ path(query.route, routeParameters|merge({(query.inputDefinition.pageParameter): index})) }}
   {% else %}
     #
   {% endif %}
@@ -298,7 +298,7 @@
 
 {% block page_content %}
   <div class="container-fluid">
-    {% if query.configuration.isSearchEnabled or visualFilters %}
+    {% if query.inputDefinition.isSearchEnabled or visualFilters %}
       <div class="row">
         <div class="col-md-12" data-page-block="search_form">
           {{ block('search_form') }}
@@ -374,7 +374,7 @@
 {% endblock %}
 
 {% block page %}
-  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ result.queryToJson|escape }}"{% endif %} data-page-search="{{ query.configuration.searchParameter }}">
+  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ result.queryToJson|escape }}"{% endif %} data-page-search="{{ query.inputDefinition.searchParameter }}">
     {{ block('page_layout') }}
   </div>
 {% endblock %}
