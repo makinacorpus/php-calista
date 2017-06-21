@@ -5,7 +5,7 @@ services:
     arguments: ['@event_dispatcher', '@request_stack']
 
   udashboard.view_factory:
-    class: MakinaCorpus\Dashboard\View\ViewFactory
+    class: MakinaCorpus\Dashboard\DependencyInjection\ViewFactory
     arguments: ['@service_container', '@form.factory', '@udashboard.action_provider_registry', '@twig', '@event_dispatcher']
 
   udashboard.processor_registry:
@@ -16,21 +16,31 @@ services:
     public: false
     class: MakinaCorpus\Dashboard\Action\ActionRegistry
 
-  udashboard.portlet_registry:
-    class: MakinaCorpus\Dashboard\Drupal\Portlet\PortletRegistry
+  # View implementations
+  udashboard.view.twig_page:
+    public: true
+    class: MakinaCorpus\Dashboard\View\Html\TwigView
+    arguments: ['@twig', '@event_dispatcher']
+    tags: [{name: udashboard.view, id: twig_page}]
+  udashboard.view.twig_form_page:
+    public: true
+    class: MakinaCorpus\Dashboard\View\Html\FormTwigView
+    arguments: ['@twig', '@event_dispatcher']
+    tags: [{name: udashboard.view, id: twig_form_page}]
 
+  # Twig extensions
   udashboard.twig.action_extension:
     public: false
     class: MakinaCorpus\Dashboard\Twig\ActionExtension
     arguments: ['@udashboard.action_provider_registry']
     tags: [{name: twig.extension}]
-
   udashboard.twig.page_extension:
     public: false
     class: MakinaCorpus\Dashboard\Twig\PageExtension
     arguments: ['@request_stack']
     tags: [{name: twig.extension}]
 
+  # Event subscribers
   udashboard.twig_view_event_subscriber:
     class: MakinaCorpus\Dashboard\Drupal\Event\TwigViewEventSubscriber
     tags: [{name: event_subscriber}]
