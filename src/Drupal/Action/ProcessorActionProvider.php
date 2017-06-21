@@ -2,6 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\Drupal\Action;
 
+use MakinaCorpus\Dashboard\Action\ActionProviderInterface;
+
 /**
  * Works with one or many processors that all supports the same type of items
  * and return actions from them

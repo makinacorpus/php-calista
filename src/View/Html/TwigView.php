@@ -16,9 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TwigView implements ViewInterface
 {
-    const EVENT_VIEW = 'view:view';
-    const EVENT_SEARCH = 'view:search';
-
     private $debug = false;
     private $dispatcher;
     private $id;
@@ -186,7 +183,7 @@ class TwigView implements ViewInterface
     public function createRenderer(ViewDefinition $viewDefinition, DatasourceResultInterface $items, Query $query, array $arguments = [])
     {
         $event = new ViewEvent($this);
-        $this->dispatcher->dispatch(TwigView::EVENT_VIEW, $event);
+        $this->dispatcher->dispatch(ViewEvent::EVENT_VIEW, $event);
 
         $arguments = $this->createTemplateArguments($viewDefinition, $items, $query, $arguments);
 

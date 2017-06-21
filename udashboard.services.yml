@@ -6,7 +6,7 @@ services:
 
   udashboard.view_factory:
     class: MakinaCorpus\Dashboard\DependencyInjection\ViewFactory
-    arguments: ['@service_container', '@form.factory', '@udashboard.action_provider_registry', '@twig', '@event_dispatcher']
+    arguments: ['@service_container']
 
   udashboard.processor_registry:
     class: MakinaCorpus\Dashboard\Drupal\Action\ProcessorActionProvider
@@ -37,10 +37,10 @@ services:
   udashboard.twig.page_extension:
     public: false
     class: MakinaCorpus\Dashboard\Twig\PageExtension
-    arguments: ['@request_stack']
+    arguments: ['@request_stack', '@property_accessor', '@property_info']
     tags: [{name: twig.extension}]
 
   # Event subscribers
   udashboard.twig_view_event_subscriber:
-    class: MakinaCorpus\Dashboard\Drupal\Event\TwigViewEventSubscriber
+    class: MakinaCorpus\Dashboard\Drupal\EventDispatcher\ViewEventSubscriber
     tags: [{name: event_subscriber}]
