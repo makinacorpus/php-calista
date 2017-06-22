@@ -39,6 +39,35 @@ class AccountPageDefinition extends AbstractPageDefinition
     public function getViewDefinition()
     {
         return new ViewDefinition([
+            'properties' => [
+                'uid' => true,
+                'status' => [
+                    'bool_value_false' => t("Blocked"),
+                    'bool_value_true' => t("Active"),
+                ],
+                'name' => true,
+                'mail' => [
+                    'string_ellipsis' => false,
+                    'string_maxlength' => null,
+                ],
+                'created' => [
+                    'callback' => 'format_interval',
+                ],
+                'access' => [
+                    'callback' => 'format_interval',
+                ],
+                'login' => [
+                    'callback' => 'format_interval',
+                ],
+                'timezone' => [
+                    'string_ellipsis' => false,
+                    'string_maxlength' => null,
+                ],
+                'language' => [
+                    'string_ellipsis' => false,
+                    'string_maxlength' => null,
+                ],
+            ],
             'templates' => [
                 'default' => 'module:udashboard:views/Page/page-dynamic-table.html.twig',
             ],

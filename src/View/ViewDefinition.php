@@ -3,9 +3,56 @@
 namespace MakinaCorpus\Dashboard\View;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use MakinaCorpus\Dashboard\Error\ConfigurationError;
 
 /**
  * View definition sanitizer
+ *
+ * Define the generic behavior of views. Not all implementations will react on
+ * all options.
+ *
+ * Available options are:
+ *
+ *  - default_display: default display identifier, this MUST be defined as a key
+ *    in the 'templates' array
+ *
+ *  - enabled_filters: it can be either null, which literally means that you want
+ *    to display ALL filters, or an array of available filters for this view
+ *    case in which each value must be a known filter identifier. The array is
+ *    ordered and order will be replicated in display
+ *    @todo implement it
+ *
+ *  - properties: an array of item property (columns) to display if you are
+ *    using a dynamic view implementation. Each keys of this array is a known
+ *    property name, and value can be either:
+ *
+ *      - false: do not display this property
+ *      - true: display this property with default options
+ *      - array: display this property with the given options
+ *      - callable: use this callable to display the property, callable MUST
+ *        accept the value as the first argument, all other argumenst MUST be
+ *        OPTIONAL
+ *
+ *    Please note that non existing properties will not make this options
+ *    resolver throw any error, it's up to the view implementation to ignore
+ *    them.
+ *
+ *  - show_filters: if set to false, no filters will be displayed at all
+ *  - show_pager: if set to false, pager if enabled will not be displayed
+ *  - show_search: if set to false, search bar if enabled will not be displayed
+ *  - show_sort: if set to false, sort links will not be displayed
+ *
+ *  - templates: an array whose keys are display identifiers (see the
+ *    'default_display' parameter) and whose values are template names. For Twig
+ *    based renderers, template name must be a valid Twig template name in the
+ *    current environment, for others, value may be business specific. If no
+ *    'default_display' is provided, first one in this array will be used
+ *    instead
+ *
+ *  - view_type: class name or service identifier of the view implementation to
+ *    use which will do the rendering and to which this ViewDefinition instance
+ *    will be given to
+ *
  *
  * @codeCoverageIgnore
  */
@@ -25,6 +72,19 @@ class ViewDefinition
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
         $this->options = $resolver->resolve($options);
+
+        if ($this->options['default_display']) {
+            if (!$this->options['templates']) {
+                throw new ConfigurationError(sprintf("default display '%s' is set but no templates are", $this->options['default_display']));
+            }
+            if (!isset($this->options['templates'][$this->options['default_display']])) {
+                throw new ConfigurationError(
+                    sprintf("default display '%s' does not exists in templates '%s'",
+                    $this->options['default_display'],
+                    implode("', '", array_keys($this->options['templates']))
+                ));
+            }
+        }
     }
 
     /**
@@ -35,20 +95,22 @@ class ViewDefinition
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'default_display'   => 'default',
-            'enabled_filters'   => [],
-            'show_filters'      => false,
-            'show_pager'        => false,
-            'show_search'       => false,
-            'show_sort'         => false,
+            'default_display'   => null,
+            'enabled_filters'   => null,
+            'properties'        => null,
+            'show_filters'      => true,
+            'show_pager'        => true,
+            'show_search'       => true,
+            'show_sort'         => true,
             'templates'         => [],
             'view_type'         => '',
         ]);
 
         $resolver->setRequired('view_type');
 
-        $resolver->setAllowedTypes('default_display', ['string']);
-        $resolver->setAllowedTypes('enabled_filters', ['array']);
+        $resolver->setAllowedTypes('default_display', ['null', 'string']);
+        $resolver->setAllowedTypes('enabled_filters', ['null', 'array']);
+        $resolver->setAllowedTypes('properties', ['null', 'array']);
         $resolver->setAllowedTypes('show_filters', ['numeric', 'bool']);
         $resolver->setAllowedTypes('show_pager', ['numeric', 'bool']);
         $resolver->setAllowedTypes('show_search', ['numeric', 'bool']);
@@ -60,7 +122,7 @@ class ViewDefinition
     /**
      * Get default display
      *
-     * @return string
+     * @return null|string
      */
     public function getDefaultDisplay()
     {
@@ -68,9 +130,49 @@ class ViewDefinition
     }
 
     /**
+     * Get displayed properties
+     *
+     * @return null|string[]
+     *   Null means display everything
+     */
+    public function getDisplayedProperties()
+    {
+          return array_keys($this->options['properties']);
+    }
+
+    /**
+     * Get property specific display options
+     *
+     * @param string $name
+     *
+     * @return array
+     */
+    public function getPropertyDisplayOptions($name)
+    {
+         if (isset($this->options['properties'][$name]) && is_array($this->options['properties'][$name])) {
+              return $this->options['properties'][$name];
+         }
+
+         return [];
+    }
+
+    /**
+     * Should this property be displayed
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function isPropertyDisplayed($name)
+    {
+        return null === $this->options['properties'] || (isset($this->options['properties'][$name]) && false !== $this->options['properties'][$name]);
+    }
+
+    /**
      * Get enabled filters
      *
-     * @return string[]
+     * @return null|string[]
+     *   Null means enable everything
      */
     public function getEnabledFilters()
     {
@@ -86,7 +188,7 @@ class ViewDefinition
      */
     public function isFilterDisplayed($name)
     {
-        return in_array($name, $this->options['enabled_filters']);
+        return null === $this->options['enabled_filters'] || in_array($name, $this->options['enabled_filters']);
     }
 
     /**

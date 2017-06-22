@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\PropertyInfo\Type;
+use MakinaCorpus\Dashboard\Error\ConfigurationError;
 
 /**
  * Display pages, build views, gives us helpers for it
@@ -145,7 +146,7 @@ class PageExtension extends \Twig_Extension
     {
         $value = strip_tags($value);
 
-        if (strlen($value) > $options['string_maxlength']) {
+        if (0 < $options['string_maxlength'] && strlen($value) > $options['string_maxlength']) {
             $value = substr($value, 0, $options['string_maxlength']);
 
             if ($options['string_ellipsis']) {
@@ -230,6 +231,21 @@ class PageExtension extends \Twig_Extension
 
         $class = get_class($item);
 
+        // Skip property info if options contain a callback.
+        if (isset($options['callback'])) {
+            if (!is_callable($options['callback'])) {
+                if ($this->debug) {
+                    throw new ConfigurationError("callback '%s' for property property '%s' on class '%s' is not callable", $options['callable'], $class, $property);
+                }
+                return self::RENDER_NOT_POSSIBLE;
+            }
+
+            // Just get the item and return the callback value
+            $value = $this->propertyAccess->getValue($item, $property);
+
+            return call_user_func($options['callback'], $value, $options);
+        }
+
         if (!$this->propertyInfo->isReadable($class, $property)) {
             return self::RENDER_NOT_POSSIBLE;
         }
@@ -239,14 +255,8 @@ class PageExtension extends \Twig_Extension
             return self::RENDER_NOT_POSSIBLE;
         }
 
-        // @todo dynamize this
-        //   for example:
-        //      - options in a specific yml file?
-        //      - options in parameters?
-        //      - global options per type, where?
-        //      - options per class and type, where?
-        //      - options per class and propery, where?
-        $options = [
+        // Apply default options, no matter from where they come from.
+        $options += [
             'bool_as_int'           => false,
             'bool_value_false'      => "Non",
             'bool_value_true'       => "Oui",

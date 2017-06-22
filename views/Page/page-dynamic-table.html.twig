@@ -7,10 +7,12 @@
             {# <td>{{ form_widget(id) }}</td> #}
             <td>{{ form_widget(element) }}</td>
         {% endif %}
-        {% for property, description in udashboard_item_definition(itemClass) %}
-            <td>
-                {{ udashboard_item_property(item, property) }}
-            </td>
+        {% for property, description in properties %}
+            {% if definition.isPropertyDisplayed(property) %}
+                <td>
+                    {{ udashboard_item_property(item, property, definition.getPropertyDisplayOptions(property)) }}
+                </td>
+            {% endif %}
         {% endfor %}
         <td>
             {{ udashboard_actions(item) }}
@@ -19,14 +21,17 @@
 {%- endblock -%}
 
 {% block item_list %}
+    {% set properties = udashboard_item_definition(itemClass) %}
     <table class="table table-condensed">
         <thead>
             <tr>
                 {% if form is defined %}
                     <th>{{ block('item_checkbox_all') }}</th>
                 {% endif %}
-                {% for property, description in udashboard_item_definition(itemClass) %}
-                    <th class="property-{{ property }}">{{ description }}</th>
+                {% for property, description in properties %}
+                    {% if definition.isPropertyDisplayed(property) %}
+                        <th class="property-{{ property }}">{{ description }}</th>
+                    {% endif %}
                 {% endfor %}
                 <th></th>
             </tr>

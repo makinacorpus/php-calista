@@ -10,6 +10,7 @@ use MakinaCorpus\Dashboard\View\AbstractView;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
+use MakinaCorpus\Dashboard\Error\ConfigurationError;
 
 /**
  * Uses a view definition and proceed to an html page display via Twig
@@ -43,16 +44,12 @@ class TwigView extends AbstractView
         $templates = $viewDefinition->getTemplates();
 
         if (empty($templates)) {
-            throw new \InvalidArgumentException("page builder has no templates");
+            throw new ConfigurationError("page builder has no templates");
         }
 
         $default = $viewDefinition->getDefaultDisplay();
         if (isset($templates[$default])) {
             return $templates[$default];
-        }
-
-        if ($this->debug) {
-            trigger_error("page builder has no explicit 'default' template set, using first in array", E_USER_WARNING);
         }
 
         return reset($templates);
@@ -141,6 +138,7 @@ class TwigView extends AbstractView
         return [
             'pageId'        => $this->getId(),
             'input'         => $inputDefinition,
+            'definition'    => $viewDefinition,
             'itemClass'     => $items->getItemClass(),
             'items'         => $items,
             'filters'       => $enabledFilters,
