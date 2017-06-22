@@ -1,11 +1,13 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\Datasource\Node;
+namespace MakinaCorpus\Dashboard\Drupal\Datasource;
 
 use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\node\Node;
 use Drupal\node\NodeInterface;
 use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
+use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Drupal\Datasource\QueryExtender\DrupalPager;
 
@@ -29,6 +31,14 @@ class DefaultNodeDatasource extends AbstractDatasource
     {
         $this->database = $database;
         $this->entityManager = $entityManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getItemClass()
+    {
+        return Node::class;
     }
 
     /**
@@ -195,11 +205,11 @@ class DefaultNodeDatasource extends AbstractDatasource
         }
 
         // Also add a few joins,  that might be useful later
-        $select->leftJoin('history', 'h', "h.nid = n.nid AND h.uid = :history_uid", [':history_uid' => $query['user_id']]);
+        $select->leftJoin('history', 'h', "h.nid = n.nid AND h.uid = :history_uid", [':history_uid' => $query->get('user_id')]);
 
         $this->applyFilters($select, $query);
 
-        return $select->extend(DrupalPager::class)->setQuery($query);
+        return $select; //->extend(DrupalPager::class)->setQuery($query);
     }
 
     /**
@@ -237,6 +247,6 @@ class DefaultNodeDatasource extends AbstractDatasource
         $select = $this->process($select, $query);
 
         // Preload and set nodes at once
-        return $this->preloadDependencies($select->execute()->fetchCol());
+        return new DefaultDatasourceResult(Node::class, $this->preloadDependencies($select->execute()->fetchCol()));
     }
 }

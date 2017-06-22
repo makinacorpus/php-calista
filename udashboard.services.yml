@@ -40,6 +40,38 @@ services:
     arguments: ['@request_stack', '@property_accessor', '@property_info']
     tags: [{name: twig.extension}]
 
+  # Property info extractors
+  udashboard.property_info_extractor.entity:
+    public: false
+    class: MakinaCorpus\Dashboard\Drupal\PropertyInfo\EntityProperyInfoExtractor
+    tags:
+      - {name: property_info.list_extractor}
+      - {name: property_info.type_extractor}
+      - {name: property_info.description_extractor}
+      - {name: property_info.access_extractor}
+
+  # Drupal datasources
+  udashboard.datasource.drupal_account:
+    public: false
+    class: MakinaCorpus\Dashboard\Drupal\Datasource\DefaultAccountDatasource
+    arguments: ['@database', '@entity.manager']
+  udashboard.datasource.drupal_node:
+    public: false
+    class: MakinaCorpus\Dashboard\Drupal\Datasource\DefaultNodeDatasource
+    arguments: ['@database', '@entity.manager']
+
+  # Drupal page definitions
+  udashboard.page.drupal_account:
+    public: true
+    class: MakinaCorpus\Dashboard\Drupal\Page\AccountPageDefinition
+    arguments: ['@udashboard.datasource.drupal_account']
+    tags: [{name: udashboard.page_definition}]
+  udashboard.page.drupal_node:
+    public: true
+    class: MakinaCorpus\Dashboard\Drupal\Page\NodePageDefinition
+    arguments: ['@udashboard.datasource.drupal_node']
+    tags: [{name: udashboard.page_definition}]
+
   # Event subscribers
   udashboard.twig_view_event_subscriber:
     class: MakinaCorpus\Dashboard\Drupal\EventDispatcher\ViewEventSubscriber

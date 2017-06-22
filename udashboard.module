@@ -6,6 +6,7 @@
 use MakinaCorpus\Dashboard\Action\Action;
 use MakinaCorpus\Dashboard\Drupal\Controller\ActionProcessorController;
 use MakinaCorpus\Dashboard\Drupal\Controller\AjaxPageController;
+use MakinaCorpus\Dashboard\Drupal\Controller\TestController;
 
 /**
  * View mode for content display.
@@ -83,6 +84,20 @@ function udashboard_menu() {
   $items['admin/page/search'] = [
     'page callback'     => 'sf_dic_page',
     'page arguments'    => [AjaxPageController::class .  '::search'],
+    'type'              => MENU_CALLBACK,
+  ];
+
+  // Testing
+  $items['admin/test/accounts'] = [
+    'page callback'     => 'sf_dic_page',
+    'page arguments'    => [TestController::class .  '::listAccounts'],
+    'access arguments'  => ['non existing permission'],
+    'type'              => MENU_CALLBACK,
+  ];
+  $items['admin/test/nodes'] = [
+    'page callback'     => 'sf_dic_page',
+    'page arguments'    => [TestController::class .  '::listNodes'],
+    'access arguments'  => ['non existing permission'],
     'type'              => MENU_CALLBACK,
   ];
 

@@ -1,13 +1,15 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Drupal\Datasource\Account;
+namespace MakinaCorpus\Dashboard\Drupal\Datasource;
 
 use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
+use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
 use MakinaCorpus\Dashboard\Datasource\Filter;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Drupal\Datasource\QueryExtender\DrupalPager;
+use Drupal\user\User;
 
 /**
  * Default data source for accounts
@@ -29,6 +31,14 @@ class DefaultAccountDatasource extends AbstractDatasource
     {
         $this->database = $database;
         $this->entityManager = $entityManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getItemClass()
+    {
+        return User::class;
     }
 
     /**
@@ -160,7 +170,7 @@ class DefaultAccountDatasource extends AbstractDatasource
 
         $this->applyFilters($select, $query);
 
-        return $select->extend(DrupalPager::class)->setQuery($query);
+        return $select /*->extend(DrupalPager::class)->setQuery($query) */;
     }
 
     /**
@@ -181,6 +191,6 @@ class DefaultAccountDatasource extends AbstractDatasource
         ;
 
         // Preload and set nodes at once
-        return $this->preloadDependencies($accountIdList);
+        return new DefaultDatasourceResult(User::class, $this->preloadDependencies($accountIdList));
     }
 }
