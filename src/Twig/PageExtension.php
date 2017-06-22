@@ -80,12 +80,17 @@ class PageExtension extends \Twig_Extension
             return $ret;
         }
 
-        foreach ($this->propertyInfo->getProperties($class) as $property) {
-            $description = $this->propertyInfo->getShortDescription($class, $property);
-            if ($description) {
-                $ret[$property] = $description;
-            } else {
-                $ret[$property] = $property;
+        $properties = $this->propertyInfo->getProperties($class);
+
+        // Properties can be null
+        if ($properties) {
+            foreach ($properties as $property) {
+                $description = $this->propertyInfo->getShortDescription($class, $property);
+                if ($description) {
+                    $ret[$property] = $description;
+                } else {
+                    $ret[$property] = $property;
+                }
             }
         }
 
