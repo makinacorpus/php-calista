@@ -32,8 +32,8 @@
     "minimum-stability" : "dev",
     "prefer-stable" : true,
     "require" : {
-        "makinacorpus/drupal-sf-dic" : ">=3.2.3",
-        "symfony/dependency-injection" : "^3.1",
+        "makinacorpus/drupal-sf-dic" : ">=3.2.6",
+        "symfony/dependency-injection" : "^3.2",
         "symfony/event-dispatcher" : "^3.1",
         "symfony/http-foundation" : "^3.1",
         "symfony/options-resolver": "^3.2",
