@@ -32,7 +32,7 @@ trait AjaxControllerTrait
     {
         try {
             $factory = $this->getViewFactory();
-            $page = $factory->getPageDefinition($request->get('name'));
+            $page = $factory->getPageDefinition($request->get('_page_id'));
             $viewDefinition = $page->getViewDefinition();
             $view = $factory->getView($viewDefinition->getViewType());
         } catch (ServiceNotFoundException $e) {

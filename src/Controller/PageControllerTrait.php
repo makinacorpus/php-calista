@@ -45,7 +45,7 @@ trait PageControllerTrait
      */
     protected function getViewOrDie(Request $request)
     {
-        $pageId = $request->get('name');
+        $pageId = $request->get('_page_id');
         $page = null;
 
         if (!$pageId) {

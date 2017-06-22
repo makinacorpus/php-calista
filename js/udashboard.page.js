@@ -142,7 +142,7 @@
       });
     }
     // For consistency ensure the page identifier is the right one.
-    data.name = page.id;
+    data._page_id = page.id;
 
     $.ajax(refreshUrl, {
       method: 'get',
@@ -153,7 +153,7 @@
       },
       error: function() {
         // refresh the page manually
-        delete data.name;
+        delete data._page_id;
         location.href = location.pathname + "?" + $.param(data)
       },
       complete: function() {
