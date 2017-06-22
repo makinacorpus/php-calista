@@ -10,6 +10,8 @@ use MakinaCorpus\Dashboard\View\ViewDefinition;
  */
 abstract class AbstractPageDefinition implements PageDefinitionInterface
 {
+    use ServiceTrait;
+
     /**
      * {@inheritdoc}
      */

@@ -97,6 +97,9 @@ final class ViewFactory
             }
         }
 
+        if ($instance instanceof ServiceInterface) {
+            $instance->setId($id);
+        }
         if ($instance instanceof ContainerAwareInterface) {
             $instance->setContainer($this->container);
         }

@@ -14,7 +14,7 @@ use MakinaCorpus\Dashboard\View\ViewDefinition;
  * It also allows you to define once then re-use specific pages at various
  * places on your site.
  */
-interface PageDefinitionInterface
+interface PageDefinitionInterface extends ServiceInterface
 {
     /**
      * Create configuration

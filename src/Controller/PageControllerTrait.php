@@ -95,6 +95,10 @@ trait PageControllerTrait
         $query = $page->getInputDefinition($inputOptions)->createQueryFromRequest($request);
         $items = $page->getDatasource()->getItems($query);
 
+        // View must inherit from the page definition identifier to ensure
+        // that AJAX queries will work
+        $view->setId($page->getId());
+
         return $view->render($viewDefinition, $items, $query);
     }
 
@@ -120,6 +124,10 @@ trait PageControllerTrait
         $page = $factory->getPageDefinition($name);
         $viewDefinition = $page->getViewDefinition();
         $view = $factory->getView($viewDefinition->getViewType());
+
+        // View must inherit from the page definition identifier to ensure
+        // that AJAX queries will work
+        $view->setId($page->getId());
 
         $query = $page->getInputDefinition($inputOptions)->createQueryFromRequest($request);
         $items = $page->getDatasource()->getItems($query);

@@ -4,12 +4,13 @@ namespace MakinaCorpus\Dashboard\View;
 
 use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\DependencyInjection\ServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Represents a view, anything that can be displayed from datasource data
  */
-interface ViewInterface
+interface ViewInterface extends ServiceInterface
 {
     /**
      * Render the view

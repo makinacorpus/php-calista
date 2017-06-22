@@ -6,19 +6,18 @@ use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Event\ViewEvent;
 use MakinaCorpus\Dashboard\Util\Link;
+use MakinaCorpus\Dashboard\View\AbstractView;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
-use MakinaCorpus\Dashboard\View\ViewInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Uses a view definition and proceed to an html page display via Twig
  */
-class TwigView implements ViewInterface
+class TwigView extends AbstractView
 {
     private $debug = false;
     private $dispatcher;
-    private $id;
     private $twig;
 
     /**
@@ -32,23 +31,6 @@ class TwigView implements ViewInterface
         $this->twig = $twig;
         $this->debug = $twig->isDebug();
         $this->dispatcher = $dispatcher;
-    }
-
-    /**
-     * Set builder identifier
-     *
-     * @param string $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        if ($this->id && $this->id !== $id) {
-            throw new \LogicException("Cannot change a page builder identifier.");
-        }
-
-        $this->id = $id;
-
-        return $this;
     }
 
     /**
@@ -105,16 +87,6 @@ class TwigView implements ViewInterface
         }
 
         return $templates[$displayName];
-    }
-
-    /**
-     * Compute an identifier for the current page
-     *
-     * @return null|string
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
