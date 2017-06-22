@@ -254,7 +254,7 @@ class PageExtension extends \Twig_Extension
             'decimal_precision'     => 2,
             'decimal_separator'     => ',',
             'string_ellipsis'       => true,
-            'string_maxlength'      => 3,
+            'string_maxlength'      => 20,
             'thousand_separator'    => '&nbsp;',
         ];
 
