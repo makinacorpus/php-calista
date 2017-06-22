@@ -104,6 +104,11 @@ class TwigView extends AbstractView
         $display = $query->getCurrentDisplay();
         $templates = $viewDefinition->getTemplates();
 
+        // @todo should the default display move to the input def?
+        if (!$display) {
+            $display = $viewDefinition->getDefaultDisplay();
+        }
+
         // Build allowed filters arrays
         $enabledFilters = [];
         foreach ($inputDefinition->getFilters() as $filter) {
@@ -115,6 +120,7 @@ class TwigView extends AbstractView
         // Build display links
         // @todo Do it better...
         $displayLinks = [];
+        $routeParameters = $query->getRouteParameters();
         foreach (array_keys($templates) as $name) {
             switch ($name) {
                 case 'grid':
@@ -125,7 +131,11 @@ class TwigView extends AbstractView
                     $displayIcon = 'th-list';
                     break;
             }
-            $displayLinks[] = new Link($name, $query->getRoute(), ['display' => $name] + $query->getRouteParameters(), $display === $name, $displayIcon);
+            if ($name === $viewDefinition->getDefaultDisplay()) {
+                $displayLinks[] = new Link($name, $query->getRoute(), array_diff_key($routeParameters, ['display' => '']), $display === $name, $displayIcon);
+            } else {
+                $displayLinks[] = new Link($name, $query->getRoute(), ['display' => $name] + $routeParameters, $display === $name, $displayIcon);
+            }
         }
 
         return [
