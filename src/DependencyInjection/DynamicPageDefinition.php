@@ -90,7 +90,7 @@ abstract class DynamicPageDefinition extends AbstractPageDefinition implements C
      */
     final public function setDatasource(DatasourceInterface $datasource)
     {
-        if (isset($this->datasource) && $this->debug) {
+        if ($this->datasource && $this->debug) {
             throw new ConfigurationError("you are injecting the datasource twice");
         }
 
@@ -136,7 +136,7 @@ abstract class DynamicPageDefinition extends AbstractPageDefinition implements C
             } else {
                 // Attempt to instanciate the object using id as class name
                 if (!class_exists($this->datasourceId)) {
-                    throw new ConfigurationError("'%s' is not a service identifier nor a valid class name", $this->datasourceId);
+                    throw new ConfigurationError(sprintf("'%s' is not a service identifier nor a valid class name", $this->datasourceId));
                 }
 
                 $this->datasource = new $this->datasourceId();

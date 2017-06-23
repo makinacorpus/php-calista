@@ -143,6 +143,7 @@ trait ContainerAwareTestTrait
     private function createContainerWithPageDefinitions()
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.debug', true);
 
         $container->addDefinitions([
             'event_dispatcher' => (new Definition())
