@@ -28,6 +28,12 @@ services:
     arguments: ['@twig', '@event_dispatcher']
     tags: [{name: udashboard.view, id: twig_form_page}]
 
+  # Action providers
+  udashboard.action_provider.node:
+    public: false
+    class: MakinaCorpus\Dashboard\Drupal\Action\CoreNodeActionProvider
+    tags: [{name: udashboard.action_provider}]
+
   # Twig extensions
   udashboard.twig.action_extension:
     public: false

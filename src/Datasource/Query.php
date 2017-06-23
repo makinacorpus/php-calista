@@ -20,6 +20,7 @@ class Query
     private $rawSearchString = '';
     private $route = '';
     private $routeParameters = [];
+    private $searchString = '';
     private $sortField = '';
     private $sortOrder = self::SORT_DESC;
 
@@ -122,6 +123,9 @@ class Query
             $searchParameter = $this->inputDefinition->getSearchParameter();
             if ($searchParameter && isset($this->routeParameters[$searchParameter])) {
                 $this->rawSearchString = (string)$this->routeParameters[$searchParameter];
+            }
+            if ($searchParameter && isset($this->filters[$searchParameter])) {
+                $this->searchString = (string)$this->filters[$searchParameter];
             }
         }
     }
@@ -247,9 +251,19 @@ class Query
      *
      * @return string
      */
-    public function getRawSearchString()
+    public function getOriginalRawSearchString()
     {
         return $this->rawSearchString;
+    }
+
+    /**
+     * Get search string, after cleanup
+     *
+     * @return string
+     */
+    public function getSearchString()
+    {
+        return $this->searchString;
     }
 
     /**

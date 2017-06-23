@@ -160,7 +160,7 @@ class DefaultAccountDatasource extends AbstractDatasource
             Query::SORT_DESC === $query->getSortOrder() ? 'desc' : 'asc'
         );
 
-        if ($searchstring = $query->getRawSearchString()) {
+        if ($searchstring = $query->getSearchString()) {
             $select->condition(
                 'u.name',
                 '%'.db_like($searchstring).'%',
@@ -192,5 +192,13 @@ class DefaultAccountDatasource extends AbstractDatasource
 
         // Preload and set nodes at once
         return new DefaultDatasourceResult(User::class, $this->preloadDependencies($accountIdList));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsFulltextSearch()
+    {
+        return true;
     }
 }

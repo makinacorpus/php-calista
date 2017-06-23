@@ -44,7 +44,13 @@ class NodePageDefinition extends AbstractPageDefinition
      */
     public function getInputDefinition (array $options = [])
     {
-        return new InputDefinition($this->datasource, ['base_query' => $this->getQueryFilters()] + $options);
+        return new InputDefinition(
+            $this->datasource, [
+                'base_query' => $this->getQueryFilters(),
+                'search_parse' => true,
+                'search_enable' => true,
+            ] + $options
+        );
     }
 
     /**
@@ -54,6 +60,7 @@ class NodePageDefinition extends AbstractPageDefinition
     {
         return new ViewDefinition([
             'default_display' => 'table',
+            'show_search' => true,
             'templates' => [
                 'grid' => 'module:udashboard:views/Page/page-grid.html.twig',
                 'table' => 'module:udashboard:views/Page/page.html.twig',

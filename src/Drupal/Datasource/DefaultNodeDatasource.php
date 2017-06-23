@@ -10,6 +10,7 @@ use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
 use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Drupal\Datasource\QueryExtender\DrupalPager;
+use MakinaCorpus\Dashboard\Datasource\Filter;
 
 /**
  * Base implementation for node admin datasource, that should fit most use cases.
@@ -70,7 +71,25 @@ class DefaultNodeDatasource extends AbstractDatasource
     {
         // @todo build commong database filters for node datasource into some
         //   trait or abstract implemetnation to avoid duplicates
-        return [];
+        return [
+            (new Filter('status', $this->t("Published")))
+                ->setChoicesMap([
+                    1 => $this->t("Yes"),
+                    0 => $this->t("No"),
+                ]),
+            (new Filter('promote', $this->t("Promoted to front page")))
+                ->setChoicesMap([
+                    1 => $this->t("Yes"),
+                    0 => $this->t("No"),
+                ]),
+            (new Filter('sticky', $this->t("Sticky")))
+                ->setChoicesMap([
+                    1 => $this->t("Yes"),
+                    0 => $this->t("No"),
+                ]),
+            (new Filter('type', $this->t("Type")))
+                ->setChoicesMap(node_type_get_names()),
+        ];
     }
 
     /**
@@ -130,6 +149,18 @@ class DefaultNodeDatasource extends AbstractDatasource
      */
     protected function applyFilters(\SelectQuery $select, Query $query)
     {
+        if ($query->has('status')) {
+            $select->condition('n.status', $query->get('status'));
+        }
+        if ($query->has('promote')) {
+            $select->condition('n.promote', $query->get('promote'));
+        }
+        if ($query->has('sticky')) {
+            $select->condition('n.sticky', $query->get('sticky'));
+        }
+        if ($query->has('type')) {
+            $select->condition('n.type', $query->get('type'));
+        }
     }
 
     /**
@@ -200,7 +231,7 @@ class DefaultNodeDatasource extends AbstractDatasource
         }
         $select->orderBy($this->getPredictibleOrderColumn(), $sortOrder);
 
-        if ($searchString = $query->getRawSearchString()) {
+        if ($searchString = $query->getSearchString()) {
             $select->condition('n.title', '%' . db_like($searchString) . '%', 'LIKE');
         }
 
@@ -248,5 +279,13 @@ class DefaultNodeDatasource extends AbstractDatasource
 
         // Preload and set nodes at once
         return new DefaultDatasourceResult(Node::class, $this->preloadDependencies($select->execute()->fetchCol()));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsFulltextSearch()
+    {
+        return true;
     }
 }
