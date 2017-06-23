@@ -2,8 +2,6 @@
 
 namespace MakinaCorpus\Dashboard\Drupal\Page;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
 use MakinaCorpus\Dashboard\View\Html\TwigView;
 
@@ -11,19 +9,18 @@ use MakinaCorpus\Dashboard\View\Html\TwigView;
  * Default node admin page implementation, suitable for most use cases
  *
  * @todo
- *   - datasource handling in datasource in parent class
- *   - make input definition optional
  *   - handle virtual columns (non existing in property info)
  *      -> allow non existing columns in property info to be displayed in dynamic template
  *      -> even if value is null, execute callback on it in twig extension
- *   - pass the complete item in the callback method signature
  *   - check for method parameters names (if value => value, if item => item)
  *      -> do a proxy callback in the parent implementation that passes the right
  *         value that the user await here
  */
 class AccountPageDefinition extends DynamicPageDefinition
 {
-    private $datasource;
+    protected $datasourceId = 'udashboard.datasource.drupal_account';
+    protected $templates = ['module:udashboard:views/Page/page-dynamic-table.html.twig'];
+    protected $viewType = TwigView::class;
 
     public $uid = 0;
     public $name = '';
@@ -36,17 +33,41 @@ class AccountPageDefinition extends DynamicPageDefinition
     public $language = '';
 
     /**
+     * Renders name
+     */
+    public function renderName($value, array $options, $item)
+    {
+        return '<a href="' . url('user/' . $item->uid) . '" title="' . t("View user profile") . '">' . check_plain($value) . '</a>';
+    }
+
+    /**
      * Renders mail
      */
-    public function renderMail($value, array $options)
+    public function renderMail($value, array $options, $item)
     {
         return '<a href="mailto:' . check_plain($value) . '" title="' . t("Send e-mail") . '">' . check_plain($value) . '</a>';
+    }
+
+    public function renderLanguage($value)
+    {
+        if ($value === LANGUAGE_NONE) {
+            return t("None");
+        }
+
+        _locale_prepare_predefined_list();
+        $list = _locale_get_predefined_list();
+
+        if (isset($list[$value])) {
+            return t($list[$value][0]);
+        }
+
+        return check_plain($value);
     }
 
     /**
      * Renders created
      */
-    public function renderCreated($value, array $options)
+    public function renderCreated($value)
     {
         return format_interval(time() - $value);
     }
@@ -54,7 +75,7 @@ class AccountPageDefinition extends DynamicPageDefinition
     /**
      * Renders changed
      */
-    public function renderChanged($value, array $options)
+    public function renderChanged($value)
     {
         return format_interval(time() - $value);
     }
@@ -62,7 +83,7 @@ class AccountPageDefinition extends DynamicPageDefinition
     /**
      * Renders login
      */
-    public function renderLogin($value, array $options)
+    public function renderLogin($value)
     {
         return format_interval(time() - $value);
     }
@@ -70,47 +91,8 @@ class AccountPageDefinition extends DynamicPageDefinition
     /**
      * Renders access
      */
-    public function renderAccess($value, array $options)
+    public function renderAccess($value)
     {
         return format_interval(time() - $value);
-    }
-
-    /**
-     * Default constructor
-     *
-     * @param DatasourceInterface $datasource
-     */
-    public function __construct(DatasourceInterface $datasource)
-    {
-        $this->datasource = $datasource;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInputDefinition(array $options = [])
-    {
-        return new InputDefinition($this->datasource, $options);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDisplayOptions()
-    {
-        return [
-            'templates' => [
-                'default' => 'module:udashboard:views/Page/page-dynamic-table.html.twig',
-            ],
-            'view_type' => TwigView::class,
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDatasource()
-    {
-        return $this->datasource;
     }
 }

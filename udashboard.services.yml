@@ -52,7 +52,7 @@ services:
 
   # Drupal datasources
   udashboard.datasource.drupal_account:
-    public: false
+    public: true
     class: MakinaCorpus\Dashboard\Drupal\Datasource\DefaultAccountDatasource
     arguments: ['@database', '@entity.manager']
   udashboard.datasource.drupal_node:
@@ -64,7 +64,6 @@ services:
   udashboard.page.drupal_account:
     public: true
     class: MakinaCorpus\Dashboard\Drupal\Page\AccountPageDefinition
-    arguments: ['@udashboard.datasource.drupal_account']
     tags: [{name: udashboard.page_definition}]
   udashboard.page.drupal_node:
     public: true

@@ -243,7 +243,7 @@ class PageExtension extends \Twig_Extension
             // Just get the item and return the callback value
             $value = $this->propertyAccess->getValue($item, $property);
 
-            return call_user_func($options['callback'], $value, $options);
+            return call_user_func($options['callback'], $value, $options, $item);
         }
 
         if (!$this->propertyInfo->isReadable($class, $property)) {
