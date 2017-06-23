@@ -10,6 +10,8 @@ use Symfony\Component\DependencyInjection\Definition;
 /**
  * Registers some foo components for downgraded mode where there is no complete
  * Symfony FrameworkBundle in place
+ *
+ * @codeCoverageIgnore
  */
 class DowngradeCompatibilityPass implements CompilerPassInterface
 {

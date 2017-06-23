@@ -7,6 +7,8 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * An admin information table is being displayed, append stuff in there
+ *
+ * @codeCoverageIgnore
  */
 class AdminTableEvent extends GenericEvent
 {

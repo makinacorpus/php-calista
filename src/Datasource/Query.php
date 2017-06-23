@@ -7,7 +7,7 @@ namespace MakinaCorpus\Dashboard\Datasource;
  */
 class Query
 {
-    const LIMIT_DEFAULT = 24;
+    const LIMIT_DEFAULT = 10;
     const SORT_ASC = 'asc';
     const SORT_DESC = 'desc';
     const URL_VALUE_SEP = '|';

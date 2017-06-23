@@ -7,6 +7,8 @@ use MakinaCorpus\Dashboard\View\ViewDefinition;
 
 /**
  * Base implementation, returns the defaults
+ *
+ * @codeCoverageIgnore
  */
 abstract class AbstractPageDefinition implements PageDefinitionInterface
 {

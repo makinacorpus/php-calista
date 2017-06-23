@@ -4,6 +4,8 @@ namespace MakinaCorpus\Dashboard\Twig;
 
 /**
  * Provides a few donwgrade compability functions.
+ *
+ * @codeCoverageIgnore
  */
 class DowngradeCompatibilityExtension extends \Twig_Extension
 {

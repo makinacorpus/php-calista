@@ -27,14 +27,14 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $controller->setContainer($container);
 
         try {
-            $controller->refreshAction(new Request(['name' => "Sure, maybe I'll be there?"]));
+            $controller->refreshAction(new Request(['_page_id' => "Sure, maybe I'll be there?"]));
             $this->fail();
         } catch (NotFoundHttpException $e) {
             $this->assertTrue(true);
         }
 
         // Refresh action
-        $response = $controller->refreshAction(new Request(['name' => 'int_array_page']));
+        $response = $controller->refreshAction(new Request(['_page_id' => 'int_array_page']));
         $this->assertInstanceOf(JsonResponse::class, $response);
         $responseArray = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('query', $responseArray);
@@ -46,7 +46,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('pager', $responseArray['blocks']);
 
         // Search action
-        $response = $controller->searchAction(new Request(['name' => 'int_array_page']));
+        $response = $controller->searchAction(new Request(['_page_id' => 'int_array_page']));
         $this->assertInstanceOf(JsonResponse::class, $response);
         $responseArray = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('query', $responseArray);

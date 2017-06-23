@@ -7,6 +7,8 @@ use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Raised when a view is rendered
+ *
+ * @codeCoverageIgnore
  */
 final class ViewEvent extends Event
 {
