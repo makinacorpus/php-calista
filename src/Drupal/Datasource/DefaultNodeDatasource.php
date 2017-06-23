@@ -277,8 +277,15 @@ class DefaultNodeDatasource extends AbstractDatasource
         $select = $this->createSelectQuery($query);
         $select = $this->process($select, $query);
 
+        /** @var \MakinaCorpus\Dashboard\Drupal\Datasource\QueryExtender\DrupalPager $pager */
+        $pager = $select->extend(DrupalPager::class);
+        $pager->setDatasourceQuery($query);
+
         // Preload and set nodes at once
-        return new DefaultDatasourceResult(Node::class, $this->preloadDependencies($select->execute()->fetchCol()));
+        $result = new DefaultDatasourceResult(Node::class, $this->preloadDependencies($pager->execute()->fetchCol()));
+        $result->setTotalItemCount($pager->getTotalCount());
+
+        return $result;
     }
 
     /**

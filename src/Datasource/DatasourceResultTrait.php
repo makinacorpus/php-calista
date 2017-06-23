@@ -56,11 +56,11 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
      *
      * @return int[]
      */
-    public function getPageRange()
+    public function getPageRange($page = 1)
     {
         $num = $this->count();
-        $min = max([$this->page - 2, 1]);
-        $max = min([$this->page + 2, $num]);
+        $min = max([$page - 2, 1]);
+        $max = min([$page + 2, $num]);
 
         if ($max - $min < 4) {
             if (1 == $min) {

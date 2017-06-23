@@ -181,8 +181,12 @@ class DefaultAccountDatasource extends AbstractDatasource
         $select = $this->getDatabase()->select('users', 'u');
         $select = $this->process($select, $query);
 
+        /** @var \MakinaCorpus\Dashboard\Drupal\Datasource\QueryExtender\DrupalPager $pager */
+        $pager = $select->extend(DrupalPager::class);
+        $pager->setDatasourceQuery($query);
+
         // Remove anonymous user
-        $accountIdList = $select
+        $accountIdList = $pager
             ->fields('u', ['uid'])
             ->condition('u.uid', 0, '>')
             ->groupBy('u.uid')
@@ -191,7 +195,10 @@ class DefaultAccountDatasource extends AbstractDatasource
         ;
 
         // Preload and set nodes at once
-        return new DefaultDatasourceResult(User::class, $this->preloadDependencies($accountIdList));
+        $result = new DefaultDatasourceResult(User::class, $this->preloadDependencies($accountIdList));
+        $result->setTotalItemCount($pager->getTotalCount());
+
+        return $result;
     }
 
     /**

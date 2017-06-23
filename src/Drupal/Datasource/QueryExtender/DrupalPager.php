@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\Dashboard\Drupal\Datasource\QueryExtender;
 
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
+use MakinaCorpus\Dashboard\Datasource\Query;
 
 /**
  * Query extender for Drupal paging that will override the element using
@@ -12,8 +12,9 @@ use MakinaCorpus\Dashboard\Datasource\InputDefinition;
  */
 class DrupalPager extends \SelectQueryExtender
 {
-    private $state;
     private $customCountQuery;
+    private $datasourceQuery;
+    private $totalCount;
 
     /**
      * Default constructor
@@ -47,10 +48,10 @@ class DrupalPager extends \SelectQueryExtender
         // offset instead of going to page 0.
         // Note that this makes those datasources not compatible with a custom
         // user-forged request as input...
-        $limit  = $this->state->getLimit();
-        $offset = $this->state->getOffset();
+        $limit  = $this->datasourceQuery->getLimit();
+        $offset = $this->datasourceQuery->getOffset();
 
-        $this->state->setTotalItemCount($this->getCountQuery()->execute()->fetchField());
+        $this->totalCount = (int)$this->getCountQuery()->execute()->fetchField();
         $this->range($offset, $limit);
 
         // Count query has run, now run the query normally.
@@ -58,13 +59,23 @@ class DrupalPager extends \SelectQueryExtender
     }
 
     /**
+     * Get total count
+     *
+     * @return integer
+     */
+    public function getTotalCount()
+    {
+        return $this->totalCount;
+    }
+
+    /**
      * Specify a custom count query if necessary
      *
-     * @param \SelectQueryInterface $query
+     * @param \SelectQuery $query
      *
      * @return $this
      */
-    public function setCountQuery(\SelectQueryInterface $query)
+    public function setCountQuery(\SelectQuery $query)
     {
         $this->customCountQuery = $query;
 
@@ -74,7 +85,7 @@ class DrupalPager extends \SelectQueryExtender
     /**
      * Get count query
      *
-     * @return \SelectQueryInterface
+     * @return \SelectQuery
      */
     public function getCountQuery()
     {
@@ -86,9 +97,9 @@ class DrupalPager extends \SelectQueryExtender
      *
      * @return $this
      */
-    public function setState(InputDefinition $state)
+    public function setDatasourceQuery(Query $query)
     {
-        $this->state = $state;
+        $this->datasourceQuery = $query;
 
         return $this;
     }

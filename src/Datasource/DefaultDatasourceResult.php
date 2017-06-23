@@ -65,28 +65,4 @@ class DefaultDatasourceResult implements \IteratorAggregate, DatasourceResultInt
 
         return $this->count = 0;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setTotalItemCount($count)
-    {
-        $this->totalCount = $count;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasTotalItemCount()
-    {
-        return null !== $this->totalCount;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTotalCount()
-    {
-        return $this->totalCount;
-    }
 }

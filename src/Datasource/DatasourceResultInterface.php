@@ -58,7 +58,10 @@ interface DatasourceResultInterface extends \Traversable, \Countable
     /**
      * Compute the current page range
      *
+     * @param int $page
+     *   Relative int to compute pages from
+     *
      * @return int[]
      */
-    public function getPageRange();
+    public function getPageRange($page = 1);
 }

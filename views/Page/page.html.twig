@@ -265,7 +265,7 @@
  #}
 {%- block pager_href -%}
   {% if index is defined %}
-    {{ path(query.route, routeParameters|merge({(input.pageParameter): index})) }}
+    {{ path(query.route, query.routeParameters|merge({(input.pagerParameter): index})) }}
   {% else %}
     #
   {% endif %}
@@ -276,7 +276,7 @@
  #}
 {%- block pager_link -%}
   {% if index is defined %}
-    <a href="{{ block('pager_href') }}" data-page-link>
+    <a href="{{ block('pager_href') }}" data-page-link="">
       {{ index }}
     </a>
   {% endif %}
@@ -299,12 +299,12 @@
             </a>
           </li>
         {% endif %}
-        {% for index in state.pageRange %}
+        {% for index in items.getPageRange(page) %}
           <li>
             {{ block('pager_link') }}
           </li>
         {% endfor %}
-        {% if page < state.pageCount %}
+        {% if page < items.pageCount %}
           <li>
             <a href="{% with {index: (page + 1)} %}{{ block('pager_href') }}{% endwith %}" aria-label="{{ "Next"|trans }}" data-page-link>
               <span aria-hidden="true">&raquo;</span>
