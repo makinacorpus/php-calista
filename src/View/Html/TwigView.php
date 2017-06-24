@@ -4,13 +4,13 @@ namespace MakinaCorpus\Dashboard\View\Html;
 
 use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\Error\ConfigurationError;
 use MakinaCorpus\Dashboard\Event\ViewEvent;
 use MakinaCorpus\Dashboard\Util\Link;
 use MakinaCorpus\Dashboard\View\AbstractView;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
 
 /**
  * Uses a view definition and proceed to an html page display via Twig
@@ -35,24 +35,21 @@ class TwigView extends AbstractView
     }
 
     /**
-     * Get default template
+     * Get templates from definition
      *
-     * @return string
+     * @param ViewDefinition $viewDefinition
+     *
+     * @return string[]
      */
-    private function getDefaultTemplate(ViewDefinition $viewDefinition)
+    private function getTemplates(ViewDefinition $viewDefinition)
     {
         $templates = $viewDefinition->getTemplates();
 
-        if (empty($templates)) {
-            throw new ConfigurationError("page builder has no templates");
+        if (!$templates) {
+            $templates = ['list' => 'module:udashboard:views/Page/page-dynamic-table.html.twig'];
         }
 
-        $default = $viewDefinition->getDefaultDisplay();
-        if (isset($templates[$default])) {
-            return $templates[$default];
-        }
-
-        return reset($templates);
+        return $templates;
     }
 
     /**
@@ -63,24 +60,12 @@ class TwigView extends AbstractView
      *
      * @return string
      */
-    private function getTemplateFor(ViewDefinition $viewDefinition, $displayName = null, $fallback = null)
+    private function getTemplateFor(ViewDefinition $viewDefinition, $displayName = null)
     {
-        if (empty($displayName)) {
-            return $this->getDefaultTemplate($viewDefinition);
-        }
-
-        $templates = $viewDefinition->getTemplates();
+        $templates = $this->getTemplates($viewDefinition);
 
         if (!isset($templates[$displayName])) {
-            if ($this->debug) {
-                trigger_error(sprintf("%s: display has no associated template, switching to default", $displayName), E_USER_WARNING);
-            }
-
-            if ($fallback) {
-                return $this->getTemplateFor($fallback);
-            }
-
-            return $this->getDefaultTemplate($viewDefinition);
+            return key($templates);
         }
 
         return $templates[$displayName];
@@ -99,11 +84,14 @@ class TwigView extends AbstractView
     {
         $inputDefinition = $query->getInputDefinition();
         $display = $query->getCurrentDisplay();
-        $templates = $viewDefinition->getTemplates();
+        $templates = $this->getTemplates($viewDefinition);
 
-        // @todo should the default display move to the input def?
+        // Find the right display to use, never let the variable empty
         if (!$display) {
             $display = $viewDefinition->getDefaultDisplay();
+            if (!$display) {
+                $display = key($templates);
+            }
         }
 
         // Build allowed filters arrays

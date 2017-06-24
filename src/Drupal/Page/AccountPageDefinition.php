@@ -19,7 +19,6 @@ use MakinaCorpus\Dashboard\View\Html\TwigView;
 class AccountPageDefinition extends DynamicPageDefinition
 {
     protected $datasourceId = 'udashboard.datasource.drupal_account';
-    protected $templates = ['module:udashboard:views/Page/page-dynamic-table.html.twig'];
     protected $viewType = TwigView::class;
 
     public $uid = 0;

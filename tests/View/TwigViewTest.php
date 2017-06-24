@@ -148,9 +148,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         $viewDefinition = new ViewDefinition([
             'default_display' => 'page',
             'enabled_filters' => ['odd_or_even'],
-            'templates' => [
-                'page' => 'module:udashboard:views/Page/page-dynamic-table.html.twig',
-            ],
+            'templates' => ['page' => 'module:udashboard:views/Page/page-dynamic-table.html.twig'],
         ]);
 
         $view = new TwigView($container->get('twig'), new EventDispatcher());
