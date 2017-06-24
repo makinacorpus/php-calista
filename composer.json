@@ -1,59 +1,60 @@
 {
-    "name" : "makinacorpus/drupal-udashboard",
-    "description" : "Advanced dashboard API for Drupal",
-    "type" : "drupal-module",
-    "license" : "GPL-2",
-    "authors" : [
+    "name": "makinacorpus/drupal-udashboard",
+    "description": "Advanced dashboard API for Drupal",
+    "type": "drupal-module",
+    "license": "GPL-2",
+    "authors": [
         {
-            "name" : "Lonny Loquesol",
-            "email" : "lonny.loquesol@makina-corpus.com"
+            "name": "Lonny Loquesol",
+            "email": "lonny.loquesol@makina-corpus.com"
         },
         {
-            "name" : "Pierre Rineau",
-            "email" : "pierre.rineau@makina-corpus.com"
+            "name": "Pierre Rineau",
+            "email": "pierre.rineau@makina-corpus.com"
         },
         {
-            "name" : "Régis Leroy",
-            "email" : "regis.leroy@makina-corpus.com"
+            "name": "Régis Leroy",
+            "email": "regis.leroy@makina-corpus.com"
         },
         {
-            "name" : "Sébastien Corbin",
-            "email" : "sebastien.corbin@makina-corpus.com"
+            "name": "Sébastien Corbin",
+            "email": "sebastien.corbin@makina-corpus.com"
         },
         {
-            "name" : "Yannick Chabbert",
-            "email" : "yannick.chabbert@makina-corpus.com"
+            "name": "Yannick Chabbert",
+            "email": "yannick.chabbert@makina-corpus.com"
         },
         {
-            "name" : "Makina Corpus",
-            "homepage" : "http://makina-corpus.com"
+            "name": "Makina Corpus",
+            "homepage": "http://makina-corpus.com"
         }
     ],
-    "minimum-stability" : "dev",
-    "prefer-stable" : true,
-    "require" : {
-        "makinacorpus/drupal-sf-dic" : ">=3.2.6",
-        "symfony/dependency-injection" : "^3.2",
-        "symfony/event-dispatcher" : "^3.1",
-        "symfony/http-foundation" : "^3.1",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "makinacorpus/drupal-sf-dic": ">=3.2.6",
+        "php": ">=5.5",
+        "symfony/dependency-injection": "^3.2",
+        "symfony/event-dispatcher": "^3.1",
+        "symfony/http-foundation": "^3.1",
         "symfony/options-resolver": "^3.2",
         "symfony/property-access": "^3.2",
         "symfony/property-info": "^3.2",
-        "symfony/security" : "^3.1"
+        "symfony/security": "^3.1"
     },
-    "require-dev" : {
-        "phpunit/phpunit" : "^5.1",
+    "require-dev": {
+        "phpunit/phpunit": "^5.1",
         "symfony/form": "^3.2",
         "symfony/options-resolver": "^3.2",
-        "twig/twig" : "^2.4"
+        "twig/twig": "^2.4"
     },
-    "autoload" : {
-        "psr-4" : {
+    "autoload": {
+        "psr-4": {
             "MakinaCorpus\\Dashboard\\" : "src/"
         }
     },
-    "autoload-dev" : {
-        "psr-4" : {
+    "autoload-dev": {
+        "psr-4": {
             "MakinaCorpus\\Dashboard\\Tests\\" : "tests/"
         }
     }
