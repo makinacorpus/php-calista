@@ -4,7 +4,6 @@ namespace MakinaCorpus\Dashboard\View\Html;
 
 use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
 use MakinaCorpus\Dashboard\Event\ViewEvent;
 use MakinaCorpus\Dashboard\Util\Link;
 use MakinaCorpus\Dashboard\View\AbstractView;
