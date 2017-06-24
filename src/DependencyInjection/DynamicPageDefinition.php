@@ -155,20 +155,6 @@ abstract class DynamicPageDefinition extends AbstractPageDefinition implements C
     }
 
     /**
-     * Get default (non properties) display options
-     *
-     * Both 'view_type' and 'templates' can be handled automatically by this
-     * parent class by settings a default value respectively on the
-     * $viewType and $templates class properties.
-     *
-     * @return array
-     */
-    protected function getDisplayOptions()
-    {
-        return [];
-    }
-
-    /**
      * {@inheritdoc}
      */
     final public function getViewDefinition()

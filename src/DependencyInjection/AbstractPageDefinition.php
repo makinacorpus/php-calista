@@ -15,6 +15,20 @@ abstract class AbstractPageDefinition implements PageDefinitionInterface
     use ServiceTrait;
 
     /**
+     * Get default (non properties) display options
+     *
+     * Both 'view_type' and 'templates' can be handled automatically by this
+     * parent class by settings a default value respectively on the
+     * $viewType and $templates class properties.
+     *
+     * @return array
+     */
+    protected function getDisplayOptions()
+    {
+        return [];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getInputDefinition(array $options = [])
@@ -27,6 +41,6 @@ abstract class AbstractPageDefinition implements PageDefinitionInterface
      */
     public function getViewDefinition()
     {
-        return new ViewDefinition();
+        return new ViewDefinition($this->getDisplayOptions());
     }
 }
