@@ -522,10 +522,17 @@ function udashboard_page_build(&$page) {
         ],
       ],
     ];
+
+    $tabs = $context->getTabs();
+    if (!$tabs) {
+        $context->addTab('default', t("Context"), 'pencil');
+        $tabs = $context->getTabs();
+    }
+
     $page['page_top']['ucontext_pane'] = [
       '#theme'    => 'udashboard_context',
       '#items'    => $context->getAll(),
-      '#tabs'     => $context->getTabs(),
+      '#tabs'     => $tabs,
       '#actions'  => $actions,
       '#attached' => [
         'library' => [['udashboard', 'udashboard'], ['system', 'jquery.once']],

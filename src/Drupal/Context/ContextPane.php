@@ -118,6 +118,7 @@ class ContextPane
             'icon'      => $icon,
             'count'     => $messageCount,
         ];
+        $this->items[$key] = [];
 
         return $this;
     }
