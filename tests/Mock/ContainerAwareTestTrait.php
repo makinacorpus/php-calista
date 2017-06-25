@@ -145,6 +145,9 @@ trait ContainerAwareTestTrait
         $container = new ContainerBuilder();
         $container->setParameter('kernel.debug', true);
 
+        $propertyInfoExtractor = $this->createPropertyInfoExtractor();
+        $container->set('property_info', $propertyInfoExtractor);
+
         $container->addDefinitions([
             'event_dispatcher' => (new Definition())
                 ->setClass(EventDispatcher::class)

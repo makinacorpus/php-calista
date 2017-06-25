@@ -4,11 +4,13 @@ namespace MakinaCorpus\Dashboard\Twig;
 
 use MakinaCorpus\Dashboard\Datasource\Filter;
 use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Dashboard\Error\ConfigurationError;
+use MakinaCorpus\Dashboard\View\PropertyView;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\PropertyInfo\Type;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
 
 /**
  * Display pages, build views, gives us helpers for it
@@ -47,7 +49,6 @@ class PageExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('udashboard_item_definition', [$this, 'getItemDefinition'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('udashboard_item_property', [$this, 'renderItemProperty'], ['is_safe' => ['html']]),
         ];
     }
@@ -59,43 +60,6 @@ class PageExtension extends \Twig_Extension
             new \Twig_SimpleFilter('udashboard_filter_query', [$this, 'getFilterQuery'], ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('udashboard_query_param', [$this, 'flattenQueryParam']),
         ];
-    }
-
-    /**
-     * Get item definition
-     *
-     * @param string $class
-     *   Must be a string, and an existing class
-     *
-     * @return string[]
-     *   Each key is a property name, each value is a short description for it
-     */
-    public function getItemDefinition($class)
-    {
-        $ret = [];
-
-        if (!$class || !class_exists($class)) {
-            if ($this->debug) {
-                throw new PropertyTypeError("Class '%s' does not exists", $class);
-            }
-            return $ret;
-        }
-
-        $properties = $this->propertyInfo->getProperties($class);
-
-        // Properties can be null
-        if ($properties) {
-            foreach ($properties as $property) {
-                $description = $this->propertyInfo->getShortDescription($class, $property);
-                if ($description) {
-                    $ret[$property] = $description;
-                } else {
-                    $ret[$property] = $property;
-                }
-            }
-        }
-
-        return $ret;
     }
 
     /**
@@ -164,8 +128,12 @@ class PageExtension extends \Twig_Extension
     /**
      * Render a single value
      */
-    private function renderSingleValue(Type $type, $value, array $options = [])
+    private function renderValue(Type $type, $value, array $options = [])
     {
+        if ($type->isCollection()) {
+            return $this->renderValueCollection($type, $value, $options);
+        }
+
         switch ($type->getBuiltinType()) {
 
             case Type::BUILTIN_TYPE_INT:
@@ -202,10 +170,84 @@ class PageExtension extends \Twig_Extension
 
         $ret = [];
         foreach ($values as $value) {
-            $ret[] = $this->renderSingleValue($type->getCollectionValueType(), $value, $options);
+            $ret[] = $this->renderValue($type->getCollectionValueType(), $value, $options);
         }
 
         return implode($options['collection_separator'], $ret);
+    }
+
+    /**
+     * Get value
+     *
+     * @param object $item
+     * @param string $property
+     *
+     * @return null|mixed
+     *   Null if not found
+     */
+    private function getValue($item, $property)
+    {
+        try {
+            return $this->propertyAccess->getValue($item, $property);
+
+        } catch (NoSuchPropertyException $e) {
+            if ($this->debug) {
+                throw $e;
+            }
+
+            return null;
+        }
+    }
+
+    /**
+     * Render property for object
+     *
+     * @param object $item
+     *   Item on which to find the property
+     * @param PropertyView $propery
+     *   Property view
+     *
+     * @return string
+     */
+    private function renderProperty($item, PropertyView $propertyView)
+    {
+        $options = $propertyView->getOptions();
+        $property = $propertyView->getName();
+
+        // Skip property info if options contain a callback.
+        if (isset($options['callback'])) {
+            if (!is_callable($options['callback'])) {
+                if ($this->debug) {
+
+                    if (is_object($item)) {
+                        $itemType = get_class($item);
+                    } else {
+                        $itemType = gettype($item);
+                    }
+
+                    throw new ConfigurationError("callback '%s' for property property '%s' on class '%s' is not callable", $options['callable'], $itemType, $property);
+                }
+
+                return self::RENDER_NOT_POSSIBLE;
+            }
+
+            // Just get the item and return the callback value
+            $value = $this->getValue($item, $property);
+
+            return call_user_func($options['callback'], $value, $options, $item);
+        }
+
+        $value = $this->getValue($item, $property);
+
+        if (null !== $value) {
+            if (!$propertyView->hasType()) {
+                return self::RENDER_NOT_POSSIBLE;
+            }
+
+            return $this->renderValue($propertyView->getType(), $value, $options);
+        }
+
+        return $this->renderValue(new Type(Type::BUILTIN_TYPE_NULL), $value, $options);
     }
 
     /**
@@ -213,7 +255,7 @@ class PageExtension extends \Twig_Extension
      *
      * @param object $item
      *   Item on which to find the property
-     * @param string $propery
+     * @param string|PropertyView $propery
      *   Property name
      * @param mixed[] $options
      *   Display options for the property
@@ -222,6 +264,10 @@ class PageExtension extends \Twig_Extension
      */
     public function renderItemProperty($item, $property, array $options = [])
     {
+        if ($property instanceof PropertyView) {
+            return $this->renderProperty($item, $property);
+        }
+
         if (!is_object($item)) {
             if ($this->debug) {
                 throw new PropertyTypeError(sprintf("Item is not an object %s found instead while rendering the '%s' property", gettype($item), $property));
@@ -229,74 +275,25 @@ class PageExtension extends \Twig_Extension
             return self::RENDER_NOT_POSSIBLE;
         }
 
+        $isVirtual = true;
+        $type = null;
         $class = get_class($item);
-
-        // Skip property info if options contain a callback.
-        if (isset($options['callback'])) {
-            if (!is_callable($options['callback'])) {
-                if ($this->debug) {
-                    throw new ConfigurationError("callback '%s' for property property '%s' on class '%s' is not callable", $options['callable'], $class, $property);
-                }
-                return self::RENDER_NOT_POSSIBLE;
-            }
-
-            // Just get the item and return the callback value
-            $value = $this->propertyAccess->getValue($item, $property);
-
-            return call_user_func($options['callback'], $value, $options, $item);
-        }
-
-        if (!$this->propertyInfo->isReadable($class, $property)) {
-            return self::RENDER_NOT_POSSIBLE;
-        }
-
         $types = $this->propertyInfo->getTypes($class, $property);
-        if (!$types) {
-            return self::RENDER_NOT_POSSIBLE;
+
+        if ($types) {
+            $isVirtual = false;
+            $type = reset($types);
         }
 
-        // Apply default options, no matter from where they come from.
-        $options += [
-            'bool_as_int'           => false,
-            'bool_value_false'      => "Non",
-            'bool_value_true'       => "Oui",
-            'collection_separator'  => ', ',
-            'decimal_precision'     => 2,
-            'decimal_separator'     => ',',
-            'string_ellipsis'       => true,
-            'string_maxlength'      => 20,
-            'thousand_separator'    => '&nbsp;',
-        ];
-
-        // @todo would there be a way to handle mixed types (more than one type)?
-        // OK just take the very first, mixed types is a bad idea overall
-        foreach ($types as $type) {
-
-            $builtin = $type->getBuiltinType();
-            $class = $type->getClassName();
-
-            if ($type->isCollection() || Type::BUILTIN_TYPE_ARRAY === $builtin) {
-                $values = $this->propertyAccess->getValue($item, $property);
-
-                return $this->renderValueCollection($type, $values, $options);
-            }
-
-            if (Type::BUILTIN_TYPE_OBJECT === $builtin) {
-                // @todo allow per class specific/custom/user-driven
-                //   implementation for display
-                return self::RENDER_NOT_POSSIBLE;
-            }
-
-            $value = $this->propertyAccess->getValue($item, $property);
-
-            return $this->renderSingleValue($type, $value, $options);
-        }
+        return $this->renderProperty($item, new PropertyView($property, $isVirtual, $type, $options));
     }
 
     /**
      * Flatten query param if array
      *
      * @param string|string[] $value
+     *
+     * @codeCoverageIgnore
      */
     public function flattenQueryParam($value)
     {
@@ -313,6 +310,8 @@ class PageExtension extends \Twig_Extension
      * @param Filter[] $filters
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function getfilterDefinition($filters)
     {
@@ -337,6 +336,8 @@ class PageExtension extends \Twig_Extension
      * @param string[] $query
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function getFilterQuery($filters, $query)
     {

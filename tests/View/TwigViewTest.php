@@ -63,19 +63,6 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         } catch (\Exception $e) {
             $this->assertTrue(true);
         }
-
-        /*
-        // And empty builder creation
-        $view = $factory->createTwigView();
-        $this->assertInstanceOf(TwigView::class, $view);
-        // Which cannot have a datasource
-        try {
-            $view->getDatasource();
-            $this->fail();
-        } catch (\Exception $e) {
-            $this->assertTrue(true);
-        }
-         */
     }
 
     /**
