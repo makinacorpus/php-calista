@@ -3,6 +3,7 @@
 namespace MakinaCorpus\Dashboard\Drupal\Page;
 
 use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
+use MakinaCorpus\Dashboard\Drupal\Datasource\DefaultAccountDatasource;
 use MakinaCorpus\Dashboard\View\Html\TwigView;
 
 /**
@@ -18,7 +19,7 @@ use MakinaCorpus\Dashboard\View\Html\TwigView;
  */
 class AccountPageDefinition extends DynamicPageDefinition
 {
-    protected $datasourceId = 'udashboard.datasource.drupal_account';
+    protected $datasourceId = DefaultAccountDatasource::class;
     protected $viewType = TwigView::class;
 
     public $uid = 0;
