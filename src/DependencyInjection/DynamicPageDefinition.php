@@ -8,6 +8,7 @@ use MakinaCorpus\Dashboard\Error\ConfigurationError;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Dynamic, introspection based, view definition.
@@ -131,15 +132,12 @@ abstract class DynamicPageDefinition extends AbstractPageDefinition implements C
                 throw new ConfigurationError("container is missing");
             }
 
-            if ($this->container->has($this->datasourceId)) {
-                $this->datasource = $this->container->get($this->datasourceId);
-            } else {
-                // Attempt to instanciate the object using id as class name
-                if (!class_exists($this->datasourceId)) {
-                    throw new ConfigurationError(sprintf("'%s' is not a service identifier nor a valid class name", $this->datasourceId));
-                }
-
-                $this->datasource = new $this->datasourceId();
+            /** @var \MakinaCorpus\Dashboard\DependencyInjection\ViewFactory $registry */
+            try {
+                $registry = $this->container->get('udashboard.view_factory');
+                $this->datasource = $registry->getDatasource($this->datasourceId);
+            } catch (ServiceNotFoundException $e) {
+                throw new ConfigurationError("could not find datasource", null, $e);
             }
         }
 

@@ -5,7 +5,9 @@ namespace MakinaCorpus\Dashboard\Tests\View;
 use MakinaCorpus\Dashboard\Error\ConfigurationError;
 use MakinaCorpus\Dashboard\Tests\Mock\BrokenDynamicPageDefinitionOne;
 use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
-use MakinaCorpus\Dashboard\Tests\Mock\DynamicPageDefinitionOne;
+use MakinaCorpus\Dashboard\Tests\Mock\DynamicPageDefinitionClass;
+use MakinaCorpus\Dashboard\Tests\Mock\DynamicPageDefinitionName;
+use MakinaCorpus\Dashboard\Tests\Mock\DynamicPageDefinitionService;
 use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
 
 /**
@@ -23,28 +25,36 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
         $container = $this->createContainerWithPageDefinitions();
         $container->compile();
 
-        $page = new DynamicPageDefinitionOne();
-        $page->setContainer($container);
+        foreach ([
+            DynamicPageDefinitionService::class,
+            DynamicPageDefinitionClass::class,
+            DynamicPageDefinitionName::class
+        ] as $pageClass) {
 
-        // This will only cover but do not test anything
-        $page->getInputDefinition();
+            /** @var \MakinaCorpus\Dashboard\DependencyInjection\PageDefinitionInterface $page */
+            $page = new $pageClass();
+            $page->setContainer($container);
 
-        // And this do test
-        $viewDefinition = $page->getViewDefinition();
+            // This will only cover but do not test anything
+            $page->getInputDefinition();
 
-        // Order is kept, properties are only those defined in the page
-        $this->assertSame(['id', 'type', 'thousands'], $viewDefinition->getDisplayedProperties());
-        $this->assertSame(['default' => 'module:udashboard:views/Page/page.html.twig'], $viewDefinition->getTemplates());
+            // And this do test
+            $viewDefinition = $page->getViewDefinition();
 
-        // Callback is set
-        $options = $viewDefinition->getPropertyDisplayOptions('thousands');
-        $this->assertSame([$page, 'renderThousands'], $options['callback']);
+            // Order is kept, properties are only those defined in the page
+            $this->assertSame(['id', 'type', 'thousands'], $viewDefinition->getDisplayedProperties());
+            $this->assertSame(['default' => 'module:udashboard:views/Page/page.html.twig'], $viewDefinition->getTemplates());
 
-        // Type is kept
-        $options = $viewDefinition->getPropertyDisplayOptions('id');
-        $this->assertSame('integer', $options['type']);
+            // Callback is set
+            $options = $viewDefinition->getPropertyDisplayOptions('thousands');
+            $this->assertSame([$page, 'renderThousands'], $options['callback']);
 
-        $this->assertInstanceOf(IntArrayDatasource::class, $page->getDatasource());
+            // Type is kept
+            $options = $viewDefinition->getPropertyDisplayOptions('id');
+            $this->assertSame('integer', $options['type']);
+
+            $this->assertInstanceOf(IntArrayDatasource::class, $page->getDatasource());
+        }
     }
 
     /**

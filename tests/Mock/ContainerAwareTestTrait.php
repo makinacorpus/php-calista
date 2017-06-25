@@ -205,6 +205,7 @@ trait ContainerAwareTestTrait
             '_test_datasource' => (new Definition())
                 ->setClass(IntArrayDatasource::class)
                 ->setPublic(true)
+                ->addTag('udashboard.datasource', ['id' => 'int_array_datasource'])
         ]);
 
         return $container;

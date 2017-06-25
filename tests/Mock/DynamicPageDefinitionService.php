@@ -3,16 +3,15 @@
 namespace MakinaCorpus\Dashboard\Tests\Mock;
 
 use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
-use MakinaCorpus\Dashboard\View\Html\TwigView;
 
 /**
  * Tests dynamic page definition without options
  */
-class DynamicPageDefinitionOne extends DynamicPageDefinition
+class DynamicPageDefinitionService extends DynamicPageDefinition
 {
-    protected $datasourceId = IntArrayDatasource::class;
+    protected $datasourceId = '_test_datasource';
     protected $templates = ['default' => 'module:udashboard:views/Page/page.html.twig'];
-    protected $viewType = TwigView::class;
+    protected $viewType = 'udashboard.view.twig_page';
 
     public $id = 0;
     public $type = "";

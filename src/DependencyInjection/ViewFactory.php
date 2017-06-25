@@ -2,6 +2,7 @@
 
 namespace MakinaCorpus\Dashboard\DependencyInjection;
 
+use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use MakinaCorpus\Dashboard\View\ViewInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,6 +16,8 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 final class ViewFactory
 {
     private $container;
+    private $datasourceClasses = [];
+    private $datasourceServices = [];
     private $pageClasses = [];
     private $pageServices = [];
     private $viewClasses = [];
@@ -28,6 +31,20 @@ final class ViewFactory
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+    }
+
+    /**
+     * Register page types
+     *
+     * @param string[] $services
+     *   Keys are names, values are service identifiers
+     * @param string[] $classes
+     *   Keys are class names, values are service identifiers
+     */
+    public function registerDatasources(array $services, array $classes = [])
+    {
+        $this->datasourceServices = $services;
+        $this->datasourceClasses = $classes;
     }
 
     /**
@@ -82,7 +99,7 @@ final class ViewFactory
             $instance = $this->container->get($id);
 
             if (!is_a($instance, $class)) {
-                throw new \InvalidArgumentException(sprintf("service '%s' with id '%s' does not implement %s", $name, $id, $class));
+                throw new ServiceNotFoundException(sprintf("service '%s' with id '%s' does not implement %s", $name, $id, $class));
             }
         } catch (ServiceNotFoundException $e) {
 
@@ -90,10 +107,10 @@ final class ViewFactory
                 $instance = new $name();
 
                 if (!is_a($instance, $class)) {
-                    throw new \InvalidArgumentException(sprintf("class '%s' does not implement %s", $name, $class));
+                    throw new ServiceNotFoundException(sprintf("class '%s' does not implement %s", $name, $class));
                 }
             } else {
-                throw new \InvalidArgumentException(sprintf("service '%s' service id '%s' does not exist in container or class does not exists", $name, $id));
+                throw new ServiceNotFoundException(sprintf("service '%s' service id '%s' does not exist in container or class does not exists", $name, $id));
             }
         }
 
@@ -105,6 +122,18 @@ final class ViewFactory
         }
 
         return $instance;
+    }
+
+    /**
+     * Get datasource
+     *
+     * @param string $name
+     *
+     * @return DatasourceInterface
+     */
+    public function getDatasource($name)
+    {
+        return $this->createInstance(DatasourceInterface::class, $name, $this->datasourceServices, $this->datasourceClasses);
     }
 
     /**

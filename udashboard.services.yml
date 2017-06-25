@@ -61,10 +61,12 @@ services:
     public: true
     class: MakinaCorpus\Dashboard\Drupal\Datasource\DefaultAccountDatasource
     arguments: ['@database', '@entity.manager']
+    tags: [{name: udashboard.datasource}]
   udashboard.datasource.drupal_node:
     public: false
     class: MakinaCorpus\Dashboard\Drupal\Datasource\DefaultNodeDatasource
     arguments: ['@database', '@entity.manager']
+    tags: [{name: udashboard.datasource}]
 
   # Drupal page definitions
   udashboard.page.drupal_account:
