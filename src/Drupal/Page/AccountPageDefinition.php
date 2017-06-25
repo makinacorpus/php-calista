@@ -27,7 +27,7 @@ class AccountPageDefinition extends DynamicPageDefinition
     public $mail = '';
     public $created = 0;
     public $changed = 0;
-    public $access = 0;
+    public $lastAccess = 0;
     public $login = 0;
     public $timezone = '';
     public $language = '';
@@ -77,7 +77,7 @@ class AccountPageDefinition extends DynamicPageDefinition
      */
     public function renderChanged($value)
     {
-        return format_interval(time() - $value);
+        return $value ? format_interval(time() - $value) : t("Never");
     }
 
     /**
@@ -85,14 +85,14 @@ class AccountPageDefinition extends DynamicPageDefinition
      */
     public function renderLogin($value)
     {
-        return format_interval(time() - $value);
+        return $value ? format_interval(time() - $value) : t("Never");
     }
 
     /**
      * Renders access
      */
-    public function renderAccess($value)
+    public function renderLastAccess($value, array $options, $item)
     {
-        return format_interval(time() - $value);
+        return $item->access ? format_interval(time() - $item->access) : t("Never");
     }
 }

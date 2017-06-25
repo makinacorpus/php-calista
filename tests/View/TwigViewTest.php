@@ -139,6 +139,8 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $view = new TwigView($container->get('twig'), new EventDispatcher());
+        $view->setContainer($container);
+
         $query = $inputDefinition->createQueryFromRequest($request);
         $items = $datasource->getItems($query);
 

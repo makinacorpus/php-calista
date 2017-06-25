@@ -84,6 +84,7 @@ class TwigView extends AbstractView
         $inputDefinition = $query->getInputDefinition();
         $display = $query->getCurrentDisplay();
         $templates = $this->getTemplates($viewDefinition);
+        $itemClass = $items->getItemClass();
 
         // Find the right display to use, never let the variable empty
         if (!$display) {
@@ -126,7 +127,8 @@ class TwigView extends AbstractView
             'pageId'        => $this->getId(),
             'input'         => $inputDefinition,
             'definition'    => $viewDefinition,
-            'itemClass'     => $items->getItemClass(),
+            'properties'    => $this->normalizeProperties($viewDefinition, $itemClass),
+            'itemClass'     => $itemClass,
             'items'         => $items,
             'filters'       => $enabledFilters,
             'visualFilters' => [],

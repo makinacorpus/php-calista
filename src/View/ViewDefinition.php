@@ -116,7 +116,7 @@ class ViewDefinition
         $resolver->setAllowedTypes('show_search', ['numeric', 'bool']);
         $resolver->setAllowedTypes('show_sort', ['numeric', 'bool']);
         $resolver->setAllowedTypes('templates', ['array']);
-        $resolver->setAllowedTypes('view_type', ['string']);
+        $resolver->setAllowedTypes('view_type', ['string', ViewInterface::class]);
     }
 
     /**
@@ -137,7 +137,11 @@ class ViewDefinition
      */
     public function getDisplayedProperties()
     {
-          return array_keys($this->options['properties']);
+        if (!is_array($this->options['properties'])) {
+            return null;
+        }
+
+        return array_keys($this->options['properties']);
     }
 
     /**
