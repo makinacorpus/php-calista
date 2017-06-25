@@ -1,50 +1,15 @@
 services:
 
-  udashboard.context:
-    class: MakinaCorpus\Dashboard\Drupal\Context\ContextPane
-    arguments: ['@event_dispatcher', '@request_stack']
-
-  udashboard.view_factory:
-    class: MakinaCorpus\Dashboard\DependencyInjection\ViewFactory
-    arguments: ['@service_container']
-
-  udashboard.processor_registry:
-    class: MakinaCorpus\Dashboard\Drupal\Action\ProcessorActionProvider
-    tags: [{name: udashboard.action_provider}]
-
-  udashboard.action_provider_registry:
-    public: false
-    class: MakinaCorpus\Dashboard\Action\ActionRegistry
-
-  # View implementations
-  udashboard.view.twig_page:
-    public: true
-    class: MakinaCorpus\Dashboard\View\Html\TwigView
-    arguments: ['@twig', '@event_dispatcher']
-    tags: [{name: udashboard.view, id: twig_page}]
-  udashboard.view.twig_form_page:
-    public: true
-    class: MakinaCorpus\Dashboard\View\Html\FormTwigView
-    arguments: ['@twig', '@event_dispatcher']
-    tags: [{name: udashboard.view, id: twig_form_page}]
-
   # Action providers
   udashboard.action_provider.node:
     public: false
     class: MakinaCorpus\Dashboard\Drupal\Action\CoreNodeActionProvider
     tags: [{name: udashboard.action_provider}]
 
-  # Twig extensions
-  udashboard.twig.action_extension:
-    public: false
-    class: MakinaCorpus\Dashboard\Twig\ActionExtension
-    arguments: ['@udashboard.action_provider_registry']
-    tags: [{name: twig.extension}]
-  udashboard.twig.page_extension:
-    public: false
-    class: MakinaCorpus\Dashboard\Twig\PageExtension
-    arguments: ['@request_stack', '@property_accessor', '@property_info']
-    tags: [{name: twig.extension}]
+  # @todo Action processors are Drupal only per signature as of now
+  udashboard.processor_registry:
+    class: MakinaCorpus\Dashboard\Drupal\Action\ProcessorActionProvider
+    tags: [{name: udashboard.action_provider}]
 
   # Property info extractors
   udashboard.property_info_extractor.entity:

@@ -7,6 +7,9 @@ module.
 
 It should be stable enough to use.
 
+This is licensed under the GPL-2 licence. This package includes third-party
+libraries, licences provided in the Resources/meta directory.
+
 ## Installation
 
 It depends heavily on makinacorpus/drupal-sf-dic, the easiest way to install is:
@@ -24,14 +27,14 @@ composer install makinacorpus/drupal-udashboard
 #### Enable top toolbar
 
 ```php
-$conf['udashboard.context_pane_enable'] = true;
+$conf['udashboard_context_pane_enable'] = true;
 ```
 
 
 #### Enable context pane
 
 ```php
-$conf['udashboard.context_pane_enable'] = true;
+$conf['udashboard_context_pane_enable'] = true;
 ```
 
 
@@ -40,7 +43,7 @@ $conf['udashboard.context_pane_enable'] = true;
 This is a very specific setting for usage with UCMS.
 
 ```php
-$conf['udashboard.breadcrumb_alter'] = true;
+$conf['udashboard_breadcrumb_alter'] = true;
 ```
 
 
@@ -52,7 +55,7 @@ If you wish to embed this module's CSS or custom LESS into your own custom
 theme, you might wish to disable CSS loading:
 
 ```php
-$conf['udashboard.disable_css'] = true;
+$conf['udashboard_disable_css'] = true;
 ```
 
 
@@ -61,7 +64,7 @@ $conf['udashboard.disable_css'] = true;
 By setting this to ``true``, seven fixes will always be included:
 
 ```php
-$conf['udashboard.seven_force'] = true;
+$conf['udashboard_seven_force'] = true;
 ```
 
 By setting it to ``false``, the will be always dropped.
