@@ -40,16 +40,16 @@ class PropertyView
     {
         $resolver->setDefaults([
             'bool_as_int'           => false,
-            'bool_value_false'      => "Non",
-            'bool_value_true'       => "Oui",
+            'bool_value_false'      => "No",
+            'bool_value_true'       => "Yes",
             'callback'              => null,
             'collection_separator'  => ', ',
             'decimal_precision'     => 2,
-            'decimal_separator'     => ',',
+            'decimal_separator'     => '.',
             'label'                 => null,
             'string_ellipsis'       => true,
             'string_maxlength'      => 20,
-            'thousand_separator'    => '&nbsp;',
+            'thousand_separator'    => ',',
             'type'                  => null,
             'virtual'               => false,
         ]);

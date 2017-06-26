@@ -2,13 +2,13 @@
 
 namespace MakinaCorpus\Dashboard\Tests\Twig;
 
+use MakinaCorpus\Dashboard\Error\ConfigurationError;
 use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
 use MakinaCorpus\Dashboard\Tests\Mock\IntItem;
 use MakinaCorpus\Dashboard\Twig\PageExtension;
 use MakinaCorpus\Dashboard\View\PropertyView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyInfo\Type;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
 
 /**
  * Tests the views
@@ -17,6 +17,13 @@ class TwigExtensionTest extends \PHPUnit_Framework_TestCase
 {
     use ContainerAwareTestTrait;
 
+    /**
+     * Stupid callback for rendering test
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
     public function displayValue($value)
     {
         if (null === $value) {
@@ -26,15 +33,129 @@ class TwigExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests PropertyView display
+     * Create page extension for testing
+     *
+     * @return \MakinaCorpus\Dashboard\Twig\PageExtension
      */
-    public function testPageExtensionRenderPropertyView()
+    private function createExtension()
     {
-        $pageExtension = new PageExtension(
+        return new PageExtension(
             new RequestStack(),
             $this->createPropertyAccessor(),
             $this->createPropertyInfoExtractor()
         );
+    }
+
+    /**
+     * Tests float render
+     */
+    public function testRenderFloat()
+    {
+        $pageExtension = $this->createExtension();
+        $item = new \stdClass();
+        $item->value = 1317.25678;
+
+        // Default display
+        $output = $pageExtension->renderItemProperty($item, 'value');
+        $this->assertSame("1,317.26", $output);
+
+        // Decimal precision
+        $output = $pageExtension->renderItemProperty($item, 'value', ['decimal_precision' => 4]);
+        $this->assertSame("1,317.2568", $output);
+
+        // Decimal and thousand separator
+        $output = $pageExtension->renderItemProperty($item, 'value', ['thousand_separator' => ' ', 'decimal_separator' => ',']);
+        $this->assertSame("1 317,26", $output);
+    }
+
+    /**
+     * Tests int render
+     */
+    public function testRenderInt()
+    {
+        $pageExtension = $this->createExtension();
+        $item = new \stdClass();
+        $item->value = 1317;
+
+        // Default display
+        $output = $pageExtension->renderItemProperty($item, 'value');
+        $this->assertSame("1,317", $output);
+
+        // Decimal and thousand separator
+        $output = $pageExtension->renderItemProperty($item, 'value', ['thousand_separator' => ' ', 'decimal_separator' => ',']);
+        $this->assertSame("1 317", $output);
+    }
+
+    /**
+     * Tests string render
+     */
+    public function testRenderString()
+    {
+        $pageExtension = $this->createExtension();
+        $item = new \stdClass();
+        $item->value = "This is marvelous!";
+
+        // Default
+        $output = $pageExtension->renderItemProperty($item, 'value');
+        $this->assertSame("This is marvelous!", $output);
+
+        // Default ellipsis + maxlength
+        $output = $pageExtension->renderItemProperty($item, 'value', ['string_maxlength' => 7]);
+        $this->assertSame("This is...", $output);
+
+        // No ellipsis + maxlength
+        $output = $pageExtension->renderItemProperty($item, 'value', ['string_maxlength' => 7, 'string_ellipsis' => false]);
+        $this->assertSame("This is", $output);
+
+        // Ellipsis + maxlength
+        $output = $pageExtension->renderItemProperty($item, 'value', ['string_maxlength' => 7, 'string_ellipsis' => " SPARTA"]);
+        $this->assertSame("This is SPARTA", $output);
+    }
+
+    /**
+     * Tests bool render
+     */
+    public function testBoolString()
+    {
+        $pageExtension = $this->createExtension();
+        $item = new \stdClass();
+        $item->value = true;
+
+        // default
+        $output = $pageExtension->renderItemProperty($item, 'value');
+        $this->assertSame("Yes", $output);
+        $item->value = false;
+        $output = $pageExtension->renderItemProperty($item, 'value');
+        $this->assertSame("No", $output);
+
+        // "true" and "false" values
+        $output = $pageExtension->renderItemProperty($item, 'value', ['bool_value_false' => "oh nooo", 'bool_value_true' => "oh yeah"]);
+        $this->assertSame("oh nooo", $output);
+        $item->value = true;
+        $output = $pageExtension->renderItemProperty($item, 'value', ['bool_value_false' => "oh nooo", 'bool_value_true' => "oh yeah"]);
+        $this->assertSame("oh yeah", $output);
+
+        // bool as int
+        $output = $pageExtension->renderItemProperty($item, 'value', ['bool_as_int' => true]);
+        $this->assertSame("1", $output);
+        $item->value = false;
+        $output = $pageExtension->renderItemProperty($item, 'value', ['bool_as_int' => true]);
+        $this->assertSame("0", $output);
+
+        // no "true" and "false" values
+        $output = $pageExtension->renderItemProperty($item, 'value', ['bool_value_false' => '', 'bool_value_true' => '']);
+        $this->assertSame("false", $output);
+        $item->value = true;
+        $output = $pageExtension->renderItemProperty($item, 'value', ['bool_value_false' => '', 'bool_value_true' => '']);
+        $this->assertSame("true", $output);
+    }
+
+    /**
+     * Tests PropertyView display
+     */
+    public function testPageExtensionRenderPropertyView()
+    {
+        $pageExtension = $this->createExtension();
 
         // Property does not exists, declared as virtual, has no callback
         // Debug mode: exception is thrown
@@ -100,11 +221,7 @@ class TwigExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testPageExtensionRenderPropertyRaw()
     {
-        $pageExtension = new PageExtension(
-            new RequestStack(),
-            $this->createPropertyAccessor(),
-            $this->createPropertyInfoExtractor()
-        );
+        $pageExtension = $this->createExtension();
 
         // Property does not exists on object, it must return '' and there
         // should not be any exception thrown (since it's null)
@@ -120,5 +237,15 @@ class TwigExtensionTest extends \PHPUnit_Framework_TestCase
         $output = $pageExtension->renderItemProperty(new IntItem(1), 'thousands');
         $this->assertNotEquals(PageExtension::RENDER_NOT_POSSIBLE, $output);
         $this->assertNotEmpty($output);
+    }
+
+    /**
+     * Useless test
+     */
+    public function testWhichIsUselessForCodeCoverage()
+    {
+        $pageExtension = $this->createExtension();
+
+        $this->assertSame("udashboard_page", $pageExtension->getName());
     }
 }
