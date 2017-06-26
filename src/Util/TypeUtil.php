@@ -8,16 +8,14 @@ namespace MakinaCorpus\Dashboard\Util;
 final class TypeUtil
 {
     /**
-     * Get internal type of value
+     * Normalize type, because sometime users don't get it right
      *
-     * @param string $value
+     * @param string $type
      *
      * @return string
      */
-    static public function getInternalType($value)
+    static public function normalizeType($type)
     {
-        $type = gettype($value);
-
         switch ($type) {
 
             case 'integer':
@@ -32,5 +30,17 @@ final class TypeUtil
             default:
                 return $type;
         }
+    }
+
+    /**
+     * Get internal type of value
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    static public function getInternalType($value)
+    {
+        return self::normalizeType(gettype($value));
     }
 }

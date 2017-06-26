@@ -49,6 +49,7 @@ class NodePageDefinition extends AbstractPageDefinition
                 'base_query' => $this->getQueryFilters(),
                 'search_parse' => true,
                 'search_enable' => true,
+                'limit_default' => 32,
             ] + $options
         );
     }
@@ -59,12 +60,33 @@ class NodePageDefinition extends AbstractPageDefinition
     public function getViewDefinition()
     {
         return new ViewDefinition([
-            'default_display' => 'table',
+//            'default_display' => 'table',
             'show_search' => true,
-            'templates' => [
-                'grid' => 'module:udashboard:views/Page/page-grid.html.twig',
-                'table' => 'module:udashboard:views/Page/page.html.twig',
+            'properties' => [
+                'type' => true,
+                'title' => [
+                    'string_maxlength' => 48,
+                ],
+                'status' => [
+                    'type' => 'bool',
+                    'bool_value_false' => t("offline"),
+                    'bool_value_true' => t("online"),
+                ],
+                'created' => [
+                    'callback' => '\\MakinaCorpus\\Dashboard\\Drupal\\PropertyInfo\\EntityField::renderTimestampAsDate',
+                ],
+                'changed' => [
+                    'callback' => '\\MakinaCorpus\\Dashboard\\Drupal\\PropertyInfo\\EntityField::renderTimestampAsInterval',
+                ],
+                'field_tags' => [
+                    'label' => "Tags",
+                    'callback' => '\\MakinaCorpus\\Dashboard\\Drupal\\PropertyInfo\\EntityField::renderField',
+                ],
             ],
+//             'templates' => [
+//                 'grid' => 'module:udashboard:views/Page/page-grid.html.twig',
+//                 'table' => 'module:udashboard:views/Page/page.html.twig',
+//             ],
             'view_type' => TwigView::class,
         ]);
     }

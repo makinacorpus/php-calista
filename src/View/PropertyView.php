@@ -131,6 +131,6 @@ class PropertyView
      */
     public function getOptions()
     {
-        return $this->options;
+        return $this->options + ['name' => $this->name];
     }
 }

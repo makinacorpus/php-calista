@@ -288,7 +288,8 @@ class PageExtension extends \Twig_Extension
      * @param string|PropertyView $propery
      *   Property name
      * @param mixed[] $options
-     *   Display options for the property
+     *   Display options for the property, dropped if the $property parameter
+     *   is an instance of PropertyView
      *
      * @return string
      */
