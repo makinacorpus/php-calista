@@ -10,9 +10,6 @@ use MakinaCorpus\Dashboard\View\Html\TwigView;
  * Default node admin page implementation, suitable for most use cases
  *
  * @todo
- *   - handle virtual columns (non existing in property info)
- *      -> allow non existing columns in property info to be displayed in dynamic template
- *      -> even if value is null, execute callback on it in twig extension
  *   - check for method parameters names (if value => value, if item => item)
  *      -> do a proxy callback in the parent implementation that passes the right
  *         value that the user await here

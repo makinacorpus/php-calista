@@ -10,7 +10,6 @@ use Symfony\Component\PropertyInfo\Type;
  */
 class PropertyView
 {
-    private $isVirtual = false;
     private $name = '';
     private $options = [];
     private $type;
@@ -19,17 +18,15 @@ class PropertyView
      * Default constructor
      *
      * @param string $name
-     * @param bool $isVirtual
      * @param Type $type
      * @param array $options
      */
-    public function __construct($name, $isVirtual = false, Type $type = null, array $options = [])
+    public function __construct($name, Type $type = null, array $options = [])
     {
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
         $this->options = $resolver->resolve($options);
 
-        $this->isVirtual = $isVirtual;
         $this->name = $name;
         $this->type = $type;
     }
@@ -54,6 +51,7 @@ class PropertyView
             'string_maxlength'      => 20,
             'thousand_separator'    => '&nbsp;',
             'type'                  => null,
+            'virtual'               => false,
         ]);
 
         $resolver->setAllowedTypes('bool_as_int', ['bool']);
@@ -68,6 +66,7 @@ class PropertyView
         $resolver->setAllowedTypes('string_maxlength', ['null', 'int']);
         $resolver->setAllowedTypes('thousand_separator', ['null', 'string']);
         $resolver->setAllowedTypes('type', ['null', 'string']);
+        $resolver->setAllowedTypes('virtual', ['bool']);
     }
 
     /**
@@ -97,7 +96,7 @@ class PropertyView
      */
     public function isVirtual()
     {
-        return $this->isVirtual;
+        return $this->options['virtual'];
     }
 
     /**

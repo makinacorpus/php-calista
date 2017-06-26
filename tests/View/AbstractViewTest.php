@@ -67,7 +67,7 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('YOUPLA', $property->getOptions()['thousand_separator']);
         // Label is found from the options array
         $this->assertSame("The Foo property", $property->getLabel());
-        $this->assertTrue($property->isVirtual());
+        $this->assertFalse($property->isVirtual());
         $this->assertTrue($viewDefinition->isPropertyDisplayed('foo'));
 
         // Then 'id', which exists on the class
@@ -84,7 +84,7 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
         // Then 'test'
         $property = next($properties);
         $this->assertSame('test', $property->getName());
-        $this->assertTrue($property->isVirtual());
+        $this->assertFalse($property->isVirtual());
         $this->assertTrue($viewDefinition->isPropertyDisplayed('test'));
         $this->assertTrue(is_callable($property->getOptions()['callback']));
         // Label is just the property name
@@ -128,7 +128,7 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
         $properties = $view->normalizePropertiesPassthrought($viewDefinition, IntItem::class);
         reset($properties);
 
-        // Trust the user, all are considered virtual
+        // Trust the user, display everything
         foreach ($properties as $property) {
             $name = $property->getName();
             if ('foo' === $name) {
@@ -136,7 +136,7 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
             } else {
                 $this->assertSame($property->getName(), $property->getLabel());
             }
-            $this->assertTrue($property->isVirtual());
+            $this->assertFalse($property->isVirtual());
         }
     }
 }

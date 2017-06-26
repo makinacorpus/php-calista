@@ -16,6 +16,7 @@ class IntItem
     }
 
     public $type = "Integer";
+    public $neverSet = null;
     public $id;
     public $thousands = [];
     public $title;

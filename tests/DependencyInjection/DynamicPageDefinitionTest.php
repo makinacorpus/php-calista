@@ -51,7 +51,7 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
 
             // Type is kept
             $options = $viewDefinition->getPropertyDisplayOptions('id');
-            $this->assertSame('integer', $options['type']);
+            $this->assertSame('int', $options['type']);
 
             $this->assertInstanceOf(IntArrayDatasource::class, $page->getDatasource());
         }

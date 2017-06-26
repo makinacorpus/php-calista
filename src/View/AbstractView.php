@@ -49,7 +49,6 @@ abstract class AbstractView implements ViewInterface, ContainerAwareInterface
             }
 
             $type = null;
-            $isVirtual = false;
 
             $options = $viewDefinition->getPropertyDisplayOptions($name);
 
@@ -72,12 +71,8 @@ abstract class AbstractView implements ViewInterface, ContainerAwareInterface
                     $type = reset($types);
                 }
             }
-            if (!$type) {
-                // Don't panic and just trust the user
-                $isVirtual = true;
-            }
 
-            $ret[$name] = new PropertyView($name, $isVirtual, $type, $options);
+            $ret[$name] = new PropertyView($name, $type, $options);
         }
 
         return $ret;

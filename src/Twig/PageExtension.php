@@ -5,6 +5,7 @@ namespace MakinaCorpus\Dashboard\Twig;
 use MakinaCorpus\Dashboard\Datasource\Filter;
 use MakinaCorpus\Dashboard\Datasource\Query;
 use MakinaCorpus\Dashboard\Error\ConfigurationError;
+use MakinaCorpus\Dashboard\Util\TypeUtil;
 use MakinaCorpus\Dashboard\View\PropertyView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
@@ -41,6 +42,18 @@ class PageExtension extends \Twig_Extension
         $this->propertyInfo = $propertyInfo;
         $this->requestStack = $requestStack;
         $this->debug = $debug;
+    }
+
+    /**
+     * Enable or disable debug mode
+     *
+     * Mostly useful for unit tests
+     *
+     * @param string $debug
+     */
+    public function setDebug($debug = true)
+    {
+        $this->debug = (bool)$debug;
     }
 
     /**
@@ -213,38 +226,55 @@ class PageExtension extends \Twig_Extension
     {
         $options = $propertyView->getOptions();
         $property = $propertyView->getName();
+        $value = null;
+
+        if (is_object($item)) {
+            $itemType = get_class($item);
+        } else {
+            $itemType = gettype($item);
+        }
 
         // Skip property info if options contain a callback.
         if (isset($options['callback'])) {
             if (!is_callable($options['callback'])) {
                 if ($this->debug) {
-
-                    if (is_object($item)) {
-                        $itemType = get_class($item);
-                    } else {
-                        $itemType = gettype($item);
-                    }
-
-                    throw new ConfigurationError("callback '%s' for property property '%s' on class '%s' is not callable", $options['callable'], $itemType, $property);
+                    throw new ConfigurationError("callback '%s' for property '%s' on class '%s' is not callable", $options['callable'], $itemType, $property);
                 }
 
                 return self::RENDER_NOT_POSSIBLE;
             }
 
-            // Just get the item and return the callback value
-            $value = $this->getValue($item, $property);
+            if (!$propertyView->isVirtual()) {
+                $value = $this->getValue($item, $property);
+            }
 
             return call_user_func($options['callback'], $value, $options, $item);
+        }
+
+        // A virtual property with no callback should not be displayable at all
+        if ($propertyView->isVirtual()) {
+            if ($this->debug) {
+                throw new ConfigurationError(sprintf("property '%s' on class '%s' is virtual but has no callback", $property, $itemType));
+            }
+
+            return self::RENDER_NOT_POSSIBLE;
         }
 
         $value = $this->getValue($item, $property);
 
         if (null !== $value) {
             if (!$propertyView->hasType()) {
-                return self::RENDER_NOT_POSSIBLE;
+                // Attempt to find the property type dynamically
+                if (is_object($value)) {
+                    $type = new Type(Type::BUILTIN_TYPE_OBJECT, false, get_class($value));
+                } else {
+                    $type = new Type(TypeUtil::getInternalType($value));
+                }
+            } else {
+                $type = $propertyView->getType();
             }
 
-            return $this->renderValue($propertyView->getType(), $value, $options);
+            return $this->renderValue($type, $value, $options);
         }
 
         return $this->renderValue(new Type(Type::BUILTIN_TYPE_NULL), $value, $options);
@@ -275,17 +305,15 @@ class PageExtension extends \Twig_Extension
             return self::RENDER_NOT_POSSIBLE;
         }
 
-        $isVirtual = true;
         $type = null;
         $class = get_class($item);
         $types = $this->propertyInfo->getTypes($class, $property);
 
         if ($types) {
-            $isVirtual = false;
             $type = reset($types);
         }
 
-        return $this->renderProperty($item, new PropertyView($property, $isVirtual, $type, $options));
+        return $this->renderProperty($item, new PropertyView($property, $type, $options));
     }
 
     /**

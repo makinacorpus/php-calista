@@ -5,6 +5,7 @@ namespace MakinaCorpus\Dashboard\DependencyInjection;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Error\ConfigurationError;
+use MakinaCorpus\Dashboard\Util\TypeUtil;
 use MakinaCorpus\Dashboard\View\ViewDefinition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -198,7 +199,7 @@ abstract class DynamicPageDefinition extends AbstractPageDefinition implements C
             $displayOptions = [];
 
             $name = $propertyRef->getName();
-            $type = gettype($propertyRef->getValue($this));
+            $type = TypeUtil::getInternalType($propertyRef->getValue($this));
 
             // Allow to enfore the property type for display
             if ("NULL" !== $type) {
