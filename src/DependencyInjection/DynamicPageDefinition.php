@@ -2,6 +2,8 @@
 
 namespace MakinaCorpus\Dashboard\DependencyInjection;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use MakinaCorpus\Dashboard\Annotation\Property;
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
 use MakinaCorpus\Dashboard\Datasource\InputDefinition;
 use MakinaCorpus\Dashboard\Error\ConfigurationError;
@@ -66,12 +68,23 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  */
 abstract class DynamicPageDefinition extends AbstractPageDefinition implements ContainerAwareInterface
 {
+    private $annotationReader;
     private $container;
     private $datasource;
     private $debug = false;
     protected $datasourceId = '';
     protected $templates;
     protected $viewType;
+
+    /**
+     * Set annotation reader, if available
+     *
+     * @param AnnotationReader $annotationReader
+     */
+    final public function setAnnotationReader(AnnotationReader $annotationReader)
+    {
+        $this->annotationReader = $annotationReader;
+    }
 
     /**
      * {@inheritdoc}
@@ -196,9 +209,16 @@ abstract class DynamicPageDefinition extends AbstractPageDefinition implements C
                 continue;
             }
 
+            $name = $propertyRef->getName();
             $displayOptions = [];
 
-            $name = $propertyRef->getName();
+            if ($this->annotationReader) {
+                $annotation = $this->annotationReader->getPropertyAnnotation(new \ReflectionProperty($class, $name), Property::class);
+                if ($annotation instanceof Property) {
+                    $displayOptions = $annotation->getOptions();
+                }
+            }
+
             $type = TypeUtil::getInternalType($propertyRef->getValue($this));
 
             // Allow to enfore the property type for display

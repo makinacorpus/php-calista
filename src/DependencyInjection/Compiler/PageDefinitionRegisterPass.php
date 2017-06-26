@@ -3,10 +3,12 @@
 namespace MakinaCorpus\Dashboard\DependencyInjection\Compiler;
 
 use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
+use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
 use MakinaCorpus\Dashboard\DependencyInjection\PageDefinitionInterface;
 use MakinaCorpus\Dashboard\View\ViewInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Registers page definitions
@@ -44,6 +46,9 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
             // @codeCoverageIgnoreStart
             if (!$refClass->implementsInterface($serviceClass)) {
                 throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, $serviceClass));
+            }
+            if ($refClass->isSubclassOf(DynamicPageDefinition::class)) {
+                $def->addMethodCall('setAnnotationReader', [new Reference('annotation_reader')]);
             }
             // @codeCoverageIgnoreEnd
 
