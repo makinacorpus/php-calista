@@ -1,13 +1,13 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\View;
+namespace MakinaCorpus\Calista\Tests\View;
 
-use MakinaCorpus\Dashboard\DependencyInjection\ConfigPageDefinition;
-use MakinaCorpus\Dashboard\DependencyInjection\PageDefinitionInterface;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
-use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
-use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
-use MakinaCorpus\Dashboard\View\Html\TwigView;
+use MakinaCorpus\Calista\DependencyInjection\ConfigPageDefinition;
+use MakinaCorpus\Calista\DependencyInjection\PageDefinitionInterface;
+use MakinaCorpus\Calista\Error\ConfigurationError;
+use MakinaCorpus\Calista\Tests\Mock\ContainerAwareTestTrait;
+use MakinaCorpus\Calista\Tests\Mock\IntArrayDatasource;
+use MakinaCorpus\Calista\View\Html\TwigView;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,8 +36,8 @@ class ConfigPageDefinitionTest extends \PHPUnit_Framework_TestCase
         $datasource = $page->getDatasource();
         $items = $datasource->getItems($query);
 
-        /** @var \MakinaCorpus\Dashboard\DependencyInjection\ViewFactory $factory */
-        $factory = $container->get('udashboard.view_factory');
+        /** @var \MakinaCorpus\Calista\DependencyInjection\ViewFactory $factory */
+        $factory = $container->get('calista.view_factory');
         $view = $factory->getView($viewDefinition->getViewType());
 
         $view->render($viewDefinition, $items, $query);

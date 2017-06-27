@@ -1,11 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Mock;
+namespace MakinaCorpus\Calista\Tests\Mock;
 
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
-use MakinaCorpus\Dashboard\DependencyInjection\AbstractPageDefinition;
-use MakinaCorpus\Dashboard\View\Html\TwigView;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Calista\Datasource\InputDefinition;
+use MakinaCorpus\Calista\DependencyInjection\AbstractPageDefinition;
+use MakinaCorpus\Calista\View\Html\TwigView;
+use MakinaCorpus\Calista\View\ViewDefinition;
 
 /**
  * Tests page definition and page definition factory
@@ -40,7 +40,7 @@ class FooPageDefinition extends AbstractPageDefinition
         return new ViewDefinition([
             'default_display' => 'default',
             'templates' => [
-                'default' => 'module:udashboard:views/Page/page.html.twig',
+                'default' => 'module:calista:views/Page/page.html.twig',
             ],
             'view_type' => TwigView::class,
         ]);

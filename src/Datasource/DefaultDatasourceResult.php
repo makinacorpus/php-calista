@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Datasource;
+namespace MakinaCorpus\Calista\Datasource;
 
 /**
  * Basics for the datasource result interface implementation

@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Controller;
+namespace MakinaCorpus\Calista\Controller;
 
-use MakinaCorpus\Dashboard\View\Html\TwigView;
+use MakinaCorpus\Calista\View\Html\TwigView;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

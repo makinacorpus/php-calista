@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Event;
+namespace MakinaCorpus\Calista\Event;
 
-use MakinaCorpus\Dashboard\Util\AdminTable;
+use MakinaCorpus\Calista\Util\AdminTable;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**

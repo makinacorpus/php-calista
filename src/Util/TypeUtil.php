@@ -1,6 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Util;
+namespace MakinaCorpus\Calista\Util;
+
+use Symfony\Component\PropertyInfo\Type;
 
 /**
  * A few helpers for managing data types
@@ -42,5 +44,51 @@ final class TypeUtil
     static public function getInternalType($value)
     {
         return self::normalizeType(gettype($value));
+    }
+
+    /**
+     * Get null type instance
+     *
+     * @return Type
+     */
+    static public function getNullType()
+    {
+        return new Type(Type::BUILTIN_TYPE_NULL);
+    }
+
+    /**
+     * Get type instance
+     *
+     * @param string $internalType
+     *
+     * @return Type
+     */
+    static public function getTypeInstance($internalType)
+    {
+        if (class_exists($internalType)) {
+            return new Type(Type::BUILTIN_TYPE_OBJECT, true, $internalType);
+        }
+        return new Type(TypeUtil::normalizeType($internalType));
+    }
+
+    /**
+     * Get type instance for value
+     *
+     * @param mixed $value
+     *
+     * @return Type
+     */
+    static public function getValueType($value)
+    {
+        // Attempt to find the property type dynamically
+        if (null === $value) {
+            return self::getNullType();
+        }
+
+        if (is_object($value)) {
+            return new Type(Type::BUILTIN_TYPE_OBJECT, false, get_class($value));
+        }
+
+        return new Type(self::getInternalType($value));
     }
 }

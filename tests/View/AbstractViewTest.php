@@ -1,12 +1,12 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\View;
+namespace MakinaCorpus\Calista\Tests\View;
 
-use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
-use MakinaCorpus\Dashboard\Tests\Mock\DummyView;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
-use MakinaCorpus\Dashboard\Tests\Mock\IntItem;
-use MakinaCorpus\Dashboard\View\PropertyView;
+use MakinaCorpus\Calista\Tests\Mock\ContainerAwareTestTrait;
+use MakinaCorpus\Calista\Tests\Mock\DummyView;
+use MakinaCorpus\Calista\View\ViewDefinition;
+use MakinaCorpus\Calista\Tests\Mock\IntItem;
+use MakinaCorpus\Calista\View\PropertyView;
 
 /**
  * Tests the views
@@ -60,7 +60,7 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
 
         // Order is the same, we have all properties we defined
         // 'foo' is the first
-        /** @var \MakinaCorpus\Dashboard\View\PropertyView $property */
+        /** @var \MakinaCorpus\Calista\View\PropertyView $property */
         $property = current($properties);
         $this->assertInstanceOf(PropertyView::class, $property);
         $this->assertSame('foo', $property->getName());

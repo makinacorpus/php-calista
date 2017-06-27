@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Datasource;
+namespace MakinaCorpus\Calista\Datasource;
 
 /**
  * Base implementation which leaves null a few mathods

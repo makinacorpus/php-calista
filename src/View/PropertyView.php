@@ -1,7 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\View;
+namespace MakinaCorpus\Calista\View;
 
+use MakinaCorpus\Calista\Util\TypeUtil;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyInfo\Type;
 
@@ -118,7 +119,7 @@ class PropertyView
     {
         if (!$this->type) {
             // Allow graceful runtime degradation in case of erroneous template
-            return new Type(Type::BUILTIN_TYPE_NULL);
+            return TypeUtil::getNullType();
         }
 
         return $this->type;

@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Twig;
+namespace MakinaCorpus\Calista\Twig;
 
 /**
  * Provides a few donwgrade compability functions.
@@ -50,6 +50,6 @@ class DowngradeCompatibilityExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'udashboard_downgrade_compatibility';
+        return 'calista_downgrade_compatibility';
     }
 }

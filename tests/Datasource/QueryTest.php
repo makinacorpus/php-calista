@@ -1,12 +1,12 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Datasource;
+namespace MakinaCorpus\Calista\Tests\Datasource;
 
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
-use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Datasource\QueryFactory;
-use MakinaCorpus\Dashboard\Datasource\QueryStringParser;
-use MakinaCorpus\Dashboard\Tests\Mock\EmptyDatasource;
+use MakinaCorpus\Calista\Datasource\InputDefinition;
+use MakinaCorpus\Calista\Datasource\Query;
+use MakinaCorpus\Calista\Datasource\QueryFactory;
+use MakinaCorpus\Calista\Datasource\QueryStringParser;
+use MakinaCorpus\Calista\Tests\Mock\EmptyDatasource;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

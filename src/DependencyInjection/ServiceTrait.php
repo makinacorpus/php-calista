@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\DependencyInjection;
+namespace MakinaCorpus\Calista\DependencyInjection;
 
 /**
  * Boilerplate code for service implementations.

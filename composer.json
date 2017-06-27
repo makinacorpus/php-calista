@@ -1,7 +1,7 @@
 {
-    "name": "makinacorpus/drupal-udashboard",
-    "description": "Advanced dashboard API for Drupal",
-    "type": "drupal-module",
+    "name": "makinacorpus/php-calista",
+    "description": "Backend agnostic API for building user interface or data exports",
+    "type": "library",
     "license": "GPL-2",
     "authors": [
         {
@@ -32,7 +32,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "makinacorpus/drupal-sf-dic": ">=3.2.6",
         "php": ">=5.5",
         "symfony/dependency-injection": "^3.2",
         "symfony/event-dispatcher": "^3.1",
@@ -50,12 +49,12 @@
     },
     "autoload": {
         "psr-4": {
-            "MakinaCorpus\\Dashboard\\" : "src/"
+            "MakinaCorpus\\Calista\\" : "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MakinaCorpus\\Dashboard\\Tests\\" : "tests/"
+            "MakinaCorpus\\Calista\\Tests\\" : "tests/"
         }
     }
 }

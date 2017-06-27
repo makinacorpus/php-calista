@@ -1,12 +1,12 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Twig;
+namespace MakinaCorpus\Calista\Twig;
 
-use MakinaCorpus\Dashboard\Datasource\Filter;
-use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
-use MakinaCorpus\Dashboard\Util\TypeUtil;
-use MakinaCorpus\Dashboard\View\PropertyView;
+use MakinaCorpus\Calista\Datasource\Filter;
+use MakinaCorpus\Calista\Datasource\Query;
+use MakinaCorpus\Calista\Error\ConfigurationError;
+use MakinaCorpus\Calista\Util\TypeUtil;
+use MakinaCorpus\Calista\View\PropertyView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -62,16 +62,16 @@ class PageExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('udashboard_item_property', [$this, 'renderItemProperty'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('calista_item_property', [$this, 'renderItemProperty'], ['is_safe' => ['html']]),
         ];
     }
 
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('udashboard_filter_definition', [$this, 'getfilterDefinition'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFilter('udashboard_filter_query', [$this, 'getFilterQuery'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFilter('udashboard_query_param', [$this, 'flattenQueryParam']),
+            new \Twig_SimpleFilter('calista_filter_definition', [$this, 'getfilterDefinition'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter('calista_filter_query', [$this, 'getFilterQuery'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter('calista_query_param', [$this, 'flattenQueryParam']),
         ];
     }
 
@@ -80,7 +80,7 @@ class PageExtension extends \Twig_Extension
      */
     private function renderInt($value, array $options = [])
     {
-        return number_format($value, 0, '.', $options['thousand_separator']);
+        return null === $value ? '' : number_format($value, 0, '.', $options['thousand_separator']);
     }
 
     /**
@@ -262,22 +262,13 @@ class PageExtension extends \Twig_Extension
 
         $value = $this->getValue($item, $property);
 
-        if (null !== $value) {
-            if (!$propertyView->hasType()) {
-                // Attempt to find the property type dynamically
-                if (is_object($value)) {
-                    $type = new Type(Type::BUILTIN_TYPE_OBJECT, false, get_class($value));
-                } else {
-                    $type = new Type(TypeUtil::getInternalType($value));
-                }
-            } else {
-                $type = $propertyView->getType();
-            }
-
-            return $this->renderValue($type, $value, $options);
+        if ($propertyView->hasType()) {
+            $type = $propertyView->getType();
+        } else {
+            $type = TypeUtil::getValueType($value);
         }
 
-        return $this->renderValue(new Type(Type::BUILTIN_TYPE_NULL), $value, $options);
+        return $this->renderValue($type, $value, $options);
     }
 
     /**
@@ -346,7 +337,7 @@ class PageExtension extends \Twig_Extension
     {
         $definition = [];
 
-        /** @var \MakinaCorpus\Dashboard\Datasource\Filter $filter */
+        /** @var \MakinaCorpus\Calista\Datasource\Filter $filter */
         foreach ($filters as $filter) {
             $definition[] = [
                 'value'   => $filter->getField(),
@@ -372,7 +363,7 @@ class PageExtension extends \Twig_Extension
     {
         $filterQuery = [];
 
-        /** @var \MakinaCorpus\Dashboard\Datasource\Filter $filter */
+        /** @var \MakinaCorpus\Calista\Datasource\Filter $filter */
         foreach ($filters as $filter) {
             $field = $filter->getField();
             if (isset($query[$field])) {
@@ -388,6 +379,6 @@ class PageExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'udashboard_page';
+        return 'calista_page';
     }
 }

@@ -1,12 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\View;
+namespace MakinaCorpus\Calista\View;
 
-use MakinaCorpus\Dashboard\DependencyInjection\ServiceTrait;
-use MakinaCorpus\Dashboard\Util\TypeUtil;
+use MakinaCorpus\Calista\DependencyInjection\ServiceTrait;
+use MakinaCorpus\Calista\Util\TypeUtil;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\PropertyInfo\Type;
 
 /**
  * Boilerplate code for view implementations.
@@ -68,11 +67,7 @@ abstract class AbstractView implements ViewInterface, ContainerAwareInterface
             // Determine data type from whatever we can find, still type can be
             // enforced by the user, at his own risks
             if (!empty($options['type'])) {
-                if (class_exists($options['type'])) {
-                    $type = new Type(Type::BUILTIN_TYPE_OBJECT, true, $options['type']);
-                } else {
-                    $type = new Type(TypeUtil::normalizeType($options['type']));
-                }
+                $type = TypeUtil::getTypeInstance($options['type']);
 
             } else if ($propertyInfoExtractor) {
                 $types = $propertyInfoExtractor->getTypes($class, $name);

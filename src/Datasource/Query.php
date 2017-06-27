@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Datasource;
+namespace MakinaCorpus\Calista\Datasource;
 
 /**
  * Sanitized version of an incomming query for a datasource

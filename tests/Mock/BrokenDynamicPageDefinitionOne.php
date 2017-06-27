@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Mock;
+namespace MakinaCorpus\Calista\Tests\Mock;
 
-use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
+use MakinaCorpus\Calista\DependencyInjection\DynamicPageDefinition;
 
 /**
  * Tests a very broken dynamic page definition
@@ -10,7 +10,7 @@ use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
 class BrokenDynamicPageDefinitionOne extends DynamicPageDefinition
 {
     // Keep templates here in order to avoid a few exception
-    protected $templates = ['default' => 'module:udashboard:views/Page/page.html.twig'];
+    protected $templates = ['default' => 'module:calista:views/Page/page.html.twig'];
 
     public $one;
     public $someField;

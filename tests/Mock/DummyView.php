@@ -1,11 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Mock;
+namespace MakinaCorpus\Calista\Tests\Mock;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
-use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\View\AbstractView;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Calista\Datasource\DatasourceResultInterface;
+use MakinaCorpus\Calista\Datasource\Query;
+use MakinaCorpus\Calista\View\AbstractView;
+use MakinaCorpus\Calista\View\ViewDefinition;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

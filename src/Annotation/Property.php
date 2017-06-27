@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Annotation;
+namespace MakinaCorpus\Calista\Annotation;
 
 /**
  * @Annotation

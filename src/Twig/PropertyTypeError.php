@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Twig;
+namespace MakinaCorpus\Calista\Twig;
 
 /**
  * Error thrown during property rendering

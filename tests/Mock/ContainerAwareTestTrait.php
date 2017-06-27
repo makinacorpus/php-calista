@@ -1,14 +1,14 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Mock;
+namespace MakinaCorpus\Calista\Tests\Mock;
 
-use MakinaCorpus\Dashboard\Action\ActionRegistry;
-use MakinaCorpus\Dashboard\DependencyInjection\Compiler\ActionProviderRegisterPass;
-use MakinaCorpus\Dashboard\DependencyInjection\Compiler\PageDefinitionRegisterPass;
-use MakinaCorpus\Dashboard\DependencyInjection\ViewFactory;
-use MakinaCorpus\Dashboard\Twig\ActionExtension;
-use MakinaCorpus\Dashboard\Twig\PageExtension;
-use MakinaCorpus\Dashboard\View\Html\TwigView;
+use MakinaCorpus\Calista\Action\ActionRegistry;
+use MakinaCorpus\Calista\DependencyInjection\Compiler\ActionProviderRegisterPass;
+use MakinaCorpus\Calista\DependencyInjection\Compiler\PageDefinitionRegisterPass;
+use MakinaCorpus\Calista\DependencyInjection\ViewFactory;
+use MakinaCorpus\Calista\Twig\ActionExtension;
+use MakinaCorpus\Calista\Twig\PageExtension;
+use MakinaCorpus\Calista\View\Html\TwigView;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -71,11 +71,11 @@ trait ContainerAwareTestTrait
     {
         $twigEnv = new \Twig_Environment(
             new \Twig_Loader_Array([
-                'module:udashboard:views/Action/action-single.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Action/action-single.html.twig'),
-                'module:udashboard:views/Action/actions.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Action/actions.html.twig'),
-                'module:udashboard:views/Page/page-dynamic-table.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-dynamic-table.html.twig'),
-                'module:udashboard:views/Page/page-grid.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-grid.html.twig'),
-                'module:udashboard:views/Page/page.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page.html.twig'),
+                'module:calista:views/Action/action-single.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Action/action-single.html.twig'),
+                'module:calista:views/Action/actions.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Action/actions.html.twig'),
+                'module:calista:views/Page/page-dynamic-table.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-dynamic-table.html.twig'),
+                'module:calista:views/Page/page-grid.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-grid.html.twig'),
+                'module:calista:views/Page/page.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page.html.twig'),
             ]),
             [
                 'debug' => true,
@@ -113,7 +113,7 @@ trait ContainerAwareTestTrait
         if ($actionRegistry) {
             $twigEnv->addExtension(new ActionExtension($actionRegistry));
         } else {
-            $twigEnv->addFunction(new \Twig_SimpleFunction('udashboard_actions', function () {
+            $twigEnv->addFunction(new \Twig_SimpleFunction('calista_actions', function () {
                 return 'ACTIONS';
             }));
         }
@@ -156,14 +156,14 @@ trait ContainerAwareTestTrait
 
         // Action
         $container->addDefinitions([
-            'udashboard.action_provider_registry' => (new Definition())
+            'calista.action_provider_registry' => (new Definition())
                 ->setClass(ActionRegistry::class)
                 ->setPublic(true)
         ]);
         $container->addDefinitions([
-            'udashboard.action_provider_int' => (new Definition())
+            'calista.action_provider_int' => (new Definition())
                 ->setClass(IntActionProvider::class)
-                ->addTag('udashboard.action_provider')
+                ->addTag('calista.action_provider')
                 ->setPublic(true)
         ]);
         $container->addCompilerPass(new ActionProviderRegisterPass());
@@ -173,13 +173,13 @@ trait ContainerAwareTestTrait
             'twig' => (new Definition())
                 ->setClass(\Twig_Environment::class)
                 ->setPublic(true)
-                ->addArgument(new Reference('udashboard.action_provider_registry'))
+                ->addArgument(new Reference('calista.action_provider_registry'))
                 ->setFactory([$this, 'createTwigEnv'])
         ]);
 
         // Views and pages factory
         $container->addDefinitions([
-            'udashboard.view_factory' => (new Definition())
+            'calista.view_factory' => (new Definition())
                 ->setClass(ViewFactory::class)
                 ->setArguments([
                     new Reference('service_container'),
@@ -190,11 +190,11 @@ trait ContainerAwareTestTrait
 
         // Views
         $container->addDefinitions([
-            'udashboard.view.twig_page' => (new Definition())
+            'calista.view.twig_page' => (new Definition())
                 ->setClass(TwigView::class)
                 ->setArguments([new Reference('twig'), new Reference('event_dispatcher')])
                 ->setPublic(true)
-                ->addTag('udashboard.view', ['id' => 'twig_page'])
+                ->addTag('calista.view', ['id' => 'twig_page'])
         ]);
 
         // Pages
@@ -202,13 +202,13 @@ trait ContainerAwareTestTrait
             '_test_view' => (new Definition())
                 ->setClass(FooPageDefinition::class)
                 ->setPublic(true)
-                ->addTag('udashboard.page_definition', ['id' => 'int_array_page'])
+                ->addTag('calista.page_definition', ['id' => 'int_array_page'])
         ]);
         $container->addDefinitions([
             '_test_datasource' => (new Definition())
                 ->setClass(IntArrayDatasource::class)
                 ->setPublic(true)
-                ->addTag('udashboard.datasource', ['id' => 'int_array_datasource'])
+                ->addTag('calista.datasource', ['id' => 'int_array_datasource'])
         ]);
 
         return $container;

@@ -1,9 +1,9 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\View;
+namespace MakinaCorpus\Calista\View;
 
+use MakinaCorpus\Calista\Error\ConfigurationError;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
 
 /**
  * View definition sanitizer

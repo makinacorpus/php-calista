@@ -1,9 +1,9 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Twig;
+namespace MakinaCorpus\Calista\Twig;
 
-use MakinaCorpus\Dashboard\Action\Action;
-use MakinaCorpus\Dashboard\Action\ActionRegistry;
+use MakinaCorpus\Calista\Action\Action;
+use MakinaCorpus\Calista\Action\ActionRegistry;
 
 /**
  * Displays any object's actions
@@ -28,10 +28,10 @@ class ActionExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('udashboard_primary', [$this, 'renderPrimaryActions'], ['is_safe' => ['html'], 'needs_environment' => true]),
-            new \Twig_SimpleFunction('udashboard_button', [$this, 'renderSingleAction'], ['is_safe' => ['html'], 'needs_environment' => true]),
-            new \Twig_SimpleFunction('udashboard_actions', [$this, 'renderActions'], ['is_safe' => ['html'], 'needs_environment' => true]),
-            new \Twig_SimpleFunction('udashboard_actions_raw', [$this, 'renderActionsRaw'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new \Twig_SimpleFunction('calista_primary', [$this, 'renderPrimaryActions'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new \Twig_SimpleFunction('calista_button', [$this, 'renderSingleAction'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new \Twig_SimpleFunction('calista_actions', [$this, 'renderActions'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new \Twig_SimpleFunction('calista_actions_raw', [$this, 'renderActionsRaw'], ['is_safe' => ['html'], 'needs_environment' => true]),
         ];
     }
 
@@ -49,7 +49,7 @@ class ActionExtension extends \Twig_Extension
      */
     public function renderSingleAction(\Twig_Environment $environment, array $options, $showTitle = false)
     {
-        return $environment->render('module:udashboard:views/Action/actions.html.twig', [
+        return $environment->render('module:calista:views/Action/actions.html.twig', [
             'show_title'  => $showTitle,
             'action'      => Action::create($options),
         ]);
@@ -132,7 +132,7 @@ class ActionExtension extends \Twig_Extension
         ];
 
         foreach ($actions as $key => $action) {
-            /** @var $action \MakinaCorpus\Dashboard\Action\Action */
+            /** @var $action \MakinaCorpus\Calista\Action\Action */
             // Remove actions for which the path is the same.
             /* @todo
             if (current_path() === $action->getRoute()) {
@@ -161,7 +161,7 @@ class ActionExtension extends \Twig_Extension
             }
         }
 
-        return $environment->render('module:udashboard:views/Action/actions.html.twig', $context);
+        return $environment->render('module:calista:views/Action/actions.html.twig', $context);
     }
 
     /**
@@ -169,6 +169,6 @@ class ActionExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'udashboard_action';
+        return 'calista_action';
     }
 }

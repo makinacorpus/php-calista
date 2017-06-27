@@ -1,10 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\DependencyInjection;
+namespace MakinaCorpus\Calista\DependencyInjection;
 
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Calista\Datasource\InputDefinition;
+use MakinaCorpus\Calista\Error\ConfigurationError;
+use MakinaCorpus\Calista\View\ViewDefinition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -75,9 +75,9 @@ class ConfigPageDefinition implements PageDefinitionInterface, ContainerAwareInt
                 throw new ConfigurationError("container is missing");
             }
 
-            /** @var \MakinaCorpus\Dashboard\DependencyInjection\ViewFactory $registry */
+            /** @var \MakinaCorpus\Calista\DependencyInjection\ViewFactory $registry */
             try {
-                $registry = $this->container->get('udashboard.view_factory');
+                $registry = $this->container->get('calista.view_factory');
                 $this->datasource = $registry->getDatasource($this->config['datasource']);
             } catch (ServiceNotFoundException $e) {
                 throw new ConfigurationError(sprintf("could not find datasource '%s'", $this->config['datasource']), null, $e);

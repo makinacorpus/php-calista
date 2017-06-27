@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\DependencyInjection;
+namespace MakinaCorpus\Calista\DependencyInjection;
 
 /**
  * Represents a view, anything that can be displayed from datasource data

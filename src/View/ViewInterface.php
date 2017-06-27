@@ -1,10 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\View;
+namespace MakinaCorpus\Calista\View;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
-use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\DependencyInjection\ServiceInterface;
+use MakinaCorpus\Calista\Datasource\DatasourceResultInterface;
+use MakinaCorpus\Calista\Datasource\Query;
+use MakinaCorpus\Calista\DependencyInjection\ServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Datasource;
+namespace MakinaCorpus\Calista\Datasource;
 
 use Symfony\Component\HttpFoundation\Request;
 

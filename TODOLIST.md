@@ -7,7 +7,6 @@
  *  [_] all: find a new name for core/decoupled library
  *  [_] all: once name is found, export it to its own package
  *  [_] all: performance: possibility of caching options/skipping resolver
- *  [_] all: profile performance
  *  [_] context: better default actions display
  *  [_] context: better pane display
  *  [_] context: get the Context namespace out of the Drupal namespace

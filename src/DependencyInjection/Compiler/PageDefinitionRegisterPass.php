@@ -1,11 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\DependencyInjection\Compiler;
+namespace MakinaCorpus\Calista\DependencyInjection\Compiler;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
-use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
-use MakinaCorpus\Dashboard\DependencyInjection\PageDefinitionInterface;
-use MakinaCorpus\Dashboard\View\ViewInterface;
+use MakinaCorpus\Calista\Datasource\DatasourceInterface;
+use MakinaCorpus\Calista\DependencyInjection\DynamicPageDefinition;
+use MakinaCorpus\Calista\DependencyInjection\PageDefinitionInterface;
+use MakinaCorpus\Calista\View\ViewInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -27,11 +27,11 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
     private function registerServices(ContainerBuilder $container, $tagName, $registerMethod, $serviceClass)
     {
         // @codeCoverageIgnoreStart
-        if (!$container->hasDefinition('udashboard.view_factory')) {
+        if (!$container->hasDefinition('calista.view_factory')) {
             return;
         }
         // @codeCoverageIgnoreEnd
-        $definition = $container->getDefinition('udashboard.view_factory');
+        $definition = $container->getDefinition('calista.view_factory');
 
         $types = $classes = [];
 
@@ -74,8 +74,8 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $this->registerServices($container, 'udashboard.page_definition', 'registerPageDefinitions', PageDefinitionInterface::class);
-        $this->registerServices($container, 'udashboard.view', 'registerViews', ViewInterface::class);
-        $this->registerServices($container, 'udashboard.datasource', 'registerDatasources', DatasourceInterface::class);
+        $this->registerServices($container, 'calista.page_definition', 'registerPageDefinitions', PageDefinitionInterface::class);
+        $this->registerServices($container, 'calista.view', 'registerViews', ViewInterface::class);
+        $this->registerServices($container, 'calista.datasource', 'registerDatasources', DatasourceInterface::class);
     }
 }

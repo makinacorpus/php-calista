@@ -1,14 +1,14 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\DependencyInjection;
+namespace MakinaCorpus\Calista\DependencyInjection;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use MakinaCorpus\Dashboard\Annotation\Property;
-use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
-use MakinaCorpus\Dashboard\Util\TypeUtil;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Calista\Annotation\Property;
+use MakinaCorpus\Calista\Datasource\DatasourceInterface;
+use MakinaCorpus\Calista\Datasource\InputDefinition;
+use MakinaCorpus\Calista\Error\ConfigurationError;
+use MakinaCorpus\Calista\Util\TypeUtil;
+use MakinaCorpus\Calista\View\ViewDefinition;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -146,9 +146,9 @@ abstract class DynamicPageDefinition extends AbstractPageDefinition implements C
                 throw new ConfigurationError("container is missing");
             }
 
-            /** @var \MakinaCorpus\Dashboard\DependencyInjection\ViewFactory $registry */
+            /** @var \MakinaCorpus\Calista\DependencyInjection\ViewFactory $registry */
             try {
-                $registry = $this->container->get('udashboard.view_factory');
+                $registry = $this->container->get('calista.view_factory');
                 $this->datasource = $registry->getDatasource($this->datasourceId);
             } catch (ServiceNotFoundException $e) {
                 throw new ConfigurationError("could not find datasource", null, $e);

@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\DependencyInjection\Compiler;
+namespace MakinaCorpus\Calista\DependencyInjection\Compiler;
 
-use MakinaCorpus\Dashboard\Twig\DowngradeCompatibilityExtension;
+use MakinaCorpus\Calista\Twig\DowngradeCompatibilityExtension;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -22,7 +22,7 @@ class DowngradeCompatibilityPass implements CompilerPassInterface
         // register a dummy implementation.
         if (!$container->has('form.extension')) {
             $container->addDefinitions([
-                'udashboard.twig.downgrade_compatibility' => (new Definition())
+                'calista.twig.downgrade_compatibility' => (new Definition())
                     ->setClass(DowngradeCompatibilityExtension::class)
                     ->addTag('twig.extension')
             ]);

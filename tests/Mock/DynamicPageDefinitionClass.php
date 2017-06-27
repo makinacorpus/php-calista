@@ -1,9 +1,9 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Mock;
+namespace MakinaCorpus\Calista\Tests\Mock;
 
-use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
-use MakinaCorpus\Dashboard\View\Html\TwigView;
+use MakinaCorpus\Calista\DependencyInjection\DynamicPageDefinition;
+use MakinaCorpus\Calista\View\Html\TwigView;
 
 /**
  * Tests dynamic page definition without options
@@ -11,7 +11,7 @@ use MakinaCorpus\Dashboard\View\Html\TwigView;
 class DynamicPageDefinitionClass extends DynamicPageDefinition
 {
     protected $datasourceId = IntArrayDatasource::class;
-    protected $templates = ['default' => 'module:udashboard:views/Page/page.html.twig'];
+    protected $templates = ['default' => 'module:calista:views/Page/page.html.twig'];
     protected $viewType = TwigView::class;
 
     public $id = 0;

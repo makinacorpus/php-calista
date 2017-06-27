@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Util;
+namespace MakinaCorpus\Calista\Util;
 
 /**
  * I don't know if this trait has any use.

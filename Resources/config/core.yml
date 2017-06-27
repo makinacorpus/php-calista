@@ -1,37 +1,37 @@
 services:
 
-  udashboard.context:
-    class: MakinaCorpus\Dashboard\Drupal\Context\ContextPane
+  calista.context:
+    class: MakinaCorpus\Calista\Drupal\Context\ContextPane
     arguments: ['@event_dispatcher', '@request_stack']
 
-  udashboard.view_factory:
-    class: MakinaCorpus\Dashboard\DependencyInjection\ViewFactory
+  calista.view_factory:
+    class: MakinaCorpus\Calista\DependencyInjection\ViewFactory
     arguments: ['@service_container']
 
-  udashboard.action_provider_registry:
+  calista.action_provider_registry:
     public: false
-    class: MakinaCorpus\Dashboard\Action\ActionRegistry
+    class: MakinaCorpus\Calista\Action\ActionRegistry
 
   # View implementations
-  udashboard.view.twig_page:
+  calista.view.twig_page:
     public: true
-    class: MakinaCorpus\Dashboard\View\Html\TwigView
+    class: MakinaCorpus\Calista\View\Html\TwigView
     arguments: ['@twig', '@event_dispatcher']
-    tags: [{name: udashboard.view, id: twig_page}]
-  udashboard.view.twig_form_page:
+    tags: [{name: calista.view, id: twig_page}]
+  calista.view.twig_form_page:
     public: true
-    class: MakinaCorpus\Dashboard\View\Html\FormTwigView
+    class: MakinaCorpus\Calista\View\Html\FormTwigView
     arguments: ['@twig', '@event_dispatcher']
-    tags: [{name: udashboard.view, id: twig_form_page}]
+    tags: [{name: calista.view, id: twig_form_page}]
 
   # Twig extensions
-  udashboard.twig.action_extension:
+  calista.twig.action_extension:
     public: false
-    class: MakinaCorpus\Dashboard\Twig\ActionExtension
-    arguments: ['@udashboard.action_provider_registry']
+    class: MakinaCorpus\Calista\Twig\ActionExtension
+    arguments: ['@calista.action_provider_registry']
     tags: [{name: twig.extension}]
-  udashboard.twig.page_extension:
+  calista.twig.page_extension:
     public: false
-    class: MakinaCorpus\Dashboard\Twig\PageExtension
+    class: MakinaCorpus\Calista\Twig\PageExtension
     arguments: ['@request_stack', '@property_accessor', '@property_info']
     tags: [{name: twig.extension}]

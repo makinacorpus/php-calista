@@ -1,9 +1,9 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Mock;
+namespace MakinaCorpus\Calista\Tests\Mock;
 
-use MakinaCorpus\Dashboard\Action\ActionProviderInterface;
-use MakinaCorpus\Dashboard\Action\Action;
+use MakinaCorpus\Calista\Action\ActionProviderInterface;
+use MakinaCorpus\Calista\Action\Action;
 
 /**
  * Uses an array as datasource
@@ -17,7 +17,7 @@ class IntActionProvider implements ActionProviderInterface
     {
         $ret = [];
 
-        /** @var \MakinaCorpus\Dashboard\Tests\Mock\IntItem $item */
+        /** @var \MakinaCorpus\Calista\Tests\Mock\IntItem $item */
         if ($item->id < 0) {
             $ret[] = new Action('Make it positive', '/make/it/positive', ['value' => $item->id], 'plus');
         } else {

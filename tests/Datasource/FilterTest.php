@@ -1,11 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Datasource\Tests;
+namespace MakinaCorpus\Calista\Datasource\Tests;
 
-use MakinaCorpus\Dashboard\Datasource\Filter;
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
-use MakinaCorpus\Dashboard\Datasource\QueryFactory;
-use MakinaCorpus\Dashboard\Tests\Mock\EmptyDatasource;
+use MakinaCorpus\Calista\Datasource\Filter;
+use MakinaCorpus\Calista\Datasource\InputDefinition;
+use MakinaCorpus\Calista\Datasource\QueryFactory;
+use MakinaCorpus\Calista\Tests\Mock\EmptyDatasource;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

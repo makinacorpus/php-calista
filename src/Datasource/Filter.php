@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Datasource;
+namespace MakinaCorpus\Calista\Datasource;
 
-use MakinaCorpus\Dashboard\Util\Link;
+use MakinaCorpus\Calista\Util\Link;
 
 /**
  * Default implementation that will convert a single hashmap to a set of links

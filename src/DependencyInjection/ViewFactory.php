@@ -1,9 +1,9 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\DependencyInjection;
+namespace MakinaCorpus\Calista\DependencyInjection;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
-use MakinaCorpus\Dashboard\View\ViewInterface;
+use MakinaCorpus\Calista\Datasource\DatasourceInterface;
+use MakinaCorpus\Calista\View\ViewInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;

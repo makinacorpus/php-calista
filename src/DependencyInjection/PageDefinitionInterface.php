@@ -1,10 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\DependencyInjection;
+namespace MakinaCorpus\Calista\DependencyInjection;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceInterface;
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Calista\Datasource\DatasourceInterface;
+use MakinaCorpus\Calista\Datasource\InputDefinition;
+use MakinaCorpus\Calista\View\ViewDefinition;
 
 /**
  * A page type is a re-usable specific page definition, that will allow you to,

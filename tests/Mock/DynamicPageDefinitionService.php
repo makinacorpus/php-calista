@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Mock;
+namespace MakinaCorpus\Calista\Tests\Mock;
 
-use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
+use MakinaCorpus\Calista\DependencyInjection\DynamicPageDefinition;
 
 /**
  * Tests dynamic page definition without options
@@ -10,8 +10,8 @@ use MakinaCorpus\Dashboard\DependencyInjection\DynamicPageDefinition;
 class DynamicPageDefinitionService extends DynamicPageDefinition
 {
     protected $datasourceId = '_test_datasource';
-    protected $templates = ['default' => 'module:udashboard:views/Page/page.html.twig'];
-    protected $viewType = 'udashboard.view.twig_page';
+    protected $templates = ['default' => 'module:calista:views/Page/page.html.twig'];
+    protected $viewType = 'calista.view.twig_page';
 
     public $id = 0;
     public $type = "";

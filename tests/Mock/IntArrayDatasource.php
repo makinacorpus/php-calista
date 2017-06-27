@@ -1,11 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Mock;
+namespace MakinaCorpus\Calista\Tests\Mock;
 
-use MakinaCorpus\Dashboard\Datasource\AbstractDatasource;
-use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
-use MakinaCorpus\Dashboard\Datasource\Filter;
-use MakinaCorpus\Dashboard\Datasource\Query;
+use MakinaCorpus\Calista\Datasource\AbstractDatasource;
+use MakinaCorpus\Calista\Datasource\DefaultDatasourceResult;
+use MakinaCorpus\Calista\Datasource\Filter;
+use MakinaCorpus\Calista\Datasource\Query;
 
 /**
  * Uses an array as datasource

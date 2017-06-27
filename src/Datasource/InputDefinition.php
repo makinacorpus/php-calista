@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Datasource;
+namespace MakinaCorpus\Calista\Datasource;
 
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
+use MakinaCorpus\Calista\Error\ConfigurationError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 

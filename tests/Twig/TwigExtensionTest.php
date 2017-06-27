@@ -1,12 +1,12 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Twig;
+namespace MakinaCorpus\Calista\Tests\Twig;
 
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
-use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
-use MakinaCorpus\Dashboard\Tests\Mock\IntItem;
-use MakinaCorpus\Dashboard\Twig\PageExtension;
-use MakinaCorpus\Dashboard\View\PropertyView;
+use MakinaCorpus\Calista\Error\ConfigurationError;
+use MakinaCorpus\Calista\Tests\Mock\ContainerAwareTestTrait;
+use MakinaCorpus\Calista\Tests\Mock\IntItem;
+use MakinaCorpus\Calista\Twig\PageExtension;
+use MakinaCorpus\Calista\View\PropertyView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyInfo\Type;
 
@@ -35,7 +35,7 @@ class TwigExtensionTest extends \PHPUnit_Framework_TestCase
     /**
      * Create page extension for testing
      *
-     * @return \MakinaCorpus\Dashboard\Twig\PageExtension
+     * @return \MakinaCorpus\Calista\Twig\PageExtension
      */
     private function createExtension()
     {
@@ -246,6 +246,6 @@ class TwigExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $pageExtension = $this->createExtension();
 
-        $this->assertSame("udashboard_page", $pageExtension->getName());
+        $this->assertSame("calista_page", $pageExtension->getName());
     }
 }

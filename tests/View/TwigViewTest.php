@@ -1,15 +1,15 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\View;
+namespace MakinaCorpus\Calista\Tests\View;
 
-use MakinaCorpus\Dashboard\Datasource\InputDefinition;
-use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
-use MakinaCorpus\Dashboard\Tests\Mock\FooPageDefinition;
-use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
-use MakinaCorpus\Dashboard\View\Html\FormTwigView;
-use MakinaCorpus\Dashboard\View\Html\TwigView;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Calista\Datasource\InputDefinition;
+use MakinaCorpus\Calista\Datasource\Query;
+use MakinaCorpus\Calista\Tests\Mock\ContainerAwareTestTrait;
+use MakinaCorpus\Calista\Tests\Mock\FooPageDefinition;
+use MakinaCorpus\Calista\Tests\Mock\IntArrayDatasource;
+use MakinaCorpus\Calista\View\Html\FormTwigView;
+use MakinaCorpus\Calista\View\Html\TwigView;
+use MakinaCorpus\Calista\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,8 +29,8 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         $container = $this->createContainerWithPageDefinitions();
         $container->compile();
 
-        /** @var \MakinaCorpus\Dashboard\DependencyInjection\ViewFactory $factory */
-        $factory = $container->get('udashboard.view_factory');
+        /** @var \MakinaCorpus\Calista\DependencyInjection\ViewFactory $factory */
+        $factory = $container->get('calista.view_factory');
         $request = new Request();
 
         // Now ensures that we can find our definition
@@ -84,7 +84,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
             'default_display' => 'page',
             'enabled_filters' => ['odd_or_even'],
             'templates' => [
-                'page' => 'module:udashboard:views/Page/page.html.twig',
+                'page' => 'module:calista:views/Page/page.html.twig',
             ],
         ]);
         $view = new TwigView($this->createTwigEnv(), new EventDispatcher());
@@ -135,7 +135,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         $viewDefinition = new ViewDefinition([
             'default_display' => 'page',
             'enabled_filters' => ['odd_or_even'],
-            'templates' => ['page' => 'module:udashboard:views/Page/page-dynamic-table.html.twig'],
+            'templates' => ['page' => 'module:calista:views/Page/page-dynamic-table.html.twig'],
         ]);
 
         $view = new TwigView($container->get('twig'), new EventDispatcher());
@@ -167,7 +167,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
             'enabled_filters' => ['odd_or_even'],
             'show_sort' => true,
             'templates' => [
-                'page' => 'module:udashboard:views/Page/page.html.twig',
+                'page' => 'module:calista:views/Page/page.html.twig',
             ],
         ]);
 

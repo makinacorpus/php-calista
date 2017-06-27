@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Util;
+namespace MakinaCorpus\Calista\Util;
 
 class AdminTableSection
 {

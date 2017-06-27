@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Mock;
+namespace MakinaCorpus\Calista\Tests\Mock;
 
 /**
  * Defined so that we may use the default page template for testing

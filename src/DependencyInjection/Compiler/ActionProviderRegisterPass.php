@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\DependencyInjection\Compiler;
+namespace MakinaCorpus\Calista\DependencyInjection\Compiler;
 
-use MakinaCorpus\Dashboard\Action\ActionProviderInterface;
+use MakinaCorpus\Calista\Action\ActionProviderInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -15,14 +15,14 @@ class ActionProviderRegisterPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         // @codeCoverageIgnoreStart
-        if (!$container->hasDefinition('udashboard.action_provider_registry')) {
+        if (!$container->hasDefinition('calista.action_provider_registry')) {
             return;
         }
-        $definition = $container->getDefinition('udashboard.action_provider_registry');
+        $definition = $container->getDefinition('calista.action_provider_registry');
         // @codeCoverageIgnoreEnd
 
         // Register custom action providers
-        $taggedServices = $container->findTaggedServiceIds('udashboard.action_provider');
+        $taggedServices = $container->findTaggedServiceIds('calista.action_provider');
         foreach ($taggedServices as $id => $attributes) {
             $def = $container->getDefinition($id);
 

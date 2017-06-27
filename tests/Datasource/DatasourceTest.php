@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Datasource;
+namespace MakinaCorpus\Calista\Tests\Datasource;
 
-use MakinaCorpus\Dashboard\Datasource\DefaultDatasourceResult;
+use MakinaCorpus\Calista\Datasource\DefaultDatasourceResult;
 
 /**
  * Test basic datasource functionnality and API

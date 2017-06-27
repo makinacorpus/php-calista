@@ -1,14 +1,14 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\View;
+namespace MakinaCorpus\Calista\Tests\View;
 
-use MakinaCorpus\Dashboard\Error\ConfigurationError;
-use MakinaCorpus\Dashboard\Tests\Mock\BrokenDynamicPageDefinitionOne;
-use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
-use MakinaCorpus\Dashboard\Tests\Mock\DynamicPageDefinitionClass;
-use MakinaCorpus\Dashboard\Tests\Mock\DynamicPageDefinitionName;
-use MakinaCorpus\Dashboard\Tests\Mock\DynamicPageDefinitionService;
-use MakinaCorpus\Dashboard\Tests\Mock\IntArrayDatasource;
+use MakinaCorpus\Calista\Error\ConfigurationError;
+use MakinaCorpus\Calista\Tests\Mock\BrokenDynamicPageDefinitionOne;
+use MakinaCorpus\Calista\Tests\Mock\ContainerAwareTestTrait;
+use MakinaCorpus\Calista\Tests\Mock\DynamicPageDefinitionClass;
+use MakinaCorpus\Calista\Tests\Mock\DynamicPageDefinitionName;
+use MakinaCorpus\Calista\Tests\Mock\DynamicPageDefinitionService;
+use MakinaCorpus\Calista\Tests\Mock\IntArrayDatasource;
 
 /**
  * Tests the views
@@ -31,7 +31,7 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
             DynamicPageDefinitionName::class
         ] as $pageClass) {
 
-            /** @var \MakinaCorpus\Dashboard\DependencyInjection\PageDefinitionInterface $page */
+            /** @var \MakinaCorpus\Calista\DependencyInjection\PageDefinitionInterface $page */
             $page = new $pageClass();
             $page->setContainer($container);
 
@@ -43,7 +43,7 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
 
             // Order is kept, properties are only those defined in the page
             $this->assertSame(['id', 'type', 'thousands'], $viewDefinition->getDisplayedProperties());
-            $this->assertSame(['default' => 'module:udashboard:views/Page/page.html.twig'], $viewDefinition->getTemplates());
+            $this->assertSame(['default' => 'module:calista:views/Page/page.html.twig'], $viewDefinition->getTemplates());
 
             // Callback is set
             $options = $viewDefinition->getPropertyDisplayOptions('thousands');

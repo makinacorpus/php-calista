@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\View\Html;
+namespace MakinaCorpus\Calista\View\Html;
 
 /**
  * Context variable for twig templates and main renderer for pages

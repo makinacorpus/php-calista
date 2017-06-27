@@ -1,10 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Error;
+namespace MakinaCorpus\Calista\Error;
 
 /**
  * Configuration error, should not happen during runtime
  */
-class ConfigurationError extends DashboardError
+class ConfigurationError extends CalistaError
 {
 }

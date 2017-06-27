@@ -1,11 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Drupal;
+namespace MakinaCorpus\Calista\Tests\Drupal;
 
-use MakinaCorpus\Dashboard\Action\Action;
-use MakinaCorpus\Dashboard\Action\ActionProviderInterface;
-use MakinaCorpus\Dashboard\Action\ActionRegistry;
-use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
+use MakinaCorpus\Calista\Action\Action;
+use MakinaCorpus\Calista\Action\ActionProviderInterface;
+use MakinaCorpus\Calista\Action\ActionRegistry;
+use MakinaCorpus\Calista\Tests\Mock\ContainerAwareTestTrait;
 
 class ActionProviderTest extends \PHPUnit_Framework_TestCase
 {

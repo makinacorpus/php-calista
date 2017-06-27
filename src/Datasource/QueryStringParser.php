@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Datasource;
+namespace MakinaCorpus\Calista\Datasource;
 
 /**
  * Search query parser, with a really simple syntax.

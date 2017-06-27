@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Action;
+namespace MakinaCorpus\Calista\Action;
 
 /**
  * Actions registry is what fetches actions from any object.

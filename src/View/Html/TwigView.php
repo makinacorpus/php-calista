@@ -1,13 +1,13 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\View\Html;
+namespace MakinaCorpus\Calista\View\Html;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
-use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Event\ViewEvent;
-use MakinaCorpus\Dashboard\Util\Link;
-use MakinaCorpus\Dashboard\View\AbstractView;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Calista\Datasource\DatasourceResultInterface;
+use MakinaCorpus\Calista\Datasource\Query;
+use MakinaCorpus\Calista\Event\ViewEvent;
+use MakinaCorpus\Calista\Util\Link;
+use MakinaCorpus\Calista\View\AbstractView;
+use MakinaCorpus\Calista\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -45,7 +45,7 @@ class TwigView extends AbstractView
         $templates = $viewDefinition->getTemplates();
 
         if (!$templates) {
-            $templates = ['list' => 'module:udashboard:views/Page/page-dynamic-table.html.twig'];
+            $templates = ['list' => 'module:calista:views/Page/page-dynamic-table.html.twig'];
         }
 
         return $templates;

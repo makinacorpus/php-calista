@@ -1,11 +1,11 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\View\Html;
+namespace MakinaCorpus\Calista\View\Html;
 
-use MakinaCorpus\Dashboard\Datasource\DatasourceResultInterface;
-use MakinaCorpus\Dashboard\Datasource\Query;
-use MakinaCorpus\Dashboard\Form\Type\SelectionFormType;
-use MakinaCorpus\Dashboard\View\ViewDefinition;
+use MakinaCorpus\Calista\Datasource\DatasourceResultInterface;
+use MakinaCorpus\Calista\Datasource\Query;
+use MakinaCorpus\Calista\Form\Type\SelectionFormType;
+use MakinaCorpus\Calista\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\LogicException;

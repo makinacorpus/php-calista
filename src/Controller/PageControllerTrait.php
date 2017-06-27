@@ -1,10 +1,10 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Controller;
+namespace MakinaCorpus\Calista\Controller;
 
-use MakinaCorpus\Dashboard\DependencyInjection\ViewFactory;
-use MakinaCorpus\Dashboard\Util\AdminTable;
-use MakinaCorpus\Dashboard\View\ViewInterface;
+use MakinaCorpus\Calista\DependencyInjection\ViewFactory;
+use MakinaCorpus\Calista\Util\AdminTable;
+use MakinaCorpus\Calista\View\ViewInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -70,7 +70,7 @@ trait PageControllerTrait
      */
     protected function getViewFactory()
     {
-        return $this->get('udashboard.view_factory');
+        return $this->get('calista.view_factory');
     }
 
     /**

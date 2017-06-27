@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Event;
+namespace MakinaCorpus\Calista\Event;
 
-use MakinaCorpus\Dashboard\View\Html\TwigView;
+use MakinaCorpus\Calista\View\Html\TwigView;
 use Symfony\Component\EventDispatcher\Event;
 
 /**

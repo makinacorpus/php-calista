@@ -1,15 +1,12 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Datasource;
+namespace MakinaCorpus\Calista\Datasource;
 
 /**
- * Use this class to interface with the main dashboard page layout
+ * Datasource interface: fetches objects.
  *
  * You won't need to care about rendering or layout, just implement this in
  * order to expose your data.
- *
- * @see \MakinaCorpus\Dashboard\Datasource\Node\DefaultNodeDatasource
- *   For a complete working exemple (which was the original prototype)
  */
 interface DatasourceInterface
 {

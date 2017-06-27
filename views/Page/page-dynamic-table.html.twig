@@ -1,4 +1,4 @@
-{% extends 'module:udashboard:views/Page/page.html.twig' %}
+{% extends 'module:calista:views/Page/page.html.twig' %}
 
 {%- block item -%}
     <tr>
@@ -9,11 +9,11 @@
         {% endif %}
         {% for property in properties %}
             <td>
-                {{ udashboard_item_property(item, property) }}
+                {{ calista_item_property(item, property) }}
             </td>
         {% endfor %}
         <td>
-            {{ udashboard_actions(item) }}
+            {{ calista_actions(item) }}
         </td>
     </tr>
 {%- endblock -%}

@@ -1,9 +1,9 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Tests\Controller;
+namespace MakinaCorpus\Calista\Tests\Controller;
 
-use MakinaCorpus\Dashboard\Drupal\Controller\AjaxPageController as AjaxPageController;
-use MakinaCorpus\Dashboard\Tests\Mock\ContainerAwareTestTrait;
+use MakinaCorpus\Calista\Tests\Mock\ContainerAwareTestTrait;
+use MakinaCorpus\Calista\Tests\Mock\FooAjaxController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -18,12 +18,12 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     /**
      * Test basics for the ajax controller
      */
-    public function testDrupalAjaxController()
+    public function testAjaxController()
     {
         $container = $this->createContainerWithPageDefinitions();
         $container->compile();
 
-        $controller = new AjaxPageController();
+        $controller = new FooAjaxController();
         $controller->setContainer($container);
 
         try {

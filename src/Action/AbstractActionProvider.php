@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Action;
+namespace MakinaCorpus\Calista\Action;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;

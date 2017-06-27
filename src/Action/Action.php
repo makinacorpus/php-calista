@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Dashboard\Action;
+namespace MakinaCorpus\Calista\Action;
 
 /**
  * Represent a possible action over a certain item, this is just a value
