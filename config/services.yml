@@ -1,9 +1,5 @@
 services:
 
-  calista.context:
-    class: MakinaCorpus\Calista\Drupal\Context\ContextPane
-    arguments: ['@event_dispatcher', '@request_stack']
-
   calista.view_factory:
     class: MakinaCorpus\Calista\DependencyInjection\ViewFactory
     arguments: ['@service_container']

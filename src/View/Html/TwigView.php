@@ -45,7 +45,7 @@ class TwigView extends AbstractView
         $templates = $viewDefinition->getTemplates();
 
         if (!$templates) {
-            $templates = ['list' => 'module:calista:views/Page/page-dynamic-table.html.twig'];
+            $templates = ['list' => '@calista/Page/page-dynamic-table.html.twig'];
         }
 
         return $templates;

@@ -10,7 +10,7 @@ use MakinaCorpus\Calista\DependencyInjection\DynamicPageDefinition;
 class DynamicPageDefinitionService extends DynamicPageDefinition
 {
     protected $datasourceId = '_test_datasource';
-    protected $templates = ['default' => 'module:calista:views/Page/page.html.twig'];
+    protected $templates = ['default' => '@calista/Page/page.html.twig'];
     protected $viewType = 'calista.view.twig_page';
 
     public $id = 0;

@@ -71,11 +71,11 @@ trait ContainerAwareTestTrait
     {
         $twigEnv = new \Twig_Environment(
             new \Twig_Loader_Array([
-                'module:calista:views/Action/action-single.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Action/action-single.html.twig'),
-                'module:calista:views/Action/actions.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Action/actions.html.twig'),
-                'module:calista:views/Page/page-dynamic-table.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-dynamic-table.html.twig'),
-                'module:calista:views/Page/page-grid.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page-grid.html.twig'),
-                'module:calista:views/Page/page.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/views/Page/page.html.twig'),
+                '@calista/Action/action-single.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Action/action-single.html.twig'),
+                '@calista/Action/actions.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Action/actions.html.twig'),
+                '@calista/Page/page-dynamic-table.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Page/page-dynamic-table.html.twig'),
+                '@calista/Page/page-grid.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Page/page-grid.html.twig'),
+                '@calista/Page/page.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Page/page.html.twig'),
             ]),
             [
                 'debug' => true,

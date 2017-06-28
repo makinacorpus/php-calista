@@ -84,7 +84,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
             'default_display' => 'page',
             'enabled_filters' => ['odd_or_even'],
             'templates' => [
-                'page' => 'module:calista:views/Page/page.html.twig',
+                'page' => '@calista/Page/page.html.twig',
             ],
         ]);
         $view = new TwigView($this->createTwigEnv(), new EventDispatcher());
@@ -135,7 +135,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         $viewDefinition = new ViewDefinition([
             'default_display' => 'page',
             'enabled_filters' => ['odd_or_even'],
-            'templates' => ['page' => 'module:calista:views/Page/page-dynamic-table.html.twig'],
+            'templates' => ['page' => '@calista/Page/page-dynamic-table.html.twig'],
         ]);
 
         $view = new TwigView($container->get('twig'), new EventDispatcher());
@@ -167,7 +167,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
             'enabled_filters' => ['odd_or_even'],
             'show_sort' => true,
             'templates' => [
-                'page' => 'module:calista:views/Page/page.html.twig',
+                'page' => '@calista/Page/page.html.twig',
             ],
         ]);
 

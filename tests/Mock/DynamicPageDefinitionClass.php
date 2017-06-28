@@ -11,7 +11,7 @@ use MakinaCorpus\Calista\View\Html\TwigView;
 class DynamicPageDefinitionClass extends DynamicPageDefinition
 {
     protected $datasourceId = IntArrayDatasource::class;
-    protected $templates = ['default' => 'module:calista:views/Page/page.html.twig'];
+    protected $templates = ['default' => '@calista/Page/page.html.twig'];
     protected $viewType = TwigView::class;
 
     public $id = 0;

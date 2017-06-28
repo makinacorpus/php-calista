@@ -10,7 +10,7 @@ use MakinaCorpus\Calista\DependencyInjection\DynamicPageDefinition;
 class BrokenDynamicPageDefinitionOne extends DynamicPageDefinition
 {
     // Keep templates here in order to avoid a few exception
-    protected $templates = ['default' => 'module:calista:views/Page/page.html.twig'];
+    protected $templates = ['default' => '@calista/Page/page.html.twig'];
 
     public $one;
     public $someField;
