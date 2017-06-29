@@ -66,7 +66,6 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
         if ($types) {
             $definition->addMethodCall($registerMethod, [$types, $classes]);
         }
-
     }
 
     /**

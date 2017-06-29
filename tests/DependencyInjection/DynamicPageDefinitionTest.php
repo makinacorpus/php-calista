@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Calista\Tests\View;
+namespace MakinaCorpus\Calista\Tests\DependencyInjection;
 
 use MakinaCorpus\Calista\Error\ConfigurationError;
 use MakinaCorpus\Calista\Tests\Mock\BrokenDynamicPageDefinitionOne;

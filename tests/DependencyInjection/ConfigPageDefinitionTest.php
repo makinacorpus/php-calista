@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\Calista\Tests\View;
+namespace MakinaCorpus\Calista\Tests\DependencyInjection;
 
 use MakinaCorpus\Calista\DependencyInjection\ConfigPageDefinition;
 use MakinaCorpus\Calista\DependencyInjection\PageDefinitionInterface;

@@ -1,0 +1,16 @@
+# This produces a few pages
+calista:
+    pages:
+        page_one:
+            id: the_first_page
+            datasource: int_array_datasource
+            view:
+                enabled_filters:
+                    - mooh
+                view_type: twig_page
+        page_two:
+            datasource: int_array_datasource
+            view:
+                view_type: twig_page
+            input:
+                search_param: do_search_this

@@ -1,0 +1,8 @@
+services:
+    calista.view_factory:
+        class: MakinaCorpus\Calista\DependencyInjection\ViewFactory
+        arguments: ['@service_container']
+    _test_datasource:
+        class: MakinaCorpus\Calista\Tests\Mock\IntArrayDatasource
+        public: true
+        tags: [{name: calista.datasource, id: int_array_datasource}]

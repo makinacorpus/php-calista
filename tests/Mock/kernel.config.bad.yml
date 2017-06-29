@@ -1,0 +1,8 @@
+# This produces a few pages
+calista:
+    pages:
+        # Oups, this one as no view defined!
+        page_one:
+            datasource: int_array_datasource
+            input:
+                search_param: astropolis
