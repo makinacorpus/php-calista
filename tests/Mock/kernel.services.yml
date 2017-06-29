@@ -1,7 +1,37 @@
+# Mock a set of services we depend upon for unit testing
+parameters:
+    kernel.debug: true
+
 services:
-    calista.view_factory:
-        class: MakinaCorpus\Calista\DependencyInjection\ViewFactory
-        arguments: ['@service_container']
+
+    twig:
+        class: \Twig_Environment
+        public: true
+        factory: ['MakinaCorpus\Calista\Tests\Mock\Kernel', createTwigEnv]
+        arguments: ['@calista.action_provider_registry']
+
+    property_access:
+        class: Symfony\Component\PropertyAccess\PropertyAccessor
+        public: true
+        factory: ['MakinaCorpus\Calista\Tests\Mock\Kernel', createPropertyAccessor]
+
+    property_info:
+        class: Symfony\Component\PropertyInfo\PropertyInfoExtractor
+        public: true
+        factory: ['MakinaCorpus\Calista\Tests\Mock\Kernel', createPropertyInfoExtractor]
+
+    event_dispatcher:
+        class: Symfony\Component\EventDispatcher\EventDispatcher
+
+    calista.action_provider_int:
+        class: MakinaCorpus\Calista\Tests\Mock\IntActionProvider
+        tags: [{name: calista.action_provider}]
+
+    _test_view:
+        class: MakinaCorpus\Calista\Tests\Mock\FooPageDefinition
+        public: true
+        tags: [{name: calista.page_definition, id: int_array_page}]
+
     _test_datasource:
         class: MakinaCorpus\Calista\Tests\Mock\IntArrayDatasource
         public: true

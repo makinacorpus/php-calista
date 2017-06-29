@@ -20,8 +20,7 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
      */
     public function testPropertyNormalization()
     {
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
+        $container = $this->getContainer();
 
         $view = new DummyView();
         $view->setContainer($container);

@@ -20,8 +20,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testAjaxController()
     {
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
+        $container = $this->getContainer();
 
         $controller = new FooAjaxController();
         $controller->setContainer($container);

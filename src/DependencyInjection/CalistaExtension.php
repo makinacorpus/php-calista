@@ -2,8 +2,10 @@
 
 namespace MakinaCorpus\Calista\DependencyInjection;
 
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
@@ -39,6 +41,9 @@ class CalistaExtension extends Extension
                 $container->addDefinitions([$serviceId => $definition]);
             }
         }
+
+        $loader = new YamlFileLoader($container, new FileLocator(dirname(dirname(__DIR__)).'/config'));
+        $loader->load('services.yml');
     }
 
     /**

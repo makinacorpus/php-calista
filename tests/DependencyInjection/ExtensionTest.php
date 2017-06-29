@@ -2,25 +2,21 @@
 
 namespace MakinaCorpus\Calista\Tests\DependencyInjection;
 
-use MakinaCorpus\Calista\DependencyInjection\CalistaExtension;
-use MakinaCorpus\Calista\Tests\Mock\Kernel;
+use MakinaCorpus\Calista\Tests\Mock\ContainerAwareTestTrait;
 
 /**
  * Tests the views
  */
 class ExtensionTest extends \PHPUnit_Framework_TestCase
 {
+    use ContainerAwareTestTrait;
+
     /**
      * Test pretty much everything there's to test
      */
     public function testConfigurationAndRegistration()
     {
-        $kernel = new Kernel(uniqid('test'), true);
-        $kernel->setConfigurationFile(dirname(__DIR__).'/Mock/kernel.config.good.yml');
-        $kernel->addExtension(new CalistaExtension());
-
-        $kernel->boot();
-        $container = $kernel->getContainer();
+        $container = $this->getContainer(dirname(__DIR__).'/Mock/kernel.config.good.yml');
 
         $this->assertTrue($container->has('calista.view_factory'));
         $this->assertTrue($container->has('calista.config_page.page_one'));

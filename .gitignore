@@ -2,4 +2,6 @@ composer.lock
 coverage
 node_modules
 phpunit.xml
+tests/Mock/cache
+tests/Mock/logs
 vendor

@@ -26,8 +26,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
      */
     public function testViewFactoryGetPageDefinition()
     {
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
+        $container = $this->getContainer();
 
         /** @var \MakinaCorpus\Calista\DependencyInjection\ViewFactory $factory */
         $factory = $container->get('calista.view_factory');
@@ -119,8 +118,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
     public function testDynamicTablePageTemplate()
     {
         // We will test the action extension at the same time
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
+        $container = $this->getContainer();
 
         $request = new Request([
             'odd_or_even' => 'odd',

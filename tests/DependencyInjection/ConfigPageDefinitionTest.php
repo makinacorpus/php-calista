@@ -102,8 +102,7 @@ class ConfigPageDefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testWithServiceIdentifiers()
     {
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
+        $container = $this->getContainer();
 
         $config = [
             'datasource' => 'int_array_datasource',
@@ -135,8 +134,7 @@ class ConfigPageDefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testWithClasses()
     {
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
+        $container = $this->getContainer();
 
         $config = [
             'datasource' => IntArrayDatasource::class,

@@ -55,8 +55,7 @@ class ActionProviderTest extends \PHPUnit_Framework_TestCase
 
     public function testActionRegistryInContainer()
     {
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
+        $container = $this->getContainer();
 
         $registry = new ActionRegistry();
         // @todo test actions registration

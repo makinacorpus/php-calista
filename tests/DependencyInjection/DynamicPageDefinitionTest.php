@@ -22,8 +22,7 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testOne()
     {
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
+        $container = $this->getContainer();
 
         foreach ([
             DynamicPageDefinitionService::class,
@@ -62,8 +61,7 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testDatasourceBehavior()
     {
-        $container = $this->createContainerWithPageDefinitions();
-        $container->compile();
+        $container = $this->getContainer();
 
         $page = new BrokenDynamicPageDefinitionOne();
 
