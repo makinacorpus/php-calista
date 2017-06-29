@@ -53,4 +53,23 @@ abstract class AbstractDatasource implements DatasourceInterface
     {
         return false;
     }
+
+    /**
+     * Create default result iterator with the provided information
+     *
+     * @param array $items
+     * @param null|int $totalCount
+     *
+     * @return DefaultDatasourceResult
+     */
+    protected function createResult(array $items, $totalCount = null)
+    {
+        $result = new DefaultDatasourceResult($this->getItemClass(), $items);
+
+        if (null !== $totalCount) {
+            $result->setTotalItemCount($totalCount);
+        }
+
+        return $result;
+    }
 }
