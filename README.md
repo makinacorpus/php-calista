@@ -9,3 +9,15 @@ architectured to provide:
  *  a way to execute datasources using a user query and fetch items;
  *  a way to provide administration or front-end object listings;
  *  a way to provide data export (CSV, Excel, Rest...).
+
+# Documentation
+
+ *  @todo api basics and architecture
+ *  @todo datasource
+ *  @todo input definition + datasource usage
+ *  @todo view definition
+ *  @todo input definition + datasource + view definition usage
+ *  @todo page definition
+ *  @todo dynamic page definition
+ *  @todo config page definition
+ *  @todo config page definition as framework configuration
