@@ -64,7 +64,7 @@ class TwigView extends AbstractView
         $templates = $this->getTemplates($viewDefinition);
 
         if (!isset($templates[$displayName])) {
-            return key($templates);
+            return reset($templates);
         }
 
         return $templates[$displayName];
