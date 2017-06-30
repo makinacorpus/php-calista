@@ -125,6 +125,46 @@ final class ViewFactory
     }
 
     /**
+     * Get pages implementing the given class
+     *
+     * I am not proud of this one, but as of now it helps dynamic driven
+     * frameworks such as Drupal finding out page definitions and register
+     * them to its own router.
+     *
+     * @param string $class
+     *
+     * @return PageDefinitionInterface[]
+     *
+     * @deprecated
+     *   You should not use this method.
+     */
+    public function getPageDefinitionList($class)
+    {
+        $ret = [];
+
+        $isInterface = false;
+        if (!class_exists($class)) {
+            throw new \BadMethodCallException(sprintf("class %s does not exists"));
+        }
+
+        foreach ($this->pageClasses as $pageClass => $name) {
+            $refClass = new \ReflectionClass($pageClass);
+
+            if ($isInterface) {
+                if ($refClass->implementsInterface($class)) {
+                    $ret[$name] = $this->getPageDefinition($name);
+                }
+            } else {
+                if ($refClass->name === $class || $refClass->isSubclassOf($class)) {
+                    $ret[$name] = $this->getPageDefinition($name);
+                }
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
      * Get datasource
      *
      * @param string $name
