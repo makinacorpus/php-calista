@@ -97,7 +97,7 @@ class TwigView extends AbstractView
         // Build allowed filters arrays
         $enabledFilters = [];
         foreach ($inputDefinition->getFilters() as $filter) {
-            if ($viewDefinition->isFilterDisplayed($filter->getField())) {
+            if ($viewDefinition->isFilterDisplayed($filter->getField()) && $filter->hasChoices()) {
                 $enabledFilters[] = $filter;
             }
         }

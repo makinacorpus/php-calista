@@ -49,6 +49,16 @@ class Filter implements \Countable
     }
 
     /**
+     * Has this filter choices
+     *
+     * @returnn bool
+     */
+    public function hasChoices()
+    {
+        return !empty($this->choicesMap);
+    }
+
+    /**
      * {inheritdoc}
      */
     public function getTitle()
@@ -58,6 +68,26 @@ class Filter implements \Countable
         }
 
         return $this->title;
+    }
+
+    /**
+     * Remove selected choices
+     *
+     * @param array $choices
+     */
+    public function removeChoices(array $choices)
+    {
+        $this->choicesMap = array_diff_key($this->choicesMap, array_flip($choices));
+    }
+
+    /**
+     * Remove selected choices
+     *
+     * @param array $choices
+     */
+    public function removeChoicesNotIn(array $choices)
+    {
+        $this->choicesMap = array_intersect_key($this->choicesMap, array_flip($choices));
     }
 
     /**

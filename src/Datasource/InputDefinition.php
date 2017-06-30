@@ -32,7 +32,16 @@ class InputDefinition
         // Normalize filters and sorts
         $this->filters = $datasource->getFilters();
         foreach ($this->filters as $filter) {
-            $this->filterLabels[$filter->getField()] = $filter->getTitle();
+            $name = $filter->getField();
+            // Filter out non allowed (outside of base query) filter choices
+            if (isset($this->options['base_query'][$name])) {
+                $choices = $this->options['base_query'][$name];
+                if (!is_array($choices)) {
+                    $choices = [$choices];
+                }
+                $filter->removeChoicesNotIn($choices);
+            }
+            $this->filterLabels[$name] = $filter->getTitle();
         }
         $this->sortLabels = $datasource->getSorts();
 
