@@ -6,6 +6,7 @@ use MakinaCorpus\Calista\Action\ActionProviderInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use MakinaCorpus\Calista\Action\AbstractActionProvider;
 
 /**
  * Registers action providers into the action registry
@@ -34,6 +35,10 @@ class ActionProviderRegisterPass implements CompilerPassInterface
                 throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, ActionProviderInterface::class));
             }
             // @codeCoverageIgnoreEnd
+
+            if ($container->has('security.authorization_checker') && $refClass->isSubclassOf(AbstractActionProvider::class)) {
+                $def->addMethodCall('setAuthorizationChecker', [new Reference('security.authorization_checker')]);
+            }
 
             $definition->addMethodCall('register', [new Reference($id)]);
         }
