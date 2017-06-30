@@ -59,6 +59,8 @@ class PageDefinitionRegisterPass implements CompilerPassInterface
             }
 
             $def->setShared(false);
+            $def->setPublic(true);
+
             $types[$typeId] = $id;
             $classes[$class] = $id;
         }
