@@ -60,8 +60,10 @@ interface DatasourceResultInterface extends \Traversable, \Countable
      *
      * @param int $page
      *   Relative int to compute pages from
+     * @param int $limit
+     *   Current query limit
      *
      * @return int[]
      */
-    public function getPageRange($page = 1);
+    public function getPageRange($page = 1, $limit = Query::LIMIT_DEFAULT);
 }

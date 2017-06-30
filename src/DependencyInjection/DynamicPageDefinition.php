@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\Calista\DependencyInjection;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use MakinaCorpus\Calista\Annotation\Property;
 use MakinaCorpus\Calista\Datasource\DatasourceInterface;
 use MakinaCorpus\Calista\Datasource\InputDefinition;
@@ -79,9 +79,9 @@ abstract class DynamicPageDefinition extends AbstractPageDefinition implements C
     /**
      * Set annotation reader, if available
      *
-     * @param AnnotationReader $annotationReader
+     * @param Reader $annotationReader
      */
-    final public function setAnnotationReader(AnnotationReader $annotationReader)
+    final public function setAnnotationReader(Reader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
     }

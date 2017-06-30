@@ -6,6 +6,7 @@
  *  [_] context: better default actions display
  *  [_] context: better pane display
  *  [_] context: get the Context namespace out of the Drupal namespace
+ *  [_] drupal, controller: access check (csrf?) for ajax refresh
  *  [_] drupal, view: expose a view mode for configuring display
  *  [_] drupal, view: expose view mode in property view options
  *  [_] drupal, view: handle gracefully fields
@@ -14,7 +15,6 @@
  *  [_] page: allow annotations for properties
  *  [_] portlet: re-introduce the portlet api and dashboard page
  *  [_] view: filters whose values are selected by base query should not be visually selected
- *  [_] view: fix the pager
  *  [_] view: for-else in default templates, page builder "empty text" property
  *  [_] write unit tests for the Action namespace
  *  [_] write unit tests for the Context namespace
@@ -27,8 +27,11 @@
  *  [x] datasource: allow datasource disovery via the view factory
  *  [x] datasource: PropertyInfo for the Datasources
  *  [x] input, query: remove base query values from filter
+ *  [x] input, query: when using base query, filtering in base query range is ignored
  *  [x] page, view: allow virtual properties
  *  [x] page, view: refine virtual, non existing types does not necesarily means virtual
  *  [x] page, view: refine virtual, real virtual properties should not use property accessor at all
  *  [x] page: make it less verbose to register
+ *  [x] view, twig: if pager is not present initially, refresh will not add it if necessary
+ *  [x] view: fix the pager
  *  [x] view: PropertyAccess for the Page renderer

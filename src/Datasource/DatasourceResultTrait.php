@@ -52,13 +52,11 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     }
 
     /**
-     * Compute the current page range
-     *
-     * @return int[]
+     * {@inheritdoc}
      */
-    public function getPageRange($page = 1)
+    public function getPageRange($page = 1, $limit = Query::LIMIT_DEFAULT)
     {
-        $num = $this->count();
+        $num = ceil($this->getTotalCount() / $limit);
         $min = max([$page - 2, 1]);
         $max = min([$page + 2, $num]);
 

@@ -299,7 +299,7 @@
             </a>
           </li>
         {% endif %}
-        {% for index in items.getPageRange(page) %}
+        {% for index in items.getPageRange(page, query.limit) %}
           <li>
             {{ block('pager_link') }}
           </li>
@@ -347,10 +347,12 @@
         {% endblock form_content %}
       </div>
     </div>
-    {% if query.limit < items.totalCount %}
+    {% if pagerEnabled %}
       <div class="row">
         <div class="col-md-12" data-page-block="pager">
-          {{ block('pager') }}
+          {% if query.limit < items.totalCount %}
+            {{ block('pager') }}
+          {% endif %}
         </div>
       </div>
     {% endif %}
