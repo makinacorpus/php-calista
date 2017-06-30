@@ -20,25 +20,31 @@ class CalistaExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = $this->getConfiguration($configs, $container);
-        $config = $this->processConfiguration($configuration, $configs);
 
         // From the configured pages, build services
-        if (isset($config['pages'])) {
-            foreach ($config['pages'] as $id => $array) {
+        foreach ($configs as $config) {
+            // Do not process everything at once, it will erase array keys
+            // of all pages definitions except those from the very first config
+            // file, and break all our services identifiers
+            $config = $this->processConfiguration($configuration, [$config]);
 
-                // Determine both service and page identifier
-                $serviceId = 'calista.config_page.' . $id;
-                $pageId = empty($array['id']) ? $id : $array['id'];
+            if (isset($config['pages'])) {
+                foreach ($config['pages'] as $id => $array) {
 
-                $definition = new Definition();
-                $definition->setClass(ConfigPageDefinition::class);
-                $definition->setArguments([$array]);
-                // It needs to be true for the factory to be able to proceed
-                // with lazy loading.
-                $definition->setPublic(true);
-                $definition->addTag('calista.page_definition', ['id' => $pageId]);
+                    // Determine both service and page identifier
+                    $serviceId = 'calista.config_page.' . $id;
+                    $pageId = empty($array['id']) ? $id : $array['id'];
 
-                $container->addDefinitions([$serviceId => $definition]);
+                    $definition = new Definition();
+                    $definition->setClass(ConfigPageDefinition::class);
+                    $definition->setArguments([$array]);
+                    // It needs to be true for the factory to be able to proceed
+                    // with lazy loading.
+                    $definition->setPublic(true);
+                    $definition->addTag('calista.page_definition', ['id' => $pageId]);
+
+                    $container->addDefinitions([$serviceId => $definition]);
+                }
             }
         }
 
