@@ -86,7 +86,8 @@ final class ViewFactory
     private function createInstance($class, $name, array $services, array $classes)
     {
         if (isset($classes[$name])) {
-            return $this->createInstance($class, $classes[$name], $services, $classes);
+            // Only attempt with the first, class lookup is not always a good move
+            return $this->createInstance($class, reset($classes[$name]), $services, $classes);
         }
 
         if (isset($services[$name])) {
@@ -147,16 +148,18 @@ final class ViewFactory
             throw new \BadMethodCallException(sprintf("class %s does not exists"));
         }
 
-        foreach ($this->pageClasses as $pageClass => $name) {
-            $refClass = new \ReflectionClass($pageClass);
+        foreach ($this->pageClasses as $pageClass => $names) {
+            foreach ($names as $name) {
+                $refClass = new \ReflectionClass($pageClass);
 
-            if ($isInterface) {
-                if ($refClass->implementsInterface($class)) {
-                    $ret[$name] = $this->getPageDefinition($name);
-                }
-            } else {
-                if ($refClass->name === $class || $refClass->isSubclassOf($class)) {
-                    $ret[$name] = $this->getPageDefinition($name);
+                if ($isInterface) {
+                    if ($refClass->implementsInterface($class)) {
+                        $ret[$name] = $this->getPageDefinition($name);
+                    }
+                } else {
+                    if ($refClass->name === $class || $refClass->isSubclassOf($class)) {
+                        $ret[$name] = $this->getPageDefinition($name);
+                    }
                 }
             }
         }
