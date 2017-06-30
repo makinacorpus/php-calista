@@ -86,4 +86,14 @@ class ConfigPageDefinition implements PageDefinitionInterface, ContainerAwareInt
 
         return $this->datasource;
     }
+
+    /**
+     * Get extra options
+     *
+     * @return array
+     */
+    public function getExtraOptions()
+    {
+        return isset($this->config['extra']) ? $this->config['extra'] : [];
+    }
 }

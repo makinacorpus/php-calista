@@ -28,6 +28,7 @@ class CalistaConfiguration implements ConfigurationInterface
                     ->normalizeKeys(true)
                     ->prototype('array')
                         ->children()
+                            ->variableNode('extra')->end()
                             ->variableNode('input')->end()
                             ->variableNode('view')->isRequired()->end()
                             ->scalarNode('datasource')->isRequired()->end()
