@@ -96,7 +96,7 @@ class AdminTable
     public function render()
     {
         if ($this->eventDispatcher) {
-            $this->eventDispatcher->dispatch('admin:table:' . $this->name, new AdminTableEvent($this));
+            $this->eventDispatcher->dispatch(AdminTableEvent::getEventName($this->name), new AdminTableEvent($this));
         }
 
         $rows = [];

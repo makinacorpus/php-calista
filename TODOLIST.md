@@ -6,6 +6,7 @@
  *  [_] context: better default actions display
  *  [_] context: better pane display
  *  [_] context: get the Context namespace out of the Drupal namespace
+ *  [_] datasource: create a default drupal database datasouce with schema introspection
  *  [_] drupal, controller: access check (csrf?) for ajax refresh
  *  [_] drupal, view: expose a view mode for configuring display
  *  [_] drupal, view: expose view mode in property view options
@@ -14,6 +15,7 @@
  *  [_] page: allow annotations for callbacks, without defining the properties
  *  [_] page: allow annotations for properties
  *  [_] portlet: re-introduce the portlet api and dashboard page
+ *  [_] view, twig: allow to register renderers for specific classes or (class, property) couples
  *  [_] view: filters whose values are selected by base query should not be visually selected
  *  [_] view: for-else in default templates, page builder "empty text" property
  *  [_] write unit tests for the Action namespace

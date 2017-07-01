@@ -13,6 +13,14 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 class AdminTableEvent extends GenericEvent
 {
     /**
+     * Get envent name
+     */
+    static public function getEventName($name)
+    {
+        return 'calista:admin-table:' . $name;
+    }
+
+    /**
      * Default constructor
      *
      * @param AdminTable $table
