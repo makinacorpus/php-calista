@@ -55,6 +55,16 @@ abstract class AbstractDatasource implements DatasourceInterface
     }
 
     /**
+     * Create an empty result
+     *
+     * @return DefaultDatasourceResult
+     */
+    protected function createEmptyResult()
+    {
+        return new DefaultDatasourceResult($this->getItemClass(), []);
+    }
+
+    /**
      * Create default result iterator with the provided information
      *
      * @param array $items
