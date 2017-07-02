@@ -37,5 +37,6 @@
  *  [x] page, view: refine virtual, real virtual properties should not use property accessor at all
  *  [x] page: make it less verbose to register
  *  [x] view, twig: if pager is not present initially, refresh will not add it if necessary
+ *  [x] view, twig: when sort is disabled in view definition, sorts disaplays anyway
  *  [x] view: fix the pager
  *  [x] view: PropertyAccess for the Page renderer
