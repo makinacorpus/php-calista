@@ -117,6 +117,7 @@ class Action
 
         if ($addCurrentDestination) {
             $this->withDestination = true;
+            $this->routeParameters['_destination'] = 1;
         }
     }
 

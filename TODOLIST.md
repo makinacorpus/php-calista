@@ -1,6 +1,5 @@
 # TODO list
 
- *  [_] action: handle redirect/destination in a generic fashion (and add query params)
  *  [_] action: make it less verbose to register
  *  [_] action: make it less verbose to write
  *  [_] action: rendering is terribly slow, make it better
@@ -25,6 +24,7 @@
  *  [_] write unit tests for the Context namespace
  *  [_] write unit tests for the Util namespace
  *  [x] action: get the action rendering out of Drupal API
+ *  [x] action: handle redirect/destination in a generic fashion (and add query params)
  *  [x] action: when rendered via ajax, destination parameter is broken
  *  [x] all: change module name to allow it to work aside the 1.x version
  *  [x] all: change namespace to allow it to work aside the 1.x version

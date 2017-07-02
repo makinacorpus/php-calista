@@ -8,6 +8,15 @@ services:
         public: false
         class: MakinaCorpus\Calista\Action\ActionRegistry
 
+    calista.redirect_router:
+        public: true
+        class: MakinaCorpus\Calista\Routing\RedirectRouter
+        decorates: router
+        arguments: ['@calista.redirect_router.inner', '@request_stack']
+        tags:
+          - {name: event_subscriber}        # Drupal
+          - {name: kernel.event_subscriber} # Symfony
+
     # View implementations
     calista.view.twig_page:
         public: true

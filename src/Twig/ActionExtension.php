@@ -128,11 +128,6 @@ class ActionExtension extends \Twig_Extension
         $route = $action->getRoute();
         $parameters = $action->getRouteParameters();
 
-        if ($action->hasDestination()) {
-            $request = $this->requestStack->getCurrentRequest();
-            // @todo better destination handling (should contain parameters)
-            $parameters['destination'] = $request->query->get('destination', $request->attributes->get('_route', ''));
-        }
         // @todo find a way for html classes
         if ($action->isDialog()) {
             $parameters['minidialog'] = 1;
