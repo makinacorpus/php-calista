@@ -13,6 +13,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
+use MakinaCorpus\Calista\Routing\DowngradeRouter;
 
 /**
  * Testing kernel
@@ -113,7 +114,7 @@ class Kernel extends BaseKernel
 
         $twigEnv->addExtension(new PageExtension(new RequestStack(), self::createPropertyAccessor(), self::createPropertyInfoExtractor(), true));
         if ($actionRegistry) {
-            $twigEnv->addExtension(new ActionExtension($actionRegistry));
+            $twigEnv->addExtension(new ActionExtension($actionRegistry, new RequestStack(), new DowngradeRouter()));
         } else {
             $twigEnv->addFunction(new \Twig_SimpleFunction('calista_actions', function () {
                 return 'ACTIONS';

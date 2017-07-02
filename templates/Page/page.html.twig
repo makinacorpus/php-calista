@@ -396,7 +396,7 @@
 {% endblock %}
 
 {% block page %}
-  <div{% if pageId %} data-page="{{ pageId }}" data-page-query="{{ query.routeParameters|json_encode|e }}"{% endif %} data-page-search="{{ input.searchParameter|e }}">
+  <div{% if pageId %} data-page="{{ pageId }}" data-page-route="{{ query.route }}" data-page-query="{{ query.routeParameters|json_encode|e }}"{% endif %} data-page-search="{{ input.searchParameter|e }}">
     {{ block('page_layout') }}
   </div>
 {% endblock %}

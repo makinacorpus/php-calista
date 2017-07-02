@@ -1,7 +1,9 @@
 # TODO list
 
+ *  [_] action: handle redirect/destination in a generic fashion (and add query params)
  *  [_] action: make it less verbose to register
  *  [_] action: make it less verbose to write
+ *  [_] action: rendering is terribly slow, make it better
  *  [_] all: performance: possibility of caching options/skipping resolver
  *  [_] context: better default actions display
  *  [_] context: better pane display
@@ -14,7 +16,6 @@
  *  [_] input, query: allow some filters to be virtual (not displayed)
  *  [_] page: allow annotations for callbacks, without defining the properties
  *  [_] page: allow annotations for properties
- *  [_] portlet: re-introduce the portlet api and dashboard page
  *  [_] view, twig: ajax refresh looses base query when rendering filters
  *  [_] view, twig: ajax refresh looses custom input options when rendering
  *  [_] view, twig: allow to register renderers for specific classes or (class, property) couples
@@ -24,6 +25,7 @@
  *  [_] write unit tests for the Context namespace
  *  [_] write unit tests for the Util namespace
  *  [x] action: get the action rendering out of Drupal API
+ *  [x] action: when rendered via ajax, destination parameter is broken
  *  [x] all: change module name to allow it to work aside the 1.x version
  *  [x] all: change namespace to allow it to work aside the 1.x version
  *  [x] all: find a new name for core/decoupled library
@@ -36,6 +38,7 @@
  *  [x] page, view: refine virtual, non existing types does not necesarily means virtual
  *  [x] page, view: refine virtual, real virtual properties should not use property accessor at all
  *  [x] page: make it less verbose to register
+ *  [x] portlet: re-introduce the portlet api and dashboard page (done in Drupal module)
  *  [x] view, twig: if pager is not present initially, refresh will not add it if necessary
  *  [x] view, twig: when sort is disabled in view definition, sorts disaplays anyway
  *  [x] view: fix the pager

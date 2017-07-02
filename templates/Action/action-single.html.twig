@@ -1,6 +1,6 @@
 {% spaceless %}
   <div class="calista-actions">
-    <a href="{{ path(action.route, action.routeParameters)|raw }}" class="btn btn-default">
+    <a href="{{ calista_actions_url(action) }}" class="{% if action.isAjax() %}use-ajax {% endif %}{% if action.isDialog() %}minidialog {% endif %}btn btn-default">
       {% if action.icon %}
         <span class="glyphicon glyphicon-{{ action.icon }}" aria-hidden="true"></span>
       {% endif %}

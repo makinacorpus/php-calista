@@ -45,21 +45,43 @@ trait AjaxControllerTrait
             throw new NotFoundHttpException('Not Found');
         }
 
-        $query = $page->getInputDefinition()->createQueryFromRequest($request);
-        $items = $page->getDatasource()->getItems($query);
+        // Clone request with original parameters so that AJAX rendered links
+        // don't get modified by the AJAX callback route.
+        $subRequest = $request->duplicate();
+        if ($route = $request->query->get('_route')) {
+            $subRequest->attributes->set('_route', $route);
+        }
+        $subRequest->query->remove('_page_id');
+        $subRequest->query->remove('_route');
+        // Anti-cache token from jQuery
+        $subRequest->query->remove('_');
 
-        $renderer = $view->createRenderer($viewDefinition, $items, $query);
+        /** @var \Symfony\Component\HttpFoundation\RequestStack $requestStack */
+        $requestStack = $this->get('request_stack');
+        $requestStack->push($subRequest);
 
-        return new JsonResponse([
-            // @todo this is ugly, find a better way
-            'query' => $renderer->getArguments()['query']->all(),
-            'blocks' => [
-                'filters'       => $renderer->renderPartial('filters'),
-                'display_mode'  => $renderer->renderPartial('display_mode'),
-                'sort_links'    => $renderer->renderPartial('sort_links'),
-                'item_list'     => $renderer->renderPartial('item_list'),
-                'pager'         => $renderer->renderPartial('pager'),
-            ],
-        ]);
+        try {
+            $query = $page->getInputDefinition()->createQueryFromRequest($subRequest);
+            $items = $page->getDatasource()->getItems($query);
+            $renderer = $view->createRenderer($viewDefinition, $items, $query);
+
+            $response = new JsonResponse([
+                // @todo this is ugly, find a better way
+                'query' => $renderer->getArguments()['query']->all(),
+                'blocks' => [
+                    'filters'       => $renderer->renderPartial('filters'),
+                    'display_mode'  => $renderer->renderPartial('display_mode'),
+                    'sort_links'    => $renderer->renderPartial('sort_links'),
+                    'item_list'     => $renderer->renderPartial('item_list'),
+                    'pager'         => $renderer->renderPartial('pager'),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            throw $e;
+        } finally {
+            $requestStack->pop();
+        }
+
+        return $response;
     }
 }

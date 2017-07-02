@@ -42,15 +42,19 @@ class Action
         );
     }
 
-    private $title = '';
-    private $route = '';
-    private $routeParameters = [];
-    private $linkOptions = [];
-    private $priority = 0;
-    private $icon = '';
-    private $primary = true;
     private $disabled = false;
     private $group = null;
+    private $icon = '';
+    private $linkOptions = [];
+    private $primary = true;
+    private $priority = 0;
+    private $route = '';
+    private $routeParameters = [];
+    private $target = '';
+    private $title = '';
+    private $withAjax = false;
+    private $withDestination = false;
+    private $withDialog = false;
 
     /**
      * Default constructor
@@ -97,44 +101,73 @@ class Action
             switch ($options) {
 
               case 'blank':
-                  $this->linkOptions = [
-                      'attributes' => ['target' => '_blank'],
-                  ];
+                  $this->target = '_blank';
                   break;
 
               case 'ajax':
                   $addCurrentDestination = true;
-                  $this->linkOptions = [
-                      'attributes' => ['class' => ['use-ajax']],
-                  ];
                   break;
 
               case 'dialog':
-                  $this->routeParameters['minidialog'] = 1;
-                  $this->linkOptions = [
-                      'attributes' => ['class' => ['use-ajax', 'minidialog']],
-                  ];
+                  $this->withDialog = true;
+                  $this->withAjax = true;
                   break;
             }
         }
 
-        $this->linkOptions['attributes']['title'] = $this->title;
-
-        if ($disabled) {
-            $this->linkOptions['attributes']['class'][] = 'disabled';
-        }
-
         if ($addCurrentDestination) {
-            if (function_exists('drupal_get_destination')) {
-                // Do not allow GET query parameter override
-                if (empty($this->routeParameters['destination'])) {
-                    $this->routeParameters += drupal_get_destination();
-                }
-            } else {
-                // We are not in Drupal, and this is not implemented.
-                // @todo sorry
-            }
+            $this->withDestination = true;
         }
+    }
+
+    /**
+     * Does this action needs a destination/redirect parameter
+     *
+     * @return bool
+     */
+    public function hasDestination()
+    {
+        return $this->withDestination || $this->withDialog;
+    }
+
+    /**
+     * Does this action is run via AJAX
+     *
+     * @return bool
+     */
+    public function isAjax()
+    {
+        return $this->withAjax;
+    }
+
+    /**
+     * Does this action is opened in a dialog
+     *
+     * @return bool
+     */
+    public function isDialog()
+    {
+        return $this->withDialog;
+    }
+
+    /**
+     * Has this action a target on link
+     *
+     * @return bool
+     */
+    public function hasTarget()
+    {
+        return !empty($this->target);
+    }
+
+    /**
+     * Get target
+     *
+     * @return string
+     */
+    public function getTarget()
+    {
+        return $this->target;
     }
 
     /**

@@ -4,6 +4,8 @@ namespace MakinaCorpus\Calista\Twig;
 
 use MakinaCorpus\Calista\Action\Action;
 use MakinaCorpus\Calista\Action\ActionRegistry;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Displays any object's actions
@@ -11,15 +13,21 @@ use MakinaCorpus\Calista\Action\ActionRegistry;
 class ActionExtension extends \Twig_Extension
 {
     private $actionRegistry;
+    private $requestStack;
+    private $urlGenerator;
 
     /**
      * Default constructor
      *
      * @param ActionRegistry $actionRegistry
+     * @param RequestStack $requestStack
+     * @param UrlGeneratorInterface $urlGenerator
      */
-    public function __construct(ActionRegistry $actionRegistry)
+    public function __construct(ActionRegistry $actionRegistry, RequestStack $requestStack, UrlGeneratorInterface $urlGenerator)
     {
         $this->actionRegistry = $actionRegistry;
+        $this->requestStack = $requestStack;
+        $this->urlGenerator = $urlGenerator;
     }
 
     /**
@@ -28,10 +36,11 @@ class ActionExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('calista_primary', [$this, 'renderPrimaryActions'], ['is_safe' => ['html'], 'needs_environment' => true]),
-            new \Twig_SimpleFunction('calista_button', [$this, 'renderSingleAction'], ['is_safe' => ['html'], 'needs_environment' => true]),
             new \Twig_SimpleFunction('calista_actions', [$this, 'renderActions'], ['is_safe' => ['html'], 'needs_environment' => true]),
             new \Twig_SimpleFunction('calista_actions_raw', [$this, 'renderActionsRaw'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new \Twig_SimpleFunction('calista_actions_url', [$this, 'renderActionUrl'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('calista_button', [$this, 'renderSingleAction'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new \Twig_SimpleFunction('calista_primary', [$this, 'renderPrimaryActions'], ['is_safe' => ['html'], 'needs_environment' => true]),
         ];
     }
 
@@ -101,6 +110,37 @@ class ActionExtension extends \Twig_Extension
     public function renderPrimaryActions(\Twig_Environment $environment, $item, $icon = null, $mode = 'icon', $title = null, $showTitle = false)
     {
         return $this->renderActionsRaw($environment, $this->actionRegistry->getActions($item, true), $icon, $mode, $title, $showTitle);
+    }
+
+    /**
+     * Render action link
+     *
+     * @param Action $action
+     *
+     * @return string
+     */
+    public function renderActionUrl($action)
+    {
+        if (!$action instanceof Action) {
+            return '';
+        }
+
+        $route = $action->getRoute();
+        $parameters = $action->getRouteParameters();
+
+        if ($action->hasDestination()) {
+            $request = $this->requestStack->getCurrentRequest();
+            // @todo better destination handling (should contain parameters)
+            $parameters['destination'] = $request->query->get('destination', $request->attributes->get('_route', ''));
+        }
+        // @todo find a way for html classes
+        if ($action->isDialog()) {
+            $parameters['minidialog'] = 1;
+        } else if ($action->isAjax()) {
+            // @todo anything?
+        }
+
+        return $this->urlGenerator->generate($route, $parameters);
     }
 
     /**

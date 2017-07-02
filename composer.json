@@ -34,11 +34,12 @@
     "require": {
         "php": ">=5.5",
         "symfony/dependency-injection": "^3.2",
-        "symfony/event-dispatcher": "^3.1",
+        "symfony/event-dispatcher": "^2.8|^3.1",
         "symfony/http-foundation": "^3.1",
         "symfony/options-resolver": "^3.2",
         "symfony/property-access": "^3.2",
         "symfony/property-info": "^3.2",
+        "symfony/routing": "^2.8|^3.1",
         "symfony/security": "^3.1"
     },
     "require-dev": {

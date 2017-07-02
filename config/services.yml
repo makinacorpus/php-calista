@@ -24,7 +24,7 @@ services:
     calista.twig.action_extension:
         public: false
         class: MakinaCorpus\Calista\Twig\ActionExtension
-        arguments: ['@calista.action_provider_registry']
+        arguments: ['@calista.action_provider_registry', '@request_stack', '@router']
         tags: [{name: twig.extension}]
     calista.twig.page_extension:
         public: false
