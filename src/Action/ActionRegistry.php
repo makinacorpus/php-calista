@@ -5,7 +5,7 @@ namespace MakinaCorpus\Calista\Action;
 /**
  * Actions registry is what fetches actions from any object.
  */
-final class ActionRegistry
+final class ActionRegistry implements ActionProviderInterface
 {
     /**
      * @var ActionProviderInterface[]
@@ -66,5 +66,13 @@ final class ActionRegistry
         });
 
         return $ret;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports($item)
+    {
+        return true;
     }
 }
