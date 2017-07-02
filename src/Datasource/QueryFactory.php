@@ -67,6 +67,38 @@ class QueryFactory
     }
 
     /**
+     * Create a query from array, but without a datasource
+     *
+     * @param array $input
+     *
+     * @return Query
+     */
+    public function fromArbitraryArray(array $input)
+    {
+        $inputDefinition = new InputDefinition(
+            new VirtualDatasource(),
+            [
+                'base_query'          => [],
+                'display_param'       => 'display',
+                'limit_allowed'       => true,
+                'limit_default'       => Query::LIMIT_DEFAULT,
+                'limit_param'         => 'limit',
+                'pager_enable'        => true,
+                'pager_param'         => 'page',
+                'search_enable'       => true,
+                'search_param'        => 'search',
+                'search_parse'        => true,
+                'sort_default_field'  => '',
+                'sort_default_order'  => Query::SORT_DESC,
+                'sort_field_param'    => 'st',
+                'sort_order_param'    => 'by',
+            ]
+        );
+
+        return $this->fromArray($inputDefinition, $input);
+    }
+
+    /**
      * Create query from request
      *
      * @param InputDefinition $inputDefinition
