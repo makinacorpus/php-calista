@@ -15,6 +15,8 @@
  *  [_] page: allow annotations for callbacks, without defining the properties
  *  [_] page: allow annotations for properties
  *  [_] portlet: re-introduce the portlet api and dashboard page
+ *  [_] view, twig: ajax refresh looses base query when rendering filters
+ *  [_] view, twig: ajax refresh looses custom input options when rendering
  *  [_] view, twig: allow to register renderers for specific classes or (class, property) couples
  *  [_] view: filters whose values are selected by base query should not be visually selected
  *  [_] view: for-else in default templates, page builder "empty text" property
