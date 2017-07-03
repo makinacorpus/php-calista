@@ -156,8 +156,8 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
             }
 
             $parameters['destination'] = $destination;
-
-            return $this->router->generate($name, $parameters, $referenceType);
         }
+
+        return $this->router->generate($name, $parameters, $referenceType);
     }
 }

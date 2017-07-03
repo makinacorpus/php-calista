@@ -21,3 +21,5 @@ architectured to provide:
  *  @todo dynamic page definition
  *  @todo config page definition
  *  @todo config page definition as framework configuration
+ *  @todo redirect mecanism
+ *  @todo action providers
