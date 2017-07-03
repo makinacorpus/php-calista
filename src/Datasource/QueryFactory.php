@@ -61,7 +61,7 @@ class QueryFactory
             $inputDefinition,
             $route,
             $this->flattenQuery($this->applyBaseQuery($input, $baseQuery), [$searchParameter]),
-            $this->flattenQuery($this->applyBaseQuery($routeParameters, $baseQuery), [$searchParameter]),
+            $this->flattenQuery($this->applyBaseQuery($routeParameters, $baseQuery, true), [$searchParameter], true),
             $baseQuery
         );
     }
@@ -130,8 +130,11 @@ class QueryFactory
      *
      * @param array $query
      * @param string[] $needsImplode
+     * @param $isRouteParameters
+     *
+     * @return array
      */
-    private function flattenQuery($query, array $needsImplode = [])
+    private function flattenQuery($query, array $needsImplode = [], $isRouteParameters = false)
     {
         foreach ($query as $key => $values) {
             if (is_array($values)) {
@@ -139,6 +142,8 @@ class QueryFactory
                     $query[$key] = reset($values);
                 } else if (in_array($key, $needsImplode)) {
                     $query[$key] = implode(' ', $values);
+                } else if ($isRouteParameters) {
+                    $query[$key] = implode(Query::URL_VALUE_SEP, $values);
                 }
             }
         }
@@ -218,10 +223,11 @@ class QueryFactory
      *
      * @param array $query
      * @param array $baseQuery
+     * @param bool $dropIfEqualOrNone
      *
      * @return array $query
      */
-    private function applyBaseQuery(array $query, array $baseQuery)
+    private function applyBaseQuery(array $query, array $baseQuery, $isRouteParameters = false)
     {
         // Ensure that query values are in base query bounds
         foreach ($baseQuery as $name => $allowed) {
@@ -234,9 +240,31 @@ class QueryFactory
                 if (!is_array($input)) {
                     $input = [$input];
                 }
+
                 // Restrict to fixed bounds
-                $query[$name] = array_unique(array_intersect($input, $allowed));
-            } else {
+                $filterValues = array_unique(array_intersect($input, $allowed));
+
+                if ($isRouteParameters) {
+                    // When filter is equal to base filter, it must be excluded
+                    // from the route parameters, they are hardcoded by the
+                    // controller and not derived from the query
+                    if (count($filterValues) !== count($input)) {
+                        $query[$name] = $filterValues;
+                    } else if (count($filterValues) !== count($allowed)) {
+                        $query[$name] = $filterValues;
+                    } else {
+                        sort($filterValues);
+                        sort($allowed);
+                        if ($filterValues !== $allowed) {
+                            $query[$name] = $filterValues;
+                        } else {
+                            unset($query[$name]);
+                        }
+                    }
+                } else {
+                    $query[$name] = $filterValues;
+                }
+            } else if (!$isRouteParameters) {
                 $query[$name] = $allowed;
             }
         }

@@ -149,10 +149,12 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             // Route parameters are left untouched, even if it matches some base query
             // parameters, only change that may be done in that is input cleaning and
             // array expansion or flattening of values
-            $this->assertCount(3, $params['foo']);
-            $this->assertContains('c', $params['foo']);
-            $this->assertContains('d', $params['foo']);
-            $this->assertContains('e', $params['foo']);
+            $this->assertTrue(is_string($params['foo']));
+            $fooValues = explode(Query::URL_VALUE_SEP, $params['foo']);
+            $this->assertCount(3, $fooValues);
+            $this->assertContains('c', $fooValues);
+            $this->assertContains('d', $fooValues);
+            $this->assertContains('e', $fooValues);
             // Search is flattened
             $this->assertSame($search, $params['search']);
         }
@@ -183,7 +185,11 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         );
 
         $factory = new QueryFactory();
-        $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['b', 'c', 'd', 'e'], 'bar' => 'baz']);
+        // Items in the query parameter are in an another order than the base
+        // query filter: this tests that items, when ordered in a different
+        // order, will still be removed from the router parameters if they
+        // match
+        $queryFromArray = $factory->fromArray($inputDefinition, ['foo' => ['d', 'c', 'b', 'e'], 'bar' => 'baz']);
         $queryFromRequest = $factory->fromRequest($inputDefinition, $request);
 
         foreach ([$queryFromArray, $queryFromRequest] as $query) {
@@ -209,11 +215,13 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('foo', $params);
             $this->assertArrayNotHasKey('some', $params);
             // Route parameters are subject to base query change too
-            $this->assertCount(2, $params['foo']);
-            $this->assertContains('b', $params['foo']);
-            $this->assertContains('c', $params['foo']);
-            $this->assertNotContains('d', $params['foo']);
-            $this->assertNotContains('e', $params['foo']);
+            $this->assertTrue(is_string($params['foo']));
+            $fooValues = explode(Query::URL_VALUE_SEP, $params['foo']);
+            $this->assertCount(2, $fooValues);
+            $this->assertContains('b', $fooValues);
+            $this->assertContains('c', $fooValues);
+            $this->assertNotContains('d', $fooValues);
+            $this->assertNotContains('e', $fooValues);
 
             $this->assertSame($baseQuery, $inputDefinition->getBaseQuery());
         }
@@ -276,10 +284,12 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             // Route parameters are left untouched, even if it matches some base query
             // parameters, only change that may be done in that is input cleaning and
             // array expansion or flattening of values
-            $this->assertCount(3, $params['foo']);
-            $this->assertContains('c', $params['foo']);
-            $this->assertContains('d', $params['foo']);
-            $this->assertContains('e', $params['foo']);
+            $this->assertTrue(is_string($params['foo']));
+            $fooValues = explode(Query::URL_VALUE_SEP, $params['foo']);
+            $this->assertCount(3, $fooValues);
+            $this->assertContains('c', $fooValues);
+            $this->assertContains('d', $fooValues);
+            $this->assertContains('e', $fooValues);
             // Search is flattened
             $this->assertSame($search, $params['search']);
             $this->assertSame($search, $params['search']);
