@@ -30,34 +30,20 @@ trait AjaxControllerTrait
      */
     public function refreshAction(Request $request)
     {
-        $pageToken = $request->get('_page_id');
-        if (!$pageToken) {
-            throw new NotFoundHttpException("Not Found");
-        }
-
-        $session = $request->getSession();
-        if (!$session) {
-            throw new NotFoundHttpException("Not Found");
-        }
-        if (!$session->has('calista-' . $pageToken)) {
-            throw new NotFoundHttpException("Not Found");
-        }
-
-        // Fetch real page identifier and input overrides from session
-        $sessionData = $session->get('calista-' . $pageToken);
-        $pageId = $sessionData['name'];
-        $inputOptionsOverride = $sessionData['input'];
-
         try {
+            // Fetch data from session
+            $sessionData = $this->getPageRenderer()->getSessionData($request);
+            $pageId = $sessionData['name'];
+            $inputOptionsOverride = $sessionData['input'];
+
             // Prepare all objects
             $factory = $this->getViewFactory();
             $page = $factory->getPageDefinition($pageId);
             $viewDefinition = $page->getViewDefinition();
             $view = $factory->getView($viewDefinition->getViewType());
-        } catch (ServiceNotFoundException $e) {
-            throw new NotFoundHttpException('Not Found');
-        } catch (\InvalidArgumentException $e) {
-            throw new NotFoundHttpException('Not Found');
+
+        } catch (\Exception $e) {
+            throw new NotFoundHttpException('Not Found', $e);
         }
 
         if (!$view instanceof TwigView) {

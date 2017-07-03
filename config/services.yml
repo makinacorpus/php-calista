@@ -1,8 +1,14 @@
 services:
 
     calista.view_factory:
+        public: true
         class: MakinaCorpus\Calista\DependencyInjection\ViewFactory
         arguments: ['@service_container']
+
+    calista.page_renderer:
+        public: true
+        class: MakinaCorpus\Calista\Controller\PageRenderer
+        arguments: ['@calista.view_factory']
 
     calista.action_provider_registry:
         public: false

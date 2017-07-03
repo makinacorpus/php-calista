@@ -74,34 +74,13 @@ trait PageControllerTrait
     }
 
     /**
-     * Prepare session
+     * Get page renderer
      *
-     * @param string $pageId
-     * @param Request $request
-     * @param array $inputOptions
-     *
-     * @return string
+     * @return PageRenderer
      */
-    private function prepareSession($pageId, Request $request, array $inputOptions = [])
+    protected function getPageRenderer()
     {
-        $session = $request->getSession();
-
-        if ($session) {
-            // View must inherit from the page definition identifier to ensure
-            // that AJAX queries will work
-            if ($inputOptions) {
-                $pageToken = $pageId . md5(serialize($inputOptions));
-            } else {
-                $pageToken = $pageId;
-            }
-
-            $session->set('calista-' . $pageToken, [
-                'name' => $pageId,
-                'input' => $inputOptions,
-            ]);
-
-            return $pageToken;
-        }
+        return $this->get('calista.page_renderer');
     }
 
     /**
@@ -118,19 +97,7 @@ trait PageControllerTrait
      */
     protected function renderPage($name, Request $request, array $inputOptions = [])
     {
-        $factory = $this->getViewFactory();
-        $page = $factory->getPageDefinition($name);
-        $viewDefinition = $page->getViewDefinition();
-        $view = $factory->getView($viewDefinition->getViewType());
-
-        $query = $page->getInputDefinition($inputOptions)->createQueryFromRequest($request);
-        $items = $page->getDatasource()->getItems($query);
-
-        if ($pageToken = $this->prepareSession($page->getId(), $request, $inputOptions)) {
-            $view->setId($pageToken);
-        }
-
-        return $view->render($viewDefinition, $items, $query);
+        return $this->getPageRenderer()->renderPage($name, $request, $inputOptions);
     }
 
     /**
@@ -151,21 +118,7 @@ trait PageControllerTrait
      */
     protected function renderPageResponse($name, Request $request, array $inputOptions = [])
     {
-        $factory = $this->getViewFactory();
-        $page = $factory->getPageDefinition($name);
-        $viewDefinition = $page->getViewDefinition();
-        $view = $factory->getView($viewDefinition->getViewType());
-
-        // View must inherit from the page definition identifier to ensure
-        // that AJAX queries will work
-        if ($pageToken = $this->prepareSession($page->getId(), $request, $inputOptions)) {
-            $view->setId($pageToken);
-        }
-
-        $query = $page->getInputDefinition($inputOptions)->createQueryFromRequest($request);
-        $items = $page->getDatasource()->getItems($query);
-
-        return $view->renderAsResponse($viewDefinition, $items, $query);
+        return $this->getPageRenderer()->renderPageResponse($name, $request, $inputOptions);
     }
 
     /**
