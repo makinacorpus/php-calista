@@ -44,7 +44,7 @@
             {% endif %}
             {% for action in group %}
               <li>
-                <a href="{{ calista_actions_url(action) }}" class="{% if action.isAjax() %}use-ajax {% endif %}{% if action.isDialog() %}use-ajax {% endif %}btn btn-default">
+                <a href="{{ calista_actions_url(action) }}" class="{% if action.isAjax() %}use-ajax {% endif %}{% if action.isDialog() %}use-ajax {% endif %}">
                   {% if action.icon %}
                     <span class="glyphicon glyphicon-{{ action.icon }}" aria-hidden="true"></span>
                   {% endif %}
