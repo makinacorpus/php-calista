@@ -30,9 +30,28 @@ trait AjaxControllerTrait
      */
     public function refreshAction(Request $request)
     {
+        $pageToken = $request->get('_page_id');
+        if (!$pageToken) {
+            throw new NotFoundHttpException("Not Found");
+        }
+
+        $session = $request->getSession();
+        if (!$session) {
+            throw new NotFoundHttpException("Not Found");
+        }
+        if (!$session->has('calista-' . $pageToken)) {
+            throw new NotFoundHttpException("Not Found");
+        }
+
+        // Fetch real page identifier and input overrides from session
+        $sessionData = $session->get('calista-' . $pageToken);
+        $pageId = $sessionData['name'];
+        $inputOptionsOverride = $sessionData['input'];
+
         try {
+            // Prepare all objects
             $factory = $this->getViewFactory();
-            $page = $factory->getPageDefinition($request->get('_page_id'));
+            $page = $factory->getPageDefinition($pageId);
             $viewDefinition = $page->getViewDefinition();
             $view = $factory->getView($viewDefinition->getViewType());
         } catch (ServiceNotFoundException $e) {
@@ -61,13 +80,12 @@ trait AjaxControllerTrait
         $requestStack->push($subRequest);
 
         try {
-            $query = $page->getInputDefinition()->createQueryFromRequest($subRequest);
+            $query = $page->getInputDefinition($inputOptionsOverride)->createQueryFromRequest($subRequest);
             $items = $page->getDatasource()->getItems($query);
             $renderer = $view->createRenderer($viewDefinition, $items, $query);
 
             $response = new JsonResponse([
-                // @todo this is ugly, find a better way
-                'query' => $renderer->getArguments()['query']->all(),
+                'query' => $query->getRouteParameters(),
                 'blocks' => [
                     'filters'       => $renderer->renderPartial('filters'),
                     'display_mode'  => $renderer->renderPartial('display_mode'),

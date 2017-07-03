@@ -74,6 +74,37 @@ trait PageControllerTrait
     }
 
     /**
+     * Prepare session
+     *
+     * @param string $pageId
+     * @param Request $request
+     * @param array $inputOptions
+     *
+     * @return string
+     */
+    private function prepareSession($pageId, Request $request, array $inputOptions = [])
+    {
+        $session = $request->getSession();
+
+        if ($session) {
+            // View must inherit from the page definition identifier to ensure
+            // that AJAX queries will work
+            if ($inputOptions) {
+                $pageToken = $pageId . md5(serialize($inputOptions));
+            } else {
+                $pageToken = $pageId;
+            }
+
+            $session->set('calista-' . $pageToken, [
+                'name' => $pageId,
+                'input' => $inputOptions,
+            ]);
+
+            return $pageToken;
+        }
+    }
+
+    /**
      * Render a page from definition
      *
      * @param string $page
@@ -95,9 +126,9 @@ trait PageControllerTrait
         $query = $page->getInputDefinition($inputOptions)->createQueryFromRequest($request);
         $items = $page->getDatasource()->getItems($query);
 
-        // View must inherit from the page definition identifier to ensure
-        // that AJAX queries will work
-        $view->setId($page->getId());
+        if ($pageToken = $this->prepareSession($page->getId(), $request, $inputOptions)) {
+            $view->setId($pageToken);
+        }
 
         return $view->render($viewDefinition, $items, $query);
     }
@@ -127,7 +158,9 @@ trait PageControllerTrait
 
         // View must inherit from the page definition identifier to ensure
         // that AJAX queries will work
-        $view->setId($page->getId());
+        if ($pageToken = $this->prepareSession($page->getId(), $request, $inputOptions)) {
+            $view->setId($pageToken);
+        }
 
         $query = $page->getInputDefinition($inputOptions)->createQueryFromRequest($request);
         $items = $page->getDatasource()->getItems($query);
