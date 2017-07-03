@@ -1,28 +1,17 @@
 # TODO list
 
- *  [_] action: make it less verbose to register
- *  [_] action: make it less verbose to write
- *  [_] action: rendering is terribly slow, make it better
- *  [_] all: performance: possibility of caching options/skipping resolver
- *  [_] context: better default actions display
- *  [_] context: better pane display
- *  [_] context: get the Context namespace out of the Drupal namespace
- *  [_] datasource: create a default drupal database datasouce with schema introspection
- *  [_] drupal, controller: access check (csrf?) for ajax refresh
- *  [_] drupal, view: expose a view mode for configuring display
- *  [_] drupal, view: expose view mode in property view options
- *  [_] drupal, view: handle gracefully fields
- *  [_] input, query: allow some filters to be virtual (not displayed)
- *  [_] page: allow annotations for callbacks, without defining the properties
- *  [_] page: allow annotations for properties
- *  [_] view, twig: ajax refresh looses base query when rendering filters
- *  [_] view, twig: ajax refresh looses custom input options when rendering
- *  [_] view, twig: allow to register renderers for specific classes or (class, property) couples
- *  [_] view: filters whose values are selected by base query should not be visually selected
- *  [_] view: for-else in default templates, page builder "empty text" property
- *  [_] write unit tests for the Action namespace
- *  [_] write unit tests for the Context namespace
- *  [_] write unit tests for the Util namespace
+ *  [ ] action: make it less verbose to register
+ *  [ ] action: make it less verbose to write
+ *  [ ] action: rendering is terribly slow, make it better
+ *  [ ] all: performance: possibility of caching options/skipping resolver
+ *  [ ] input, query: allow some filters to be virtual (not displayed)
+ *  [ ] page: allow annotations for callbacks, without defining the properties
+ *  [ ] page: allow annotations for properties
+ *  [ ] view, twig: allow to register renderers for specific classes or (class, property) couples
+ *  [ ] view: for-else in default templates, page builder "empty text" property
+ *  [ ] write unit tests for the Action namespace
+ *  [ ] write unit tests for the Context namespace
+ *  [ ] write unit tests for the Util namespace
  *  [x] action: get the action rendering out of Drupal API
  *  [x] action: handle redirect/destination in a generic fashion (and add query params)
  *  [x] action: when rendered via ajax, destination parameter is broken
@@ -32,6 +21,7 @@
  *  [x] all: once name is found, export it to its own package
  *  [x] datasource: allow datasource disovery via the view factory
  *  [x] datasource: PropertyInfo for the Datasources
+ *  [x] drupal, controller: access check using token in session for ajax refresh
  *  [x] input, query: remove base query values from filter
  *  [x] input, query: when using base query, filtering in base query range is ignored
  *  [x] page, view: allow virtual properties
@@ -39,7 +29,11 @@
  *  [x] page, view: refine virtual, real virtual properties should not use property accessor at all
  *  [x] page: make it less verbose to register
  *  [x] portlet: re-introduce the portlet api and dashboard page (done in Drupal module)
+ *  [x] view, twig: ajax refresh looses base query when rendering filters
+ *  [x] view, twig: ajax refresh looses custom input options when rendering
+ *  [x] view, twig: history push ajax refreshes
  *  [x] view, twig: if pager is not present initially, refresh will not add it if necessary
  *  [x] view, twig: when sort is disabled in view definition, sorts disaplays anyway
+ *  [x] view: filters whose values are selected by base query should not be visually selected
  *  [x] view: fix the pager
  *  [x] view: PropertyAccess for the Page renderer
