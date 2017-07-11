@@ -44,6 +44,13 @@ interface DatasourceInterface
     public function getSorts();
 
     /**
+     * Does this datasource streams data
+     *
+     * @return bool
+     */
+    public function supportsStreaming();
+
+    /**
      * Does this datasource supports pagination
      *
      * @return bool

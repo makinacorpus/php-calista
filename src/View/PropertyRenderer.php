@@ -174,7 +174,16 @@ class PropertyRenderer
     private function getValue($item, $property)
     {
         try {
-            return $this->propertyAccess->getValue($item, $property);
+            // In case we have an array, and a numeric property, this means the
+            // intends to fetch data in a numerically indexed array, let's make
+            // it understandable for the Symfony's PropertyAccess component
+            if (is_array($item) && is_numeric($property)) {
+                $property = '[' . $property . ']';
+            }
+
+            // Force string cast because PropertyAccess component cannot deal
+            // with numerical indices
+            return $this->propertyAccess->getValue($item, (string)$property);
 
         } catch (NoSuchPropertyException $e) {
             if ($this->debug) {

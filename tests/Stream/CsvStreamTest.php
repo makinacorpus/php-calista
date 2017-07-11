@@ -1,0 +1,130 @@
+<?php
+
+namespace MakinaCorpus\Calista\Tests\Stream;
+
+use MakinaCorpus\Calista\Datasource\QueryFactory;
+use MakinaCorpus\Calista\Datasource\Stream\CsvStreamDatasource;
+use MakinaCorpus\Calista\Datasource\Stream\CsvStreamReader;
+use MakinaCorpus\Calista\Tests\Mock\Kernel;
+use MakinaCorpus\Calista\View\PropertyRenderer;
+use MakinaCorpus\Calista\View\ViewDefinition;
+use MakinaCorpus\Calista\View\Stream\CsvStreamView;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+/**
+ * Tests both the CSV stream reader and stream viewer
+ */
+class CsvStreamTest extends \PHPUnit_Framework_TestCase
+{
+    public function testReaderWithoutHeader()
+    {
+        $filename = dirname(__DIR__) . '/Mock/stream.csv';
+
+        $reader = new CsvStreamReader($filename, ['delimiter' => ';']);
+
+        $this->assertTrue($reader->valid());
+        $this->assertSame(['a', 'b', 'c'], $reader->current());
+        $reader->next();
+        $this->assertSame(['1', '2', '3'], $reader->current());
+        $reader->next();
+        $this->assertSame(['4', '5', '6'], $reader->current());
+        $reader->next();
+        $this->assertSame(['foo', 'bar', '"baz"'], $reader->current());
+        $reader->next();
+
+        $this->assertSame(null, $reader->current());
+        $this->assertFalse($reader->valid());
+    }
+
+    public function testReaderWithHeader()
+    {
+        $filename = dirname(__DIR__) . '/Mock/stream.csv';
+
+        $reader = new CsvStreamReader($filename, ['delimiter' => ';', 'headers' => true]);
+
+        $this->assertTrue($reader->valid());
+        $this->assertSame(['a', 'b', 'c'], $reader->getHeaders());
+
+        $this->assertSame(['a' => '1', 'b' => '2', 'c' => '3'], $reader->current());
+        $reader->next();
+        $this->assertSame(['a' => '4', 'b' => '5', 'c' => '6'], $reader->current());
+        $reader->next();
+        $this->assertSame(['a' => 'foo', 'b' => 'bar', 'c' => '"baz"'], $reader->current());
+        $reader->next();
+
+        $this->assertSame(null, $reader->current());
+        $this->assertFalse($reader->valid());
+    }
+
+    public function testCsvDatasource()
+    {
+        $filename = dirname(__DIR__) . '/Mock/stream.csv';
+        $datasource = new CsvStreamDatasource($filename, ['delimiter' => ';']);
+        $query = (new QueryFactory())->fromArbitraryArray([]);
+        $items = $datasource->getItems($query);
+
+        $this->assertTrue($datasource->supportsStreaming());
+        $this->assertFalse($datasource->supportsPagination());
+        $this->assertFalse($datasource->supportsFulltextSearch());
+        $this->assertFalse($datasource->validateItems($query, ['any']));
+
+        foreach ($items as $index => $item) {
+            switch ($index) {
+                case 0:
+                    $this->assertSame(['a', 'b', 'c'], $item);
+                    break;
+                case 1:
+                    $this->assertSame(['1', '2', '3'], $item);
+                    break;
+                case 2:
+                    $this->assertSame(['4', '5', '6'], $item);
+                    break;
+                case 3:
+                    $this->assertSame(['foo', 'bar', '"baz"'], $item);
+                    break;
+                default:
+                    $this->fail();
+                    break;
+            }
+        }
+    }
+
+    public function testCsvInputToCsvOutput()
+    {
+        $filename = dirname(__DIR__) . '/Mock/stream.csv';
+        $datasource = new CsvStreamDatasource($filename, ['delimiter' => ';']);
+        $query = (new QueryFactory())->fromArbitraryArray([]);
+        $items = $datasource->getItems($query);
+
+        $viewDefinition = new ViewDefinition([
+            'properties' => [
+                0 => ['label' => "The first column"],
+                1 => ['label' => "The second column"],
+                2 => ['label' => "The third column"],
+            ],
+        ]);
+
+        $view = new CsvStreamView(new PropertyRenderer(Kernel::createPropertyAccessor(), Kernel::createPropertyInfoExtractor()));
+        $output = $view->render($viewDefinition, $items, $query);
+
+        $reference = <<<EOT
+﻿"The first column","The second column","The third column"
+a,b,c
+1,2,3
+4,5,6
+foo,bar,"""baz"""
+EOT;
+
+        // We trim because fputscsv() always add a newline at end of file
+        $this->assertSame($reference, rtrim($output));
+
+        // And now as a reponse
+        $response = $view->renderAsResponse($viewDefinition, $items, $query);
+        $this->assertInstanceOf(StreamedResponse::class, $response);
+
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_clean();
+        $this->assertSame($reference, rtrim($content));
+    }
+}

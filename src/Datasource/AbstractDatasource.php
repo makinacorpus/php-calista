@@ -2,6 +2,8 @@
 
 namespace MakinaCorpus\Calista\Datasource;
 
+use MakinaCorpus\Calista\Error\CalistaError;
+
 /**
  * Base implementation which leaves null a few mathods
  */
@@ -28,6 +30,14 @@ abstract class AbstractDatasource implements DatasourceInterface
     public function getSorts()
     {
         return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsStreaming()
+    {
+        return false; // Sensible default
     }
 
     /**
@@ -67,13 +77,17 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * Create default result iterator with the provided information
      *
-     * @param array $items
+     * @param array|\Traversable $items
      * @param null|int $totalCount
      *
      * @return DefaultDatasourceResult
      */
-    protected function createResult(array $items, $totalCount = null)
+    protected function createResult($items, $totalCount = null)
     {
+        if (!is_array($items) && !$items instanceof \Traversable) {
+            throw new CalistaError("given items are nor an array nor a \Traversable instance");
+        }
+
         $result = new DefaultDatasourceResult($this->getItemClass(), $items);
 
         if (null !== $totalCount) {

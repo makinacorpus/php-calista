@@ -55,7 +55,7 @@ class PageExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('calista_filter_definition', [$this, 'getfilterDefinition'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter('calista_filter_definition', [$this, 'getFilterDefinition'], ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('calista_filter_query', [$this, 'getFilterQuery'], ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('calista_query_param', [$this, 'flattenQueryParam']),
         ];
@@ -104,7 +104,7 @@ class PageExtension extends \Twig_Extension
      *
      * @codeCoverageIgnore
      */
-    public function getfilterDefinition($filters)
+    public function getFilterDefinition($filters)
     {
         $definition = [];
 
