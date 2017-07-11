@@ -14,7 +14,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * Handles the 'destination' GET parameter transparently and proceed with
  *
- * @codeCoverageIgnore
+ * Choice of default parameter name is to make it Drupal-compatible.
  */
 class RedirectRouter implements EventSubscriberInterface, RouterInterface
 {
@@ -31,6 +31,11 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
     }
 
     /**
+     * @var string
+     */
+    private $parameterName = '';
+
+    /**
      * @var RouterInterface
      */
     private $router;
@@ -45,10 +50,11 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
      *
      * @param RouterInterface $router
      */
-    public function __construct(RouterInterface $router, RequestStack $requestStack)
+    public function __construct(RouterInterface $router, RequestStack $requestStack, $parameterName = 'destination')
     {
         $this->router = $router;
         $this->requestStack = $requestStack;
+        $this->parameterName = $parameterName;
     }
 
     /**
@@ -63,7 +69,7 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
 
             // Alter the given response to redirect the destination in case
             // we have one in the request
-            $destination = $request->query->get('destination');
+            $destination = $request->query->get($this->parameterName);
             if ($destination) {
 
                 // For security reasons, disallow redirect when they do not
@@ -87,6 +93,8 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getRouteCollection()
     {
@@ -95,6 +103,8 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function match($pathinfo)
     {
@@ -103,6 +113,8 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function setContext(RequestContext $context)
     {
@@ -111,6 +123,8 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getContext()
     {
@@ -124,9 +138,13 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
     {
         if (isset($parameters['_destination'])) {
 
+            // Keep a copy of original destination
+            $destination = $parameters['_destination'];
+            unset($parameters['_destination']);
+
             // We have a conflict with another parameter, do not allow
             // a specific controller to crash because of us.
-            if (isset($parameters['destination'])) {
+            if (isset($parameters[$this->parameterName])) {
                 return $this->router->generate($name, $parameters, $referenceType);
             }
 
@@ -134,16 +152,16 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
 
             // If the current master query has a destination, do not alter
             // it and re-use it instead. Consider it as being safe already.
-            if ($request->query->has('destination')) {
-                $destination = $request->query->get('destination');
+            if ($request->query->has($this->parameterName)) {
+                $destination = $request->query->get($this->parameterName);
             } else {
                 $route = null;
                 $routeParameters = [];
 
                 // Build destination using the internal router, first use the
                 // given string as a route if provided
-                if (is_string($parameters['_destination'])) {
-                    $route = $parameters['_destination'];
+                if (is_string($destination)) {
+                    $route = $destination;
                 } else {
                     $route = $request->attributes->get('_route');
                     $routeParameters = $request->attributes->get('_route_params');
@@ -155,7 +173,7 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
                 $destination = $this->router->generate($route, $routeParameters, $referenceType);
             }
 
-            $parameters['destination'] = $destination;
+            $parameters[$this->parameterName] = $destination;
         }
 
         return $this->router->generate($name, $parameters, $referenceType);

@@ -17,6 +17,8 @@ class DowngradeRouter implements RouterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function setContext(RequestContext $context)
     {
@@ -25,6 +27,8 @@ class DowngradeRouter implements RouterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getContext()
     {
@@ -46,6 +50,8 @@ class DowngradeRouter implements RouterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getRouteCollection()
     {
@@ -54,6 +60,8 @@ class DowngradeRouter implements RouterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function match($pathinfo)
     {

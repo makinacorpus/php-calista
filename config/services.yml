@@ -1,3 +1,6 @@
+parameters:
+    calista.redirect_router.parameter_name: destination
+
 services:
 
     calista.view_factory:
@@ -18,12 +21,12 @@ services:
         public: true
         class: MakinaCorpus\Calista\Routing\RedirectRouter
         decorates: router
-        arguments: ['@calista.redirect_router.inner', '@request_stack']
+        arguments: ['@calista.redirect_router.inner', '@request_stack', '%calista.redirect_router.parameter_name%']
         tags:
           - {name: event_subscriber}        # Drupal
           - {name: kernel.event_subscriber} # Symfony
 
-    # View implementations
+    # View implementationse
     calista.view.twig_page:
         public: true
         class: MakinaCorpus\Calista\View\Html\TwigView
