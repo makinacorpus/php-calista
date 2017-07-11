@@ -13,16 +13,6 @@ use Symfony\Component\Form\Forms;
  */
 trait ContainerAwareTestTrait
 {
-    private function createPropertyAccessor()
-    {
-        return Kernel::createPropertyAccessor();
-    }
-
-    private function createPropertyInfoExtractor()
-    {
-        return Kernel::createPropertyInfoExtractor();
-    }
-
     private function createTwigEnv(ActionRegistry $actionRegistry = null)
     {
         return Kernel::createTwigEnv($actionRegistry);

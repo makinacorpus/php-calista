@@ -26,6 +26,11 @@ services:
           - {name: event_subscriber}        # Drupal
           - {name: kernel.event_subscriber} # Symfony
 
+    calista.property_renderer:
+        public: false
+        class: MakinaCorpus\Calista\View\PropertyRenderer;
+        arguments: ['@property_accessor', '@property_info']
+
     # View implementationse
     calista.view.twig_page:
         public: true
@@ -47,5 +52,5 @@ services:
     calista.twig.page_extension:
         public: false
         class: MakinaCorpus\Calista\Twig\PageExtension
-        arguments: ['@request_stack', '@property_accessor', '@property_info']
+        arguments: ['@request_stack', '@calista.property_renderer']
         tags: [{name: twig.extension}]

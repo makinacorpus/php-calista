@@ -5,7 +5,9 @@ namespace MakinaCorpus\Calista\Tests\Twig;
 use MakinaCorpus\Calista\Error\ConfigurationError;
 use MakinaCorpus\Calista\Tests\Mock\ContainerAwareTestTrait;
 use MakinaCorpus\Calista\Tests\Mock\IntItem;
+use MakinaCorpus\Calista\Tests\Mock\Kernel;
 use MakinaCorpus\Calista\Twig\PageExtension;
+use MakinaCorpus\Calista\View\PropertyRenderer;
 use MakinaCorpus\Calista\View\PropertyView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyInfo\Type;
@@ -39,11 +41,12 @@ class TwigExtensionTest extends \PHPUnit_Framework_TestCase
      */
     private function createExtension()
     {
-        return new PageExtension(
-            new RequestStack(),
-            $this->createPropertyAccessor(),
-            $this->createPropertyInfoExtractor()
+        $propertyRenderer = new PropertyRenderer(
+            Kernel::createPropertyAccessor(),
+            Kernel::createPropertyInfoExtractor()
         );
+
+        return new PageExtension(new RequestStack(), $propertyRenderer);
     }
 
     /**
@@ -173,7 +176,7 @@ class TwigExtensionTest extends \PHPUnit_Framework_TestCase
         $pageExtension->setDebug(false);
         $propertyView = new PropertyView('foo', null, ['virtual' => true]);
         $output = $pageExtension->renderItemProperty(new IntItem(1), $propertyView);
-        $this->assertSame(PageExtension::RENDER_NOT_POSSIBLE, $output);
+        $this->assertSame(PropertyRenderer::RENDER_NOT_POSSIBLE, $output);
 
         // Reset debug mode: prefer exceptions
         $pageExtension->setDebug(true);
@@ -235,7 +238,7 @@ class TwigExtensionTest extends \PHPUnit_Framework_TestCase
 
         // Same as upper, with an array
         $output = $pageExtension->renderItemProperty(new IntItem(1), 'thousands');
-        $this->assertNotEquals(PageExtension::RENDER_NOT_POSSIBLE, $output);
+        $this->assertNotEquals(PropertyRenderer::RENDER_NOT_POSSIBLE, $output);
         $this->assertNotEmpty($output);
     }
 

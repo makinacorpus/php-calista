@@ -4,8 +4,10 @@ namespace MakinaCorpus\Calista\Tests\Mock;
 
 use MakinaCorpus\Calista\Action\ActionRegistry;
 use MakinaCorpus\Calista\CalistaBundle;
+use MakinaCorpus\Calista\Routing\DowngradeRouter;
 use MakinaCorpus\Calista\Twig\ActionExtension;
 use MakinaCorpus\Calista\Twig\PageExtension;
+use MakinaCorpus\Calista\View\PropertyRenderer;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
@@ -13,7 +15,6 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
-use MakinaCorpus\Calista\Routing\DowngradeRouter;
 
 /**
  * Testing kernel
@@ -112,7 +113,12 @@ class Kernel extends BaseKernel
             return (string)$value;
         }));
 
-        $twigEnv->addExtension(new PageExtension(new RequestStack(), self::createPropertyAccessor(), self::createPropertyInfoExtractor(), true));
+        $propertyRenderer = new PropertyRenderer(
+            self::createPropertyAccessor(),
+            self::createPropertyInfoExtractor()
+        );
+
+        $twigEnv->addExtension(new PageExtension(new RequestStack(), $propertyRenderer, true));
         if ($actionRegistry) {
             $twigEnv->addExtension(new ActionExtension($actionRegistry, new RequestStack(), new DowngradeRouter()));
         } else {
