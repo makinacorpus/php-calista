@@ -3,13 +3,15 @@
 namespace MakinaCorpus\Calista\Routing;
 
 use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * Avoids crashes in degraded environment, but this should never happen
  * in a real life application, we need a router.
  */
-class DowngradeRouter implements UrlGeneratorInterface
+class DowngradeRouter implements RouterInterface
 {
     private $context;
 
@@ -32,7 +34,7 @@ class DowngradeRouter implements UrlGeneratorInterface
     /**
      * {@inheritdoc}
      */
-    public function generate($name, $parameters = [], $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH)
+    public function generate($name, $parameters = [], $referenceType = self::ABSOLUTE_PATH)
     {
         // @todo use context if availabe
         if ($parameters) {
@@ -40,5 +42,21 @@ class DowngradeRouter implements UrlGeneratorInterface
         }
 
         return $name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRouteCollection()
+    {
+        return new RouteCollection();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function match($pathinfo)
+    {
+        throw new ResourceNotFoundException();
     }
 }
