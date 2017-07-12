@@ -31,18 +31,6 @@ services:
         class: MakinaCorpus\Calista\View\PropertyRenderer
         arguments: ['@property_accessor', '@property_info']
 
-    # View implementationse
-    calista.view.twig_page:
-        public: true
-        class: MakinaCorpus\Calista\View\Html\TwigView
-        arguments: ['@twig', '@event_dispatcher']
-        tags: [{name: calista.view, id: twig_page}]
-    calista.view.twig_form_page:
-        public: true
-        class: MakinaCorpus\Calista\View\Html\FormTwigView
-        arguments: ['@twig', '@event_dispatcher']
-        tags: [{name: calista.view, id: twig_form_page}]
-
     # Twig extensions
     calista.twig.action_extension:
         public: false

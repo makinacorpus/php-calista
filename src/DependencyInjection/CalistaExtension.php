@@ -50,6 +50,7 @@ class CalistaExtension extends Extension
 
         $loader = new YamlFileLoader($container, new FileLocator(dirname(dirname(__DIR__)).'/config'));
         $loader->load('services.yml');
+        $loader->load('view.yml');
     }
 
     /**
