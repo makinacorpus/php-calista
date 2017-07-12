@@ -123,6 +123,11 @@ class CsvStreamView extends AbstractView
         $response = new StreamedResponse();
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
 
+        $filename = $viewDefinition->getExtraOptionValue('filename');
+        if ($filename) {
+            $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        }
+
         $response->setCallback(function () use ($viewDefinition, $items, $query) {
             $resource = fopen('php://output', 'w+');
             $this->renderInStream($viewDefinition, $items, $query, $resource);

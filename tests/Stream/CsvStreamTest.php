@@ -107,6 +107,7 @@ class CsvStreamTest extends \PHPUnit_Framework_TestCase
             'extra' => [
                 'add_bom' => true,
                 'add_header' => true,
+                'filename' => 'some_export.csv',
             ],
             'properties' => [
                 0 => ['label' => "The first column"],
