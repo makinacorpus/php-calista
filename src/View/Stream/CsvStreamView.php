@@ -11,7 +11,7 @@ use MakinaCorpus\Calista\View\ViewDefinition;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * Uses a view definition and proceed to an html page display via Twig
+ * Turn your data stream to CSV file
  */
 class CsvStreamView extends AbstractView
 {
@@ -81,17 +81,18 @@ class CsvStreamView extends AbstractView
     private function renderInStream(ViewDefinition $viewDefinition, DatasourceResultInterface $items, Query $query, $resource)
     {
         // Add the BOM for Excel to read correctly the file
-        // @todo make this configurable
-        fwrite($resource, "\xEF\xBB\xBF");
+        if ($viewDefinition->getExtraOptionValue('add_bom', false)) {
+            fwrite($resource, "\xEF\xBB\xBF");
+        }
 
-        // @todo make separator and enclose parameters configurable
+        $delimiter = $viewDefinition->getExtraOptionValue('csv_delimiter', ',');
+        $enclosure = $viewDefinition->getExtraOptionValue('csv_enclosure', '"');
+        $escape = $viewDefinition->getExtraOptionValue('csv_escape_char', '\\');
+
         $properties = $this->normalizeProperties($viewDefinition, $items->getItemClass());
-        $delimiter = ',';
-        $enclosure = '"';
-        $escape = '\\';
 
-        // @todo header configurable
-        if (true) {
+        // Render the CSV header
+        if ($viewDefinition->getExtraOptionValue('add_header', false)) {
             fputcsv($resource, $this->createHeaderRow($items, $viewDefinition, $properties), $delimiter, $enclosure, $escape);
         }
 

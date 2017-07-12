@@ -97,6 +97,7 @@ class ViewDefinition
         $resolver->setDefaults([
             'default_display'   => null,
             'enabled_filters'   => null,
+            'extra'             => [],
             'properties'        => null,
             'show_filters'      => true,
             'show_pager'        => true,
@@ -110,6 +111,7 @@ class ViewDefinition
 
         $resolver->setAllowedTypes('default_display', ['null', 'string']);
         $resolver->setAllowedTypes('enabled_filters', ['null', 'array']);
+        $resolver->setAllowedTypes('extra', ['array']);
         $resolver->setAllowedTypes('properties', ['null', 'array']);
         $resolver->setAllowedTypes('show_filters', ['numeric', 'bool']);
         $resolver->setAllowedTypes('show_pager', ['numeric', 'bool']);
@@ -117,6 +119,32 @@ class ViewDefinition
         $resolver->setAllowedTypes('show_sort', ['numeric', 'bool']);
         $resolver->setAllowedTypes('templates', ['array']);
         $resolver->setAllowedTypes('view_type', ['string', ViewInterface::class]);
+    }
+
+    /**
+     * Get extra options
+     *
+     * Extra options are backend specific options, they should be validated by
+     * the view implementation itself
+     *
+     * @return array
+     */
+    public function getExtraOptions()
+    {
+        return $this->options['extra'];
+    }
+
+    /**
+     * Get extra option value
+     *
+     * @param string $name
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    public function getExtraOptionValue($name, $default = null)
+    {
+        return array_key_exists($name, $this->options['extra']) ? $this->options['extra'][$name] : $default;
     }
 
     /**

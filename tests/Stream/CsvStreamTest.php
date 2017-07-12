@@ -31,6 +31,8 @@ class CsvStreamTest extends \PHPUnit_Framework_TestCase
         $reader->next();
         $this->assertSame(['foo', 'bar', '"baz"'], $reader->current());
         $reader->next();
+        $this->assertSame(['foo', '#bar#', '###baz###'], $reader->current());
+        $reader->next();
 
         $this->assertSame(null, $reader->current());
         $this->assertFalse($reader->valid());
@@ -50,6 +52,8 @@ class CsvStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['a' => '4', 'b' => '5', 'c' => '6'], $reader->current());
         $reader->next();
         $this->assertSame(['a' => 'foo', 'b' => 'bar', 'c' => '"baz"'], $reader->current());
+        $reader->next();
+        $this->assertSame(['a' => 'foo', 'b' => '#bar#', 'c' => '###baz###'], $reader->current());
         $reader->next();
 
         $this->assertSame(null, $reader->current());
@@ -82,6 +86,9 @@ class CsvStreamTest extends \PHPUnit_Framework_TestCase
                 case 3:
                     $this->assertSame(['foo', 'bar', '"baz"'], $item);
                     break;
+                case 4:
+                    $this->assertSame(['foo', '#bar#', '###baz###'], $item);
+                    break;
                 default:
                     $this->fail();
                     break;
@@ -97,6 +104,10 @@ class CsvStreamTest extends \PHPUnit_Framework_TestCase
         $items = $datasource->getItems($query);
 
         $viewDefinition = new ViewDefinition([
+            'extra' => [
+                'add_bom' => true,
+                'add_header' => true,
+            ],
             'properties' => [
                 0 => ['label' => "The first column"],
                 1 => ['label' => "The second column"],
@@ -113,6 +124,7 @@ a,b,c
 1,2,3
 4,5,6
 foo,bar,"""baz"""
+foo,#bar#,###baz###
 EOT;
 
         // We trim because fputscsv() always add a newline at end of file
@@ -126,5 +138,30 @@ EOT;
         $response->sendContent();
         $content = ob_get_clean();
         $this->assertSame($reference, rtrim($content));
+
+        $viewDefinition = new ViewDefinition([
+            'extra' => [
+                'add_bom' => true,
+                'add_header' => false,
+                'csv_delimiter' => ';',
+                'csv_enclosure' => '#',
+            ],
+            'properties' => [
+                0 => ['label' => "The first column"],
+                1 => ['label' => "The second column"],
+                2 => ['label' => "The third column"],
+            ],
+        ]);
+
+        $view = new CsvStreamView(new PropertyRenderer(Kernel::createPropertyAccessor(), Kernel::createPropertyInfoExtractor()));
+        $output = $view->render($viewDefinition, $items, $query);
+
+        $reference = <<<EOT
+a;b;c
+1;2;3
+4;5;6
+foo;"bar";"""baz"""
+foo;#bar#;###baz###
+EOT;
     }
 }
