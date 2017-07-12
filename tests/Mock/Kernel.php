@@ -148,6 +148,7 @@ class Kernel extends BaseKernel
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load(__DIR__.'/kernel.services.yml');
+
         if ($this->configurationFilename) {
             $loader->load($this->configurationFilename);
         }

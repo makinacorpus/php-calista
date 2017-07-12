@@ -10,7 +10,7 @@ services:
         factory: ['MakinaCorpus\Calista\Tests\Mock\Kernel', createTwigEnv]
         arguments: ['@calista.action_provider_registry']
 
-    property_access:
+    property_accessor:
         class: Symfony\Component\PropertyAccess\PropertyAccessor
         public: true
         factory: ['MakinaCorpus\Calista\Tests\Mock\Kernel', createPropertyAccessor]
