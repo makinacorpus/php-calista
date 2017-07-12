@@ -28,7 +28,7 @@ services:
 
     calista.property_renderer:
         public: false
-        class: MakinaCorpus\Calista\View\PropertyRenderer;
+        class: MakinaCorpus\Calista\View\PropertyRenderer
         arguments: ['@property_accessor', '@property_info']
 
     # View implementationse
