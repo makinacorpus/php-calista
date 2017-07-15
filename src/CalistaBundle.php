@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Testing kernel
+ * Symfony based application bundle implementation.
  */
 class CalistaBundle extends Bundle
 {
