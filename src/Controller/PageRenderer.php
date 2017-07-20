@@ -67,7 +67,7 @@ class PageRenderer
      */
     public function getSessionData(Request $request, $parameterName = '_page_id')
     {
-        $pageToken = $request->get('_page_id');
+        $pageToken = $request->get($parameterName);
         if (!$pageToken) {
             throw new \RuntimeException("request has no page identifier");
         }
