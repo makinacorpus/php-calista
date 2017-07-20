@@ -5,8 +5,8 @@ namespace MakinaCorpus\Calista\View;
 use MakinaCorpus\Calista\Error\ConfigurationError;
 use MakinaCorpus\Calista\Twig\PropertyTypeError;
 use MakinaCorpus\Calista\Util\TypeUtil;
+use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\PropertyInfo\Type;
 
@@ -185,7 +185,7 @@ class PropertyRenderer
             // with numerical indices
             return $this->propertyAccess->getValue($item, (string)$property);
 
-        } catch (NoSuchPropertyException $e) {
+        } catch (AccessException $e) {
             if ($this->debug) {
                 throw $e;
             }
