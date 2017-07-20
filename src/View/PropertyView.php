@@ -45,6 +45,7 @@ class PropertyView
             'bool_value_true'       => "Yes",
             'callback'              => null,
             'collection_separator'  => ', ',
+            'date_format'           => 'Y-m-d H:i:s',
             'decimal_precision'     => 2,
             'decimal_separator'     => '.',
             'label'                 => null,
@@ -58,8 +59,9 @@ class PropertyView
         $resolver->setAllowedTypes('bool_as_int', ['bool']);
         $resolver->setAllowedTypes('bool_value_false', ['string']);
         $resolver->setAllowedTypes('bool_value_true', ['string']);
-        $resolver->setAllowedTypes('callback', ['null', 'callable']);
+        $resolver->setAllowedTypes('callback', ['null', 'callable', 'string']);
         $resolver->setAllowedTypes('collection_separator', ['null', 'string']);
+        $resolver->setAllowedTypes('date_format', ['null', 'string']);
         $resolver->setAllowedTypes('decimal_precision', ['null', 'int']);
         $resolver->setAllowedTypes('decimal_separator', ['null', 'string']);
         $resolver->setAllowedTypes('label', ['null', 'string']);

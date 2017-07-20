@@ -51,9 +51,39 @@ class PropertyRenderer
     }
 
     /**
+     * Render a date
+     */
+    public function renderDate($value, array $options = [])
+    {
+        if (!$value) {
+            return null;
+        }
+
+        if (!$value instanceof \DateTimeInterface) {
+            if (is_numeric($value)) {
+                $value = new \DateTimeImmutable('@' . $value);
+            } else {
+                $value = new \DateTime($value);
+
+                if (!$value) {
+                    return null;
+                }
+            }
+        }
+
+        switch ($options['date_format']) {
+            // @todo handle INTL
+            // @todo handle date constants (a few format, eg. atom, rfcXXXX, etc...)
+
+            default:
+                return $value->format($options['date_format']);
+        }
+    }
+
+    /**
      * Render an integer value
      */
-    private function renderInt($value, array $options = [])
+    public function renderInt($value, array $options = [])
     {
         return null === $value ? '' : number_format($value, 0, '.', $options['thousand_separator']);
     }
@@ -61,7 +91,7 @@ class PropertyRenderer
     /**
      * Render a float value
      */
-    private function renderFloat($value, array $options = [])
+    public function renderFloat($value, array $options = [])
     {
         return number_format($value, $options['decimal_precision'], $options['decimal_separator'], $options['thousand_separator']);
     }
@@ -69,7 +99,7 @@ class PropertyRenderer
     /**
      * Render a boolean value
      */
-    private function renderBool($value, array $options = [])
+    public function renderBool($value, array $options = [])
     {
         if ($options['bool_as_int']) {
             return $value ? "1" : "0";
@@ -94,7 +124,7 @@ class PropertyRenderer
     /**
      * Render a string value
      */
-    private function renderString($value, array $options = [])
+    public function renderString($value, array $options = [])
     {
         $value = strip_tags($value);
 
@@ -234,6 +264,13 @@ class PropertyRenderer
 
         // Skip property info if options contain a callback.
         if (isset($options['callback'])) {
+
+            // Add some magic in there, allow this object methods to be called
+            // directly; @todo extend it with user-defined services
+            if (is_string($options['callback']) && method_exists($this, $options['callback'])) {
+                $options['callback'] = [$this, $options['callback']];
+            }
+
             if (!is_callable($options['callback'])) {
                 if ($this->debug) {
                     throw new ConfigurationError("callback '%s' for property '%s' on class '%s' is not callable", $options['callable'], $itemType, $property);
