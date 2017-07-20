@@ -289,7 +289,7 @@ class FormTwigView extends TwigView
      *
      * @return string[]
      */
-    private function getItemIdentifierList(DatasourceResultInterface $items, callable $callback = null)
+    private function getItemData(DatasourceResultInterface $items, callable $callback = null)
     {
         $ret = [];
 
@@ -338,7 +338,7 @@ class FormTwigView extends TwigView
         $form = $this->getForm();
 
         // Bind initial data
-        $form->setData(['items' => $this->getItemIdentifierList($items, $callback)])->handleRequest($request);
+        $form->setData(['items' => $this->getItemData($items, $callback)])->handleRequest($request);
 
         if ($this->confirmForm) {
             $this->confirmForm->handleRequest($request);
