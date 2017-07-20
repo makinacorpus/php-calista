@@ -7,6 +7,8 @@ use MakinaCorpus\Calista\Twig\PropertyTypeError;
 use MakinaCorpus\Calista\Util\TypeUtil;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
+use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\PropertyInfo\Type;
 
@@ -186,6 +188,20 @@ class PropertyRenderer
             return $this->propertyAccess->getValue($item, (string)$property);
 
         } catch (AccessException $e) {
+            if ($this->debug) {
+                throw $e;
+            }
+
+            return null;
+
+        } catch (NoSuchPropertyException $e) {
+            if ($this->debug) {
+                throw $e;
+            }
+
+            return null;
+
+        } catch (UnexpectedTypeException $e) {
             if ($this->debug) {
                 throw $e;
             }
