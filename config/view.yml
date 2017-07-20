@@ -15,5 +15,5 @@ services:
     calista.view.twig_form_page:
         public: true
         class: MakinaCorpus\Calista\View\Html\FormTwigView
-        arguments: ['@twig', '@event_dispatcher']
+        arguments: ['@twig', '@event_dispatcher', '@?form.factory']
         tags: [{name: calista.view, id: twig_form_page}]

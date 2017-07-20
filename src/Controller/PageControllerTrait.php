@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use MakinaCorpus\Calista\DependencyInjection\PageDefinitionInterface;
 
 /**
  * Gives a few helper methods for retrieving and rendering views and pagess.
@@ -86,7 +87,7 @@ trait PageControllerTrait
     /**
      * Render a page from definition
      *
-     * @param string $page
+     * @param string|PageDefinitionInterface $page
      *   Page class or identifier
      * @param Request $request
      *   Incomming request
@@ -107,7 +108,7 @@ trait PageControllerTrait
      * outputs with large datasets, it allows the view to control the response
      * type hence use a streamed response whenever possible.
      *
-     * @param string $page
+     * @param string|PageDefinitionInterface $page
      *   Page class or identifier
      * @param Request $request
      *   Incomming request

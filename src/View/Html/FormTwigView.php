@@ -4,6 +4,7 @@ namespace MakinaCorpus\Calista\View\Html;
 
 use MakinaCorpus\Calista\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Calista\Datasource\Query;
+use MakinaCorpus\Calista\Error\CalistaError;
 use MakinaCorpus\Calista\Form\Type\SelectionFormType;
 use MakinaCorpus\Calista\View\ViewDefinition;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -212,6 +213,10 @@ class FormTwigView extends TwigView
     {
         if ($name) {
             if (!isset($this->storedData[$name])) {
+                if ('clicked_button' === $name) {
+                    return null;
+                }
+
                 throw new \InvalidArgumentException(sprintf("No data named '%s'.", $name));
             }
 
@@ -224,21 +229,22 @@ class FormTwigView extends TwigView
     /**
      * Get the loaded items from selection
      *
-     * @param null $data
-     *
      * @return array
      */
-    public function getSelectedItems($data = null)
+    public function getSelectedItems()
     {
-        if (!$data) {
-            $data = $this->form->getData();
+        try {
+            $data = $this->getStoredData('items');
+        } catch (\InvalidArgumentException $e) {
+            return [];
         }
 
-        $selectedIds = array_keys(array_filter($data['items'], function ($d) {
-            return !empty($d['selected']);
-        }));
-
-        return array_intersect_key($this->storedData, array_flip($selectedIds));
+        return array_filter(
+            $data,
+            function ($d) {
+                return !empty($d['selected']);
+            }
+        );
     }
 
     /**
@@ -293,12 +299,18 @@ class FormTwigView extends TwigView
             foreach ($items as $item) {
                 if (is_scalar($item)) {
                     $id = $item;
-                } else if (method_exists($item, 'getId')) {
-                    $id = $item->getId();
-                } else if (method_exists($item, 'id')) {
-                    $id = $item->id();
-                } else if (property_exists($item, 'id')) {
-                    $id  = $item->id;
+                } else if (is_object($item)) {
+                    if (method_exists($item, 'getId')) {
+                        $id = $item->getId();
+                    } else if (method_exists($item, 'id')) {
+                        $id = $item->id();
+                    } else if (property_exists($item, 'id')) {
+                        $id  = $item->id;
+                    } else {
+                        throw new CalistaError("could not determine identifier for item");
+                    }
+                } else {
+                    throw new CalistaError("could not determine identifier for item");
                 }
                 $ret[$id] = ['id' => $id];
             }
@@ -328,33 +340,51 @@ class FormTwigView extends TwigView
         // Bind initial data
         $form->setData(['items' => $this->getItemIdentifierList($items, $callback)])->handleRequest($request);
 
-        $data = $form->getData();
-
         if ($this->confirmForm) {
             $this->confirmForm->handleRequest($request);
 
-            $id = $this->getId();
             if (
                 $this->confirmForm->isSubmitted() &&
                 $this->confirmForm->getClickedButton()->getName() == 'cancel'
             ) {
                 // Confirm form has been cancelled, set the data back and display form
                 $this->confirmationCancelled = true;
-                $data = $request->getSession()->get($id);
-                $form->setData($data);
-            } else {
-                // Test if the form has been submitted and store data if we need a confirmation form
-                if ($form->isSubmitted() && $form->isValid()) {
-                    $data['clicked_button'] = $form->getClickedButton()->getName();
-                    $request->getSession()->set($id, $data);
-                    $this->storedData = $data;
-                } else {
-                    $this->storedData = $request->getSession()->get($id);
+                $data = $request->getSession()->get($this->getId());
+                $this->form->setData($data);
+
+            } else if ($this->form->isSubmitted() && $this->form->isValid()) {
+                // Form has been submitted, store data into session and display confirm form.
+                $data = $this->form->getData();
+
+                // Form could have been posted by a custom button in a template, case in which
+                // it will not be available within the form; moreoever, POST'ing data without
+                // using a button is valid too.
+                $clickedButton = $this->form->getClickedButton();
+                if ($clickedButton) {
+                    $data['clicked_button'] = $clickedButton->getName();
                 }
+
+                $request->getSession()->set($this->getId(), $data);
+                $this->storedData = $data;
+
+            } else {
+                // Confirm form is valid, do not attempt to fetch data from original form.
+                $this->storedData = $request->getSession()->get($this->getId());
             }
-        } else {
+        } else if ($this->form->isSubmitted() && $this->form->isValid()) {
+
+            // Form could have been posted by a custom button in a template, case in which
+            // it will not be available within the form; moreoever, POST'ing data without
+            // using a button is valid too.
+            $clickedButton = $this->form->getClickedButton();
+            if ($clickedButton) {
+                $data['clicked_button'] = $clickedButton->getName();
+            }
+
             // Else if no confirm form there's no need to use the session
-            $this->storedData = $data;
+            $this->storedData = $this->form->getData();
+        } else {
+            $this->storedData = [];
         }
 
         $this->requestHandled = true;

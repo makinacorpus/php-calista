@@ -2,6 +2,7 @@
 
 namespace MakinaCorpus\Calista\Controller;
 
+use MakinaCorpus\Calista\DependencyInjection\PageDefinitionInterface;
 use MakinaCorpus\Calista\DependencyInjection\ViewFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -94,7 +95,7 @@ class PageRenderer
     /**
      * Render a page from definition
      *
-     * @param string $page
+     * @param string|PageDefinitionInterface $page
      *   Page class or identifier
      * @param Request $request
      *   Incomming request
@@ -105,7 +106,12 @@ class PageRenderer
      */
     public function renderPage($name, Request $request, array $inputOptions = [])
     {
-        $page = $this->viewFactory->getPageDefinition($name);
+        if ($name instanceof PageDefinitionInterface) {
+            $page = $name;
+        } else {
+            $page = $this->viewFactory->getPageDefinition($name);
+        }
+
         $viewDefinition = $page->getViewDefinition();
         $view = $this->viewFactory->getView($viewDefinition->getViewType());
 
@@ -126,7 +132,7 @@ class PageRenderer
      * outputs with large datasets, it allows the view to control the response
      * type hence use a streamed response whenever possible.
      *
-     * @param string $page
+     * @param string|PageDefinitionInterface $page
      *   Page class or identifier
      * @param Request $request
      *   Incomming request
@@ -137,7 +143,12 @@ class PageRenderer
      */
     public function renderPageResponse($name, Request $request, array $inputOptions = [])
     {
-        $page = $this->viewFactory->getPageDefinition($name);
+        if ($name instanceof PageDefinitionInterface) {
+            $page = $name;
+        } else {
+            $page = $this->viewFactory->getPageDefinition($name);
+        }
+
         $viewDefinition = $page->getViewDefinition();
         $view = $this->viewFactory->getView($viewDefinition->getViewType());
 
