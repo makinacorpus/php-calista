@@ -79,6 +79,9 @@ class RedirectRouter implements EventSubscriberInterface, RouterInterface
                     return;
                 }
 
+                // @todo Other modules/bundles should be able to disable this
+                //   repsonse hijacking and/or add additional parameters to it
+
                 // @todo
                 // In order to avoid infinite redirect loops, we should also
                 // that our redirected URL does not have a 'destination' GET
