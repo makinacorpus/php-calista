@@ -181,8 +181,12 @@ class ViewDefinition
      */
     public function getPropertyDisplayOptions($name)
     {
-         if (isset($this->options['properties'][$name]) && is_array($this->options['properties'][$name])) {
-              return $this->options['properties'][$name];
+         if (isset($this->options['properties'][$name])) {
+              if (is_string($this->options['properties'][$name])) {
+                  return ['type' => $this->options['properties'][$name]];
+              } else if (is_array($this->options['properties'][$name])) {
+                  return $this->options['properties'][$name];
+              }
          }
 
          return [];
