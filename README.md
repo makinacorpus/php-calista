@@ -1,14 +1,16 @@
 # Calista - Backend agnostic API for building user interface or data exports
 
-Complete API for building entity lists using configuration without bare minimal
-code, i.e. the datasource for integrating with various data providers.
+Complete API for building entity lists using configuration without writing
+boilerplate code, necessiting the bare minimum code, i.e. the datasource
+for integrating with various data providers.
 
-In other purpose, this is a backend-independent object list display that is
-architectured to provide:
+In other words, this is a backend-independent dynamic and configuration based
+object list streamer and renderer that may help you with those use case:
 
  *  a way to execute datasources using a user query and fetch items;
  *  a way to provide administration or front-end object listings;
- *  a way to provide data export (CSV, Excel, Rest...).
+ *  a way to provide data export (CSV, Excel, Rest...);
+ *  and probably more.
 
 
 # Documentation
@@ -22,13 +24,13 @@ part of the API.
 
 ### From input to datasource
 
- *  The **datasource** fetches data and provide metadata about the possible
+ *  The **datasource** fetches data and provides metadata about the possible
     **filters**, **sort fields** and its own capabilities;
 
  *  The datasource needs a **query** to run, the query is a sanitized, processed
     representation of the incomming **request**;
 
- *  Query sanitization is done using developer configuration, carried by the
+ *  Query sanitization is done using user configuration, carried by the
     **input definition**.
 
 Example that would display a custom template with datasource results:
@@ -88,7 +90,7 @@ function myControllerAction(Request $request) {
     be extended using rendering callbacks.
 
 Example, let's complete the code above that will stream a CSV file:
-```
+```php
 use MakinaCorpus\Calista\View\PropertyRenderer;
 use MakinaCorpus\Calista\View\Stream\CsvStreamView;
 
@@ -100,7 +102,7 @@ function myControllerCsvExportAction(Request $request) {
 
     // Input creation, needs the datasource for filtering input depending
     // upon its capabilities
-    $viewDefinition = new ViewDefinition($datasource, [
+    $viewDefinition = new ViewDefinition([
         'extra' => [
             'add_bom' => true,
             'add_header' => true,
@@ -112,28 +114,28 @@ function myControllerCsvExportAction(Request $request) {
                 'decimal_separator' => '',
             ],
             'title' => [
-                label' => 'Title',
-                type' => 'string',
-                string_maxlength' => null,
+                'label' => 'Title',
+                'type' => 'string',
+                'string_maxlength' => null,
             ],
             'city' => [
-                label' => 'City',
-                type' => 'string',
-                string_maxlength' => null,
+                'label' => 'City',
+                'type' => 'string',
+                'string_maxlength' => null,
             ],
             'date' => [
-                label' => 'Event date',
-                type' => 'int',
-                callback' => 'renderDate',
-                date_format' => 'd/m/Y',
+                'label' => 'Event date',
+                'type' => 'int',
+                'callback' => 'renderDate',
+                'date_format' => 'd/m/Y',
             ],
             'comment' => [
-                label: 'Comment',
-                type: 'string',
-                string_maxlength: null,
+                'label' => 'Comment',
+                'type' => 'string',
+                'string_maxlength' => null,
             ],
         ],
-        'view_type': 'csv_stream',
+        'view_type' => 'csv_stream',
     ]);
 
     $view = new CsvStreamView($propertyRenderer);
@@ -147,11 +149,11 @@ function myControllerCsvExportAction(Request $request) {
 ### In a few words
 
 If you understood the minimal examples above, you understand pretty much
-everything of this API, in a few words we could synthetize this:
+everything of this API, in a few words we could synthetize like this:
 
  *  user defines the input definition, which is a basic input sanitization,
 
- *  user defines a view definition, which carries the property that should be
+ *  user defines a view definition, which carries the properties that should be
     displayed, and how they should displayed,
 
  *  user executes a datasource using the sanitized query thanks to the
