@@ -39,7 +39,11 @@ class DefaultDatasourceResult implements \IteratorAggregate, DatasourceResultInt
      */
     public function getIterator()
     {
-        if ($this->items instanceof \Traversable) {
+        if ($this->items instanceof \Closure) {
+            return call_user_func($this->items);
+        }
+
+        if ($this->items instanceof \Traversable || $this->items instanceof \Generator) {
             return $this->items;
         }
 
