@@ -84,8 +84,8 @@ abstract class AbstractDatasource implements DatasourceInterface
      */
     protected function createResult($items, $totalCount = null)
     {
-        if (!is_array($items) && !$items instanceof \Traversable) {
-            throw new CalistaError("given items are nor an array nor a \Traversable instance");
+        if (!is_array($items) && !$items instanceof \Traversable && is_callable($items)) {
+            throw new CalistaError("given items are nor an array nor a \Traversable instance nor a callable");
         }
 
         $result = new DefaultDatasourceResult($this->getItemClass(), $items);
