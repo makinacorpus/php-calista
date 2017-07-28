@@ -7,8 +7,8 @@ use MakinaCorpus\Calista\DependencyInjection\Compiler\ActionProviderRegisterPass
 use MakinaCorpus\Calista\DependencyInjection\Compiler\DowngradeCompatibilityPass;
 use MakinaCorpus\Calista\DependencyInjection\Compiler\PageDefinitionRegisterPass;
 use MakinaCorpus\Calista\DependencyInjection\Compiler\RegisterTemplatePass;
-use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
