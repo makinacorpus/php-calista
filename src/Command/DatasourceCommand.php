@@ -12,9 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Command class to import EDMC data: cities, contracts, contact points, ...
- *
- * @todo remove all Drupal variable usage with something better.
+ * Introspect datasources
  */
 class DatasourceCommand extends ContainerAwareCommand
 {
@@ -24,7 +22,7 @@ class DatasourceCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this->setName('calista:datasource');
-        $this->setDescription("Introspect datasource");
+        $this->setDescription("Introspect datasources");
         $this->setDefinition([
             new InputArgument('action', InputArgument::REQUIRED, "One of: info, list, filter, sort"),
             new InputArgument('datasource', InputArgument::OPTIONAL, "Datasource class, identifier or service identifer, required for all other actions than 'list'"),
