@@ -49,9 +49,12 @@ class CalistaExtension extends Extension
         }
 
         $loader = new YamlFileLoader($container, new FileLocator(dirname(dirname(__DIR__)).'/config'));
-        $loader->load('commands.yml');
         $loader->load('services.yml');
         $loader->load('view.yml');
+
+        if (class_exists('Symfony\\Bundle\\FrameworkBundle\\Command\\ContainerAwareCommand')) {
+            $loader->load('commands.yml');
+        }
     }
 
     /**

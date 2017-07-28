@@ -5,7 +5,7 @@ namespace MakinaCorpus\Calista\Command;
 use MakinaCorpus\Calista\Datasource\DatasourceInterface;
 use MakinaCorpus\Calista\DependencyInjection\ViewFactory;
 use MakinaCorpus\Calista\Error\CalistaError;
-use MakinaCorpus\Drupal\Sf\Command\ContainerAwareCommand;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -107,6 +107,7 @@ class DatasourceCommand extends ContainerAwareCommand
 
         $table = new Table($output);
         $table->setHeaders(['name', 'label', 'safe', 'choices']);
+        $table->setStyle('compact');
         /** @var \MakinaCorpus\Calista\Datasource\Filter $filter */
         foreach ($filters as $filter) {
 

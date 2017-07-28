@@ -4,7 +4,7 @@ namespace MakinaCorpus\Calista\Command;
 
 use MakinaCorpus\Calista\DependencyInjection\ViewFactory;
 use MakinaCorpus\Calista\Error\CalistaError;
-use MakinaCorpus\Drupal\Sf\Command\ContainerAwareCommand;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
