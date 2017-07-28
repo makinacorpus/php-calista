@@ -126,6 +126,66 @@ final class ViewFactory
     }
 
     /**
+     * List found components in
+     */
+    private function listComponents(array $services, array $classes)
+    {
+        $ret = [];
+
+        foreach ($services as $id => $serviceId) {
+            foreach ($classes as $class => $map) {
+                if (isset($map[$id])) {
+                    $ret[$id] = [
+                        'service' => $serviceId,
+                        'class'   => $class,
+                    ];
+                }
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * List datasources
+     *
+     * @return array
+     *   Keys are datasource identifiers, values are an array of:
+     *     - service: service identifier, might be the same as the identifier
+     *     - class: datasource class
+     */
+    public function listDatasources()
+    {
+        return $this->listComponents($this->datasourceServices, $this->datasourceClasses);
+    }
+
+    /**
+     * List pages
+     *
+     * @return array
+     *   Keys are page identifiers, values are an array of:
+     *     - service: service identifier, might be the same as the identifier
+     *     - class: datasource class
+     */
+    public function listPages()
+    {
+        return $this->listComponents($this->pageServices, $this->pageClasses);
+    }
+
+    /**
+     * List views
+     *
+     * @return array
+     *   Keys are view identifiers, values are an array of:
+     *     - service: service identifier, might be the same as the identifier
+     *     - class: datasource class
+     */
+    public function listViews()
+    {
+        return $this->listComponents($this->viewServices, $this->viewClasses);
+    }
+
+    /**
      * Get pages implementing the given class
      *
      * I am not proud of this one, but as of now it helps dynamic driven

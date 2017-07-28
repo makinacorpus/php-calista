@@ -1,0 +1,4 @@
+services:
+    calista.command.datasource:
+        class: MakinaCorpus\Calista\Command\DatasourceCommand
+        tags: [{name: console.command}]
