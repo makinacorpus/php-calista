@@ -185,12 +185,16 @@
    {% if 'asc' == query.sortOrder %}{{ "ascending"|t }}{% else %}{{ "descending"|t }}{% endif %}&nbsp;<span class="caret"></span>
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
-    <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'asc'})) }}" {% if 'asc' == query.sortOrder %}class="active"{% endif %} data-page-link>
-      {{ "ascending"|t }}
-    </a>
-    <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'desc'})) }}" {% if 'desc' == query.sortOrder %}class="active"{% endif %} data-page-link>
-      {{ "descending"|t }}
-    </a>
+    <li>
+      <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'asc'})) }}" {% if 'asc' == query.sortOrder %}class="active"{% endif %} data-page-link>
+        {{ "ascending"|t }}
+      </a>
+    </li>
+    <li>
+      <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'desc'})) }}" {% if 'desc' == query.sortOrder %}class="active"{% endif %} data-page-link>
+        {{ "descending"|t }}
+      </a>
+    </li>
   </ul>
 {% endblock %}
 
