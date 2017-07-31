@@ -7,6 +7,7 @@ use MakinaCorpus\Calista\DependencyInjection\Compiler\ActionProviderRegisterPass
 use MakinaCorpus\Calista\DependencyInjection\Compiler\DowngradeCompatibilityPass;
 use MakinaCorpus\Calista\DependencyInjection\Compiler\PageDefinitionRegisterPass;
 use MakinaCorpus\Calista\DependencyInjection\Compiler\RegisterTemplatePass;
+use MakinaCorpus\Calista\DependencyInjection\Compiler\RendererRegisterPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -25,6 +26,7 @@ class CalistaBundle extends Bundle
         $container->addCompilerPass(new DowngradeCompatibilityPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 50 /* Make it run before twig's one */);
         $container->addCompilerPass(new PageDefinitionRegisterPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new RegisterTemplatePass());
+        $container->addCompilerPass(new RendererRegisterPass());
     }
 
     /**

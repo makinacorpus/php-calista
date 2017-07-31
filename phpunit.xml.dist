@@ -23,6 +23,8 @@
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory>./src</directory>
             <exclude>
+                <!-- coverage for commands needs Symfony fullstack -->
+                <directory>./src/Command</directory>
                 <directory>./vendor</directory>
                 <directory>./views</directory>
             </exclude>

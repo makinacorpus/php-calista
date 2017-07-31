@@ -25,6 +25,7 @@ class PropertyRenderer
     private $debug = false;
     private $propertyAccess;
     private $propertyInfo;
+    private $renderers = [];
 
     /**
      * Default constructor
@@ -36,6 +37,16 @@ class PropertyRenderer
     {
         $this->propertyAccess = $propertyAccess;
         $this->propertyInfo = $propertyInfo;
+    }
+
+    /**
+     * Append a property renderer
+     *
+     * @param object $renderer
+     */
+    public function addRenderer($renderer)
+    {
+        $this->renderers[] = $renderer;
     }
 
     /**
@@ -60,14 +71,14 @@ class PropertyRenderer
         }
 
         if (!$value instanceof \DateTimeInterface) {
-            if (is_numeric($value)) {
-                $value = new \DateTimeImmutable('@' . $value);
-            } else {
-                $value = new \DateTime($value);
-
-                if (!$value) {
-                    return null;
+            try {
+                if (is_numeric($value)) {
+                    $value = new \DateTimeImmutable('@' . $value);
+                } else {
+                    $value = new \DateTime($value);
                 }
+            } catch (\Exception $e) {
+                return null;
             }
         }
 
@@ -241,6 +252,46 @@ class PropertyRenderer
     }
 
     /**
+     * Find the appropriate callback for rendering among the renderers
+     *
+     * @param string $itemType
+     * @param string $property
+     * @param string $callback
+     *
+     * @return callable
+     */
+    private function findRenderCallback($itemType, $property, $callback)
+    {
+        if (is_callable($callback)) {
+            return $callback;
+        }
+
+        if (is_string($callback)) {
+            $privates = [];
+
+            foreach ($this->renderers + [$this] as $renderer) {
+
+                if (method_exists($renderer, $callback)) {
+                    if ((new \ReflectionMethod($renderer, $callback))->isPublic()) {
+                        return [$renderer, $callback];
+                    }
+
+                    // If method is private or protected, it cannot be called using
+                    // call_user_func() but let's provide some useful debug info
+                    // for the developer
+                    $privates[] = get_class($renderer) . '::' . $callback;
+                }
+            }
+
+            if ($privates) {
+                throw new ConfigurationError(sprintf("callback '%s' for property '%s' on class '%s' has candidates, but their visibility is not public: %s", $callback, $property, $itemType, implode(', ', $privates)));
+            }
+        }
+
+        throw new ConfigurationError(sprintf("callback '%s' for property '%s' on class '%s' is not callable", $callback, $property, $itemType));
+    }
+
+    /**
      * Render property for object
      *
      * @param object $item
@@ -265,15 +316,11 @@ class PropertyRenderer
         // Skip property info if options contain a callback.
         if (isset($options['callback'])) {
 
-            // Add some magic in there, allow this object methods to be called
-            // directly; @todo extend it with user-defined services
-            if (is_string($options['callback']) && method_exists($this, $options['callback'])) {
-                $options['callback'] = [$this, $options['callback']];
-            }
-
-            if (!is_callable($options['callback'])) {
+            try {
+                $options['callback'] = $this->findRenderCallback($itemType, $property, $options['callback']);
+            } catch (ConfigurationError $e) {
                 if ($this->debug) {
-                    throw new ConfigurationError("callback '%s' for property '%s' on class '%s' is not callable", $options['callable'], $itemType, $property);
+                    throw $e;
                 }
 
                 return self::RENDER_NOT_POSSIBLE;

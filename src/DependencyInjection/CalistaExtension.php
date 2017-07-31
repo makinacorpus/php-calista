@@ -20,6 +20,7 @@ class CalistaExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
 
         // From the configured pages, build services
         foreach ($configs as $config) {
