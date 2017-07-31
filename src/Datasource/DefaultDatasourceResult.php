@@ -2,6 +2,8 @@
 
 namespace MakinaCorpus\Calista\Datasource;
 
+use MakinaCorpus\Calista\Error\ConfigurationError;
+
 /**
  * Basics for the datasource result interface implementation
  */
@@ -17,11 +19,20 @@ class DefaultDatasourceResult implements \IteratorAggregate, DatasourceResultInt
      *
      * @param string $itemClass
      * @param array|\Traversable $items
+     * @param array PropertyDescription[]
      */
-    public function __construct($itemClass, $items)
+    public function __construct($itemClass, $items, array $properties = [])
     {
         $this->itemClass = $itemClass;
         $this->items = $items;
+
+        foreach ($properties as $index => $property) {
+            if (!$property instanceof PropertyDescription) {
+                throw new ConfigurationError(sprintf("property at index %s is not a %s instance", $index, PropertyDescription::class));
+            }
+        }
+
+        $this->properties = $properties;
     }
 
     /**

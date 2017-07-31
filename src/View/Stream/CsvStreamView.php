@@ -89,7 +89,7 @@ class CsvStreamView extends AbstractView
         $enclosure = $viewDefinition->getExtraOptionValue('csv_enclosure', '"');
         $escape = $viewDefinition->getExtraOptionValue('csv_escape_char', '\\');
 
-        $properties = $this->normalizeProperties($viewDefinition, $items->getItemClass());
+        $properties = $this->normalizeProperties($viewDefinition, $items);
 
         // Render the CSV header
         if ($viewDefinition->getExtraOptionValue('add_header', false)) {

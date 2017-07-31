@@ -16,9 +16,9 @@ class DummyView extends AbstractView
     /**
      * Passthrougth for normalizeProperties().
      */
-    public function normalizePropertiesPassthrought(ViewDefinition $viewDefinition, $class)
+    public function normalizePropertiesPassthrought(ViewDefinition $viewDefinition, DatasourceResultInterface $items)
     {
-        return $this->normalizeProperties($viewDefinition, $class);
+        return $this->normalizeProperties($viewDefinition, $items);
     }
 
     /**

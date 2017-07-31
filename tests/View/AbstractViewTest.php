@@ -7,6 +7,8 @@ use MakinaCorpus\Calista\Tests\Mock\DummyView;
 use MakinaCorpus\Calista\View\ViewDefinition;
 use MakinaCorpus\Calista\Tests\Mock\IntItem;
 use MakinaCorpus\Calista\View\PropertyView;
+use MakinaCorpus\Calista\Datasource\DefaultDatasourceResult;
+use MakinaCorpus\Calista\Datasource\PropertyDescription;
 
 /**
  * Tests the views
@@ -25,12 +27,12 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
         $view = new DummyView();
         $view->setContainer($container);
 
+        $items = new DefaultDatasourceResult(IntItem::class, []);
+
         // If there is no properties, all from the original class should
         // be found with default options instead
-        $viewDefinition = new ViewDefinition([
-            'view_type' => $view,
-        ]);
-        $properties = $view->normalizePropertiesPassthrought($viewDefinition, IntItem::class);
+        $viewDefinition = new ViewDefinition(['view_type' => $view]);
+        $properties = $view->normalizePropertiesPassthrought($viewDefinition, $items);
         $this->assertCount(8, $properties);
 
         // If a list of properties is defined, the algorithm should not
@@ -53,7 +55,7 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
             'view_type' => $view,
         ]);
 
-        $properties = $view->normalizePropertiesPassthrought($viewDefinition, IntItem::class);
+        $properties = $view->normalizePropertiesPassthrought($viewDefinition, $items);
         $this->assertCount(3, $properties);
         reset($properties);
 
@@ -97,11 +99,11 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
     {
         $view = new DummyView();
 
+        $items = new DefaultDatasourceResult(IntItem::class, []);
+
         // No property info, no properties.
-        $viewDefinition = new ViewDefinition([
-            'view_type' => $view,
-        ]);
-        $properties = $view->normalizePropertiesPassthrought($viewDefinition, IntItem::class);
+        $viewDefinition = new ViewDefinition(['view_type' => $view]);
+        $properties = $view->normalizePropertiesPassthrought($viewDefinition, $items);
         $this->assertCount(0, $properties);
 
         // If a list of properties is defined, the algorithm should not
@@ -124,7 +126,7 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
             'view_type' => $view,
         ]);
 
-        $properties = $view->normalizePropertiesPassthrought($viewDefinition, IntItem::class);
+        $properties = $view->normalizePropertiesPassthrought($viewDefinition, $items);
         reset($properties);
 
         // Trust the user, display everything
@@ -137,5 +139,41 @@ class AbstractViewTest extends \PHPUnit_Framework_TestCase
             }
             $this->assertFalse($property->isVirtual());
         }
+    }
+
+    /**
+     * Tests that datasource result driven properties takes precedence over property info
+     */
+    public function testDatasourceResultProperty()
+    {
+        $view = new DummyView();
+
+        $items = new DefaultDatasourceResult(IntItem::class, [], [
+            new PropertyDescription('a', 'The A property', 'int'),
+            new PropertyDescription('b', 'The B property', 'string'),
+        ]);
+
+        // If a list of properties is defined, the algorithm should not
+        // attempt to use the property info component for retrieving the
+        // property list
+        $viewDefinition = new ViewDefinition(['view_type' => $view]);
+        $properties = $view->normalizePropertiesPassthrought($viewDefinition, $items);
+        reset($properties);
+
+        // Order is the same, we have all properties we defined
+        // 'foo' is the first
+        /** @var \MakinaCorpus\Calista\View\PropertyView $property */
+        $property = current($properties);
+        $this->assertInstanceOf(PropertyView::class, $property);
+        $this->assertSame('a', $property->getName());
+        $this->assertSame('The A property', $property->getLabel());
+        $this->assertSame('int', $property->getType()->getBuiltinType());
+
+        // Then 'id', which exists on the class
+        $property = next($properties);
+        $this->assertInstanceOf(PropertyView::class, $property);
+        $this->assertSame('b', $property->getName());
+        $this->assertSame('The B property', $property->getLabel());
+        $this->assertSame('string', $property->getType()->getBuiltinType());
     }
 }

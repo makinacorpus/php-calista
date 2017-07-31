@@ -127,7 +127,7 @@ class TwigView extends AbstractView
             'pageId'        => $this->getId(),
             'input'         => $inputDefinition,
             'definition'    => $viewDefinition,
-            'properties'    => $this->normalizeProperties($viewDefinition, $itemClass),
+            'properties'    => $this->normalizeProperties($viewDefinition, $items),
             'itemClass'     => $itemClass,
             'items'         => $items,
             'filters'       => $enabledFilters,

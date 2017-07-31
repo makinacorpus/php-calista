@@ -9,6 +9,7 @@ namespace MakinaCorpus\Calista\Datasource;
  */
 trait DatasourceResultTrait /* implements DatasourceResultInterface */
 {
+    private $properties = [];
     private $totalCount;
 
     /**
@@ -17,6 +18,14 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     public function getItemClass()
     {
         return $this->itemClass;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getProperties()
+    {
+        return $this->properties;
     }
 
     /**

@@ -22,6 +22,15 @@ interface DatasourceResultInterface extends \Traversable, \Countable
     public function getItemClass();
 
     /**
+     * Datasource can provide its own set of known properties, useful for view
+     * introspection if you don't want to or can't rely upon the property info
+     * component introspection
+     *
+     * @return PropertyDescription[]
+     */
+    public function getProperties();
+
+    /**
      * Can this datasource stream large datasets
      *
      * Most result iterators should never preload items, and should allow items
