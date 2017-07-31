@@ -1,5 +1,7 @@
 # Calista - Backend agnostic API for building user interface or data exports
 
+[![Build Status](https://travis-ci.org/makinacorpus/php-calista.svg?branch=master)](https://travis-ci.org/makinacorpus/php-calista)
+
 Complete API for building entity lists using configuration without writing
 boilerplate code, necessiting the bare minimum code, i.e. the datasource
 for integrating with various data providers.
