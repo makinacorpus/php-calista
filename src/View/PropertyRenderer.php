@@ -210,12 +210,37 @@ class PropertyRenderer
      *
      * @param object $item
      * @param string $property
+     * @param array $options
      *
      * @return null|mixed
      *   Null if not found
      */
-    private function getValue($item, $property)
+    private function getValue($item, $property, array $options = [])
     {
+        if (isset($options['value_accessor'])) {
+
+            // Attempt using object method.
+            if (is_string($options['value_accessor'])) {
+                $options['value_accessor'] = [$item, $options['value_accessor']];
+            }
+
+            if (!is_callable($options['value_accessor'])) {
+                if ($this->debug) {
+                    $itemType = is_object($item) ? get_class($item) : gettype($item);
+
+                    throw new ConfigurationError(sprintf("value accessor for property '%s' on class '%s' is not callbable", $property, $itemType));
+                }
+
+                // We cannot use the value accessor, but we cannot let the
+                // property accessor deal with it either: if we do this, the
+                // behavior would change from the intended one, and make the
+                // debug potentially confusing for developpers
+                return null;
+            }
+
+            return call_user_func($options['value_accessor'], $item, $property, $options);
+        }
+
         try {
             // In case we have an array, and a numeric property, this means the
             // intends to fetch data in a numerically indexed array, let's make
@@ -327,7 +352,7 @@ class PropertyRenderer
             }
 
             if (!$propertyView->isVirtual()) {
-                $value = $this->getValue($item, $property);
+                $value = $this->getValue($item, $property, $options);
             }
 
             return call_user_func($options['callback'], $value, $options, $item);
@@ -342,7 +367,7 @@ class PropertyRenderer
             return self::RENDER_NOT_POSSIBLE;
         }
 
-        $value = $this->getValue($item, $property);
+        $value = $this->getValue($item, $property, $options);
 
         if ($propertyView->hasType()) {
             $type = $propertyView->getType();

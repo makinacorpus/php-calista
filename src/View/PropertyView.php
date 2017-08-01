@@ -53,6 +53,17 @@ class PropertyView
             'string_maxlength'      => 20,
             'thousand_separator'    => ',',
             'type'                  => null,
+            // Property access component will be used to fetch value, but in
+            // case you have heavy performance problems, the property view can
+            // give its own value getter, which will bypass then the property
+            // access slow getValue() function.
+            // If value accessor is a string, it will be called as an object
+            // method, if it is a callbable, it will just be called.
+            'value_accessor'        => null,
+            // A virtual fields means the value will be computed by the display
+            // callback without the need of fetching the value first, this can
+            // only be set to true when the display callback knows how to fetch
+            // the property by itself.
             'virtual'               => false,
         ]);
 
@@ -69,6 +80,7 @@ class PropertyView
         $resolver->setAllowedTypes('string_maxlength', ['null', 'int']);
         $resolver->setAllowedTypes('thousand_separator', ['null', 'string']);
         $resolver->setAllowedTypes('type', ['null', 'string']);
+        $resolver->setAllowedTypes('value_accessor', ['null', 'string', 'callable']);
         $resolver->setAllowedTypes('virtual', ['bool']);
     }
 
