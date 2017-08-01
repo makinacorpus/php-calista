@@ -11,6 +11,7 @@ namespace MakinaCorpus\Calista\Datasource;
  */
 class PropertyDescription
 {
+    private $defaultDisplayOptions = [];
     private $label;
     private $name;
     private $type;
@@ -24,12 +25,15 @@ class PropertyDescription
      *   Human readable label
      * @param string $type
      *   Valid class name or PHP internal type
+     * @param array $defaultDisplayOptions
+     *   Default view options for this property
      */
-    public function __construct($name, $label = null, $type = null)
+    public function __construct($name, $label = null, $type = null, array $defaultViewOptions = [])
     {
         $this->name = $name;
         $this->label = $label;
         $this->type = $type;
+        $this->defaultDisplayOptions = $defaultViewOptions;
     }
 
     /**
@@ -60,5 +64,15 @@ class PropertyDescription
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Get default display options for this property
+     *
+     * @return array
+     */
+    public function getDefaultDisplayOptions()
+    {
+        return $this->defaultDisplayOptions;
     }
 }

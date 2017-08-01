@@ -84,7 +84,7 @@ abstract class AbstractView implements ViewInterface, ContainerAwareInterface
                 $options += [
                     'label' => $definitions[$name]->getLabel(),
                     'type' => $definitions[$name]->getType(),
-                ];
+                ] + $definitions[$name]->getDefaultDisplayOptions();
             }
 
             if (empty($options['label'])) {
