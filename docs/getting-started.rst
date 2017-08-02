@@ -18,19 +18,24 @@ Then edit your ``app/AppKernel.php`` PHP file and add the bundle:
 
 .. code-block:: php
 
-    /**
-     * {@inheritdoc}
-     */
-    public function registerBundles()
-    {
-        $bundles = [
-            // ...
-            new \MakinaCorpus\Calista\CalistaBundle(),
-        ];
+   <?php
 
-        // ...
+   use Symfony\Component\HttpKernel\Kernel;
+   use Symfony\Component\Config\Loader\LoaderInterface;
 
-        return $bundles;
+   class AppKernel extends Kernel
+   {
+       public function registerBundles()
+       {
+           $bundles = [
+               // ...
+               new \MakinaCorpus\Calista\CalistaBundle(),
+           ];
+
+           // ...
+
+           return $bundles;
+        }
     }
 
 Clear caches and check nothing is broken:
@@ -118,7 +123,7 @@ But as of now, a bug still exist where the CalistaBundle configuration is not
 processed in the right order, and the ``calista`` configuration top-level element
 is not defined when the bundle extensions are loaded, which makes Symfony throw
 exception on container compile phase, this will solved soon, I hope, until then
-you need to use the `PrependExtensionInterface` onto your extension. Edit your
+you need to use the ``PrependExtensionInterface`` onto your extension. Edit your
 ``src/AppBundle/DependencyInjection/AppBundleExtension.php`` file:
 
 .. code-block:: php
