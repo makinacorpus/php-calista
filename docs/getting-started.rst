@@ -12,7 +12,11 @@ First install it using composer:
 .. code-block:: sh
 
    cd /path/to/your/symfony/app
-   composer request makinacorpus/php-calista
+   composer require makinacorpus/php-calista
+
+.. note::
+
+   This API is still in very early stage, you project must have the ``minimum-stability`` set to ``dev``.
 
 Then edit your ``app/AppKernel.php`` PHP file and add the bundle:
 
@@ -38,14 +42,23 @@ Then edit your ``app/AppKernel.php`` PHP file and add the bundle:
         }
     }
 
+Enable the ``property_info`` component. Edit your ``app/config/config.yml`` file
+then add ``property_info: {enabled: true}`` in the ``framework`` section:
+
+.. code-block:: yaml
+
+   framework:
+       # ...
+       property_info:
+           enabled: true
+
 Clear caches and check nothing is broken:
 
 .. code-block:: sh
 
-   cd /path/to/your/symfony/app
    bin/console cache:clear
 
-Now let's proceed to your first page definition.
+Now let's proceed to your first datasource registration.
 
 Write your first page (using Doctrine)
 --------------------------------------
@@ -65,23 +78,34 @@ Edit your `app/config/services.yml` and add the following service:
 .. code-block:: yaml
 
    services:
+       # ...
 
        app.datasource.my_entity:
            public: true
            class: MakinaCorpus\Calista\Bridge\Doctrine\DoctrineDatasource
            arguments: ['AppBundle:MyEntity', '@doctrine']
+           # 'id' attribute is the calista name of the datasource, a shortcut
+           # you may use in various later definitions
            tags: [{name: calista.datasource, id: my_entity}]
+
+Clear caches and check nothing is broken:
+
+.. code-block:: sh
+
+   bin/console cache:clear
+
+Now let's proceed to your first page definition.
 
 Step 2: Register the calista page
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Create a new ``pages.yml`` file into your bundle ``src/AppBundle/Resources/config``
-folder containing:
+Create the ``app/config/pages.yml``:
 
 .. code-block:: yaml
 
    calista:
        pages:
+           # Key here is the page name for the application
            my_first_page_with_entities:
                # This is the 'id' attribute of your service tag
                datasource: my_entity
@@ -101,69 +125,28 @@ folder containing:
                    show_search: false
                    show_sort: true
                    # This implementation will display an Twitter Bootstrap HTML
-                   # admin page, enough for testing
+                   # admin page, enough for testing, a few others are provided
+                   # per default
                    view_type: twig_page
 
-Step 3: Register the page configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Please note that in a ideal world, you could copy/paste the ``pages.yml`` content
-into your existing ``services.yml`` file, with this structure:
+Then add at the top of the ``app/config/config.yml``:
 
 .. code-block:: yaml
 
-   calista:
-       pages:
-           # ...
-   services:
-       app.datasource.my_entity:
-           # ...
+   imports:
+       # ...
+       - { resource: pages.yml }
 
-But as of now, a bug still exist where the CalistaBundle configuration is not
-processed in the right order, and the ``calista`` configuration top-level element
-is not defined when the bundle extensions are loaded, which makes Symfony throw
-exception on container compile phase, this will solved soon, I hope, until then
-you need to use the ``PrependExtensionInterface`` onto your extension. Edit your
-``src/AppBundle/DependencyInjection/AppBundleExtension.php`` file:
+Clear caches and check nothing is broken:
 
-.. code-block:: php
+.. code-block:: sh
 
-   <?php
+   bin/console cache:clear
 
-   namespace AppBundle\DependencyInjection;
+Now let's proceed to your route and controller definition.
 
-   use Symfony\Component\Config\FileLocator;
-   use Symfony\Component\DependencyInjection\ContainerBuilder;
-   use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
-   use Symfony\Component\DependencyInjection\Loader;
-   use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-
-   class AppBundleExtension extends Extension implements PrependExtensionInterface
-   {
-       /**
-        * {@inheritdoc}
-        */
-       public function load(array $configs, ContainerBuilder $container)
-       {
-           $loader = new Loader\YamlFileLoader($container, new FileLocator(dirname(__DIR__).'/Resources/config'));
-           $loader->load('services.yml');
-       }
-
-       /**
-        * Using prepend here to ensure that Calista finds out our own configuration
-        * when processing the pages.
-        *
-        * {@inheritdoc}
-        */
-       public function prepend(ContainerBuilder $container)
-       {
-           $loader = new Loader\YamlFileLoader($container, new FileLocator(dirname(__DIR__).'/Resources/config'));
-           $loader->load('pages.yml');
-       }
-   }
-
-Step 4: Write a controller
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Step 3: Write a controller and register a route
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Create a new ``src/AppBundle/Controller/MyEntityController.php`` file:
 
@@ -174,6 +157,104 @@ Create a new ``src/AppBundle/Controller/MyEntityController.php`` file:
    namespace AppBundle\Controller;
 
    use MakinaCorpus\Calista\Controller\PageControllerTrait;
+   use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+   use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+   use Symfony\Component\HttpFoundation\Request;
+
+   /**
+    * The controller needs to extends default Symfony's one only for the get() method.
+    */
+   class MyEntityController extends Controller
+   {
+       use PageControllerTrait;
+
+       /**
+        * @Route("/admin/my-entites", name="app_admin_my_entities")
+        */
+       public function adminListAction(Request $request)
+       {
+            return $this->renderPageResponse('my_first_page_with_entities', $request);
+       }
+   }
+
+Clear caches a very last time:
+
+.. code-block:: sh
+
+   bin/console cache:clear
+
+An if nothing is broken, visit your site: http://127.0.0.1:8000/admin/my-entites
+
+Step 3: Embedding into a page layout
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Because default template uses Twitter Bootstrap 3 code, let's start with
+creating a new base page template for the sake of our example, create the
+``app/Resources/views/bootstrap-base.html.twig``:
+
+.. code-block:: twig
+
+   <!DOCTYPE html>
+   <html lang="en">
+     <head>
+       <meta charset="utf-8">
+       <meta http-equiv="X-UA-Compatible" content="IE=edge">
+       <meta name="viewport" content="width=device-width, initial-scale=1">
+       <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+       <title>My site</title>
+
+       <!-- Bootstrap -->
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+       <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+       <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+       <!--[if lt IE 9]>
+         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+       <![endif]-->
+     </head>
+     <body>
+       {% block container %}
+         <div class="container-fluid">
+           <div class="row">
+             <div class="col-md-12">
+               {% block body %}{% endblock %}
+             </div>
+           </div>
+         </div>
+       {% endblock %}
+
+       <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+       <!-- Include all compiled plugins (below), or include individual files as needed -->
+       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+       {% block javascripts %}{% endblock %}
+     </body>
+   </html>
+
+This is, of course, just a an example.
+
+And now, create your own controller template file ``app/Resources/views/my-entity/admin-list.html.twig``:
+
+.. code-block:: twig
+
+   {% extends 'bootstrap-base.html.twig' %}
+
+   {% block body %}
+       <h1>Posts</h1>
+
+       {{ calista_page('my_first_page_with_posts') }}
+   {% endblock %}
+
+End with rewriting ``src/AppBundle/Controller/MyEntityController.php`` file:
+
+.. code-block:: php
+
+   <?php
+   namespace AppBundle\Controller;
+
+   use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+   use Symfony\Bundle\FrameworkBundle\Controller\Controller;
    use Symfony\Component\HttpFoundation\Request;
 
    /**
@@ -182,24 +263,22 @@ Create a new ``src/AppBundle/Controller/MyEntityController.php`` file:
     */
    class MyEntityController extends Controller
    {
-       use PageControllerTrait;
-
        /**
-        * Display an HTML entity list administration screen
+        * @Route("/admin/my-entites", name="app_admin_my_entities")
         */
-       public function adminListAction(Request $request)
+       public function adminListAction (Request $request)
        {
-            return $this->renderPageResponse('my_first_page_with_entities', $request);
+           return $this->render('my-entity/admin-list.html.twig');
        }
    }
 
-Step 5: Declare your route
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Clear caches a very last time:
 
+.. code-block:: sh
 
-Step 6: Go there, and enjoy
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   bin/console cache:clear
 
+An if nothing is broken, visit your site: http://127.0.0.1:8000/admin/my-entites
 
 Bonnus step: add a CSV export
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
