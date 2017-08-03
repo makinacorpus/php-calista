@@ -2,6 +2,7 @@
 
 namespace MakinaCorpus\Calista\Twig;
 
+use MakinaCorpus\Calista\Controller\PageRenderer;
 use MakinaCorpus\Calista\Datasource\Filter;
 use MakinaCorpus\Calista\Datasource\Query;
 use MakinaCorpus\Calista\View\PropertyRenderer;
@@ -14,19 +15,22 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class PageExtension extends \Twig_Extension
 {
     private $debug = false;
-    private $requestStack;
+    private $pageRenderer;
     private $propertyRenderer;
+    private $requestStack;
 
     /**
      * Default constructor
      *
      * @param RequestStack $requestStack
      * @param PropertyRenderer $propertyRenderer
+     * @param PageRenderer $pageRenderer
      */
-    public function __construct(RequestStack $requestStack, PropertyRenderer $propertyRenderer)
+    public function __construct(RequestStack $requestStack, PropertyRenderer $propertyRenderer, PageRenderer $pageRenderer)
     {
-        $this->requestStack = $requestStack;
+        $this->pageRenderer = $pageRenderer;
         $this->propertyRenderer = $propertyRenderer;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -49,6 +53,7 @@ class PageExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFunction('calista_item_property', [$this, 'renderItemProperty'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('calista_page', [$this, 'renderPage'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -143,6 +148,14 @@ class PageExtension extends \Twig_Extension
         }
 
         return json_encode($filterQuery);
+    }
+
+    /**
+     * Render a complete page
+     */
+    public function renderPage($name, array $inputOptions = [])
+    {
+        return $this->pageRenderer->renderPage($name, $this->requestStack->getCurrentRequest(), $inputOptions);
     }
 
     /**

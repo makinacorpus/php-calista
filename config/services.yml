@@ -38,5 +38,5 @@ services:
     calista.twig.page_extension:
         public: false
         class: MakinaCorpus\Calista\Twig\PageExtension
-        arguments: ['@request_stack', '@calista.property_renderer']
+        arguments: ['@request_stack', '@calista.property_renderer', '@calista.page_renderer']
         tags: [{name: twig.extension}]
