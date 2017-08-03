@@ -182,17 +182,17 @@
 
 {% block sort_links_order %}
   <a href="#" class="dropdown-toggle" title="{{ "Order by:"|trans }}" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
-   {% if 'asc' == query.sortOrder %}{{ "ascending"|t }}{% else %}{{ "descending"|t }}{% endif %}&nbsp;<span class="caret"></span>
+   {% if 'asc' == query.sortOrder %}{{ "ascending"|trans }}{% else %}{{ "descending"|trans }}{% endif %}&nbsp;<span class="caret"></span>
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
     <li>
       <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'asc'})) }}" {% if 'asc' == query.sortOrder %}class="active"{% endif %} data-page-link>
-        {{ "ascending"|t }}
+        {{ "ascending"|trans }}
       </a>
     </li>
     <li>
       <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'desc'})) }}" {% if 'desc' == query.sortOrder %}class="active"{% endif %} data-page-link>
-        {{ "descending"|t }}
+        {{ "descending"|trans }}
       </a>
     </li>
   </ul>
@@ -214,7 +214,7 @@
  # data-page-checkbox="all" attribute on which the javascript will match.
  #}
 {%- block item_checkbox_all -%}
-  <input type="checkbox" data-page-checkbox="all" title="{{ "(Un)check all"|t }}"/>
+  <input type="checkbox" data-page-checkbox="all" title="{{ "(Un)check all"|trans }}"/>
 {%- endblock -%}
 
 {%- block item -%}
@@ -231,8 +231,8 @@
       </div>
     </td>
     <td>{% if item.isPublished %}{{ "published"|trans }}{% endif %}</td>
-    <td>{{ item.created|time_diff }}</td>
-    <td>{{ item.changed|time_diff }}</td>
+    <td>{{ item.created|date }}</td>
+    <td>{{ item.changed|date }}</td>
     <td>{{ item.name }}</td>
     <td>
       {{ calista_actions(item) }}
@@ -370,7 +370,7 @@
 {% endblock %}
 
 {% block page_layout %}
-  <div class="calista-page container-fluid">
+  <div class="calista-page">
     <div class="row">
       {% if 1 < displays|length or filters %}
         <div class="col-md-2">
