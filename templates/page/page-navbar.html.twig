@@ -1,5 +1,5 @@
 {# Implementation of default page using a navbar #}
-{% extends '@calista/Page/page-dynamic-table.html.twig' %}
+{% extends '@calista/page/page.html.twig' %}
 
 {% block search_form %}
   <form method="get" class="navbar-form navbar-right calista-search-form" accept-charset="UTF-8">
@@ -98,7 +98,7 @@
 {% endblock %}
 
 {% block page_layout %}
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#calista-collapse-{{ pageId }}" aria-expanded="false">

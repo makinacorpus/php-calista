@@ -58,7 +58,7 @@ class ActionExtension extends \Twig_Extension
      */
     public function renderSingleAction(\Twig_Environment $environment, array $options, $showTitle = false)
     {
-        return $environment->render('@calista/Action/actions.html.twig', [
+        return $environment->render('@calista/action/actions.html.twig', [
             'show_title'  => $showTitle,
             'action'      => Action::create($options),
         ]);
@@ -196,7 +196,7 @@ class ActionExtension extends \Twig_Extension
             }
         }
 
-        return $environment->render('@calista/Action/actions.html.twig', $context);
+        return $environment->render('@calista/action/actions.html.twig', $context);
     }
 
     /**

@@ -15,6 +15,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
+use MakinaCorpus\Calista\Controller\PageRenderer;
 
 /**
  * Testing kernel
@@ -75,11 +76,12 @@ class Kernel extends BaseKernel
     {
         $twigEnv = new \Twig_Environment(
             new \Twig_Loader_Array([
-                '@calista/Action/action-single.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Action/action-single.html.twig'),
-                '@calista/Action/actions.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Action/actions.html.twig'),
-                '@calista/Page/page-dynamic-table.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Page/page-dynamic-table.html.twig'),
-                '@calista/Page/page-grid.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Page/page-grid.html.twig'),
-                '@calista/Page/page.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/Page/page.html.twig'),
+                '@calista/action/action-single.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/action/action-single.html.twig'),
+                '@calista/action/actions.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/action/actions.html.twig'),
+                '@calista/page/drupal/page-node-grid.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/page/drupal/page-node-grid.html.twig'),
+                '@calista/page/drupal/page-node-table.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/page/drupal/page-node-table.html.twig'),
+                '@calista/page/page-navbar.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/page/page-navbar.html.twig'),
+                '@calista/page/page.html.twig' => file_get_contents(dirname(dirname(__DIR__)) . '/templates/page/page.html.twig'),
             ]),
             [
                 'debug' => true,
@@ -118,7 +120,7 @@ class Kernel extends BaseKernel
             self::createPropertyInfoExtractor()
         );
 
-        $twigEnv->addExtension(new PageExtension(new RequestStack(), $propertyRenderer, true));
+        $twigEnv->addExtension(new PageExtension(new RequestStack(), $propertyRenderer));
         if ($actionRegistry) {
             $twigEnv->addExtension(new ActionExtension($actionRegistry, new RequestStack(), new DowngradeRouter()));
         } else {

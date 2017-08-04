@@ -2,16 +2,15 @@
 
 namespace MakinaCorpus\Calista\Tests\Mock;
 
-use MakinaCorpus\Calista\Controller\AjaxControllerTrait;
+use MakinaCorpus\Calista\Controller\AjaxController;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Tests a very broken dynamic page definition
  */
-class FooAjaxController
+class FooAjaxController extends AjaxController
 {
-    use AjaxControllerTrait;
     use ContainerAwareTrait;
 
     /**

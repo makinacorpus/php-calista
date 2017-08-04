@@ -8,6 +8,7 @@ use MakinaCorpus\Calista\Datasource\Query;
 use MakinaCorpus\Calista\View\PropertyRenderer;
 use MakinaCorpus\Calista\View\PropertyView;
 use Symfony\Component\HttpFoundation\RequestStack;
+use MakinaCorpus\Calista\Error\CalistaError;
 
 /**
  * Display pages, build views, gives us helpers for it
@@ -26,7 +27,7 @@ class PageExtension extends \Twig_Extension
      * @param PropertyRenderer $propertyRenderer
      * @param PageRenderer $pageRenderer
      */
-    public function __construct(RequestStack $requestStack, PropertyRenderer $propertyRenderer, PageRenderer $pageRenderer)
+    public function __construct(RequestStack $requestStack, PropertyRenderer $propertyRenderer, PageRenderer $pageRenderer = null)
     {
         $this->pageRenderer = $pageRenderer;
         $this->propertyRenderer = $propertyRenderer;
@@ -155,6 +156,10 @@ class PageExtension extends \Twig_Extension
      */
     public function renderPage($name, array $inputOptions = [])
     {
+        if (!$this->pageRenderer) {
+            throw new CalistaError("page renderer is not set");
+        }
+
         return $this->pageRenderer->renderPage($name, $this->requestStack->getCurrentRequest(), $inputOptions);
     }
 

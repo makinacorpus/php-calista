@@ -1,0 +1,48 @@
+{% extends '@calista/page/page.html.twig' %}
+
+{%- block item -%}
+  <tr>
+    {% if form is defined %}
+      {% set element = form.items[item.id] %}
+      {# <td>{{ form_widget(id) }}</td> #}
+      <td>{{ form_widget(element) }}</td>
+    {% endif %}
+    <td>{{ item.type }}</td>
+    <td class="ui-sortable"><span class="pull-right"></span>
+      <div class="calista-result" data-nid="{{ item.id }}">
+        <a href="{{ path('node/%node', {node: item.id}) }}">{{ item.title }}</a>
+      </div>
+    </td>
+    <td>{% if item.isPublished %}{{ "published"|trans }}{% endif %}</td>
+    <td>{{ item.created|date }}</td>
+    <td>{{ item.changed|date }}</td>
+    <td>{{ item.name }}</td>
+    <td>
+      {{ calista_actions(item) }}
+    </td>
+  </tr>
+{%- endblock -%}
+
+{% block item_list %}
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        {% if form is defined %}
+          <th>{{ block('item_checkbox_all') }}</th>
+        {% endif %}
+        <th>{{ "Type"|trans }}</th>
+        <th>{{ "Title"|trans }}</th>
+        <th>{{ "Status"|trans }}</th>
+        <th>{{ "Created at"|trans }}</th>
+        <th>{{ "Updated at"|trans }}</th>
+        <th>{{ "Owner"|trans }}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+        {{ block('item') }}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -40,7 +40,7 @@ class FooPageDefinition extends AbstractPageDefinition
         return new ViewDefinition([
             'default_display' => 'default',
             'templates' => [
-                'default' => '@calista/Page/page.html.twig',
+                'default' => '@calista/page/page.html.twig',
             ],
             'view_type' => TwigView::class,
         ]);

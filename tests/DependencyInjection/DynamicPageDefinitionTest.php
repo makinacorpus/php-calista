@@ -42,7 +42,7 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
 
             // Order is kept, properties are only those defined in the page
             $this->assertSame(['id', 'type', 'thousands'], $viewDefinition->getDisplayedProperties());
-            $this->assertSame(['default' => '@calista/Page/page.html.twig'], $viewDefinition->getTemplates());
+            $this->assertSame(['default' => '@calista/page/page.html.twig'], $viewDefinition->getTemplates());
 
             // Callback is set
             $options = $viewDefinition->getPropertyDisplayOptions('thousands');
