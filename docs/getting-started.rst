@@ -122,7 +122,7 @@ Create the ``app/config/pages.yml``:
                datasource: my_entity
                input:
                    # Default limit
-                   limit_default: 50
+                   limit_default: 30
                    # Enable or not pager, current Doctrine implementation is limited
                    # and does not yet enable paging
                    pager_enable: false
@@ -369,3 +369,49 @@ Clear caches once again:
    bin/console cache:clear
 
 An if nothing is broken, visit your site: http://127.0.0.1:8000/admin/my-entites/csv
+
+.. note::
+
+   All filters, sort and paging capabilities defined by the datasource can be
+   used via incomming GET parameters, you may write an URL such as:
+   http://127.0.0.1:8000/admin/my-entites/csv?st=title&by=asc&someField=someValue
+
+Bonus step: use Content-Type to switch template
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: php
+
+   <?php
+
+   namespace AppBundle\Controller;
+
+   use MakinaCorpus\Calista\Controller\PageControllerTrait;
+   use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+   use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+   use Symfony\Component\HttpFoundation\Request;
+   use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
+
+   class PostController extends Controller
+   {
+       use PageControllerTrait;
+
+       /**
+        * @Route("/admin/my-entites/csv", name="app_admin_my_entities_csv")
+        */
+       public function adminListAction(Request $request)
+       {
+           foreach ($request->getAcceptableContentTypes() as $contentType) {
+               switch ($contentType) {
+
+                   case 'application/xhtml+xml':
+                   case 'text/html':
+                       return $this->render('my-entity/admin-list.html.twig');
+
+                   case 'text/csv':
+                       return $this->renderPageResponse('my_first_csv_export', $request);
+               }
+           }
+
+           throw new UnsupportedMediaTypeHttpException();
+       }
+   }
