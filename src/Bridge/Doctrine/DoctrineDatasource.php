@@ -26,9 +26,10 @@ class DoctrineDatasource extends AbstractDatasource
 {
     private $allowedAssociationFilters = [];
     private $allowedFilters = [];
+    private $classMetadata;
     private $entityName;
     private $primaryKey = [];
-    private $classMetadata;
+    private $searchables = [];
 
     /**
      * @var \Doctrine\ORM\EntityRepository
@@ -113,7 +114,6 @@ class DoctrineDatasource extends AbstractDatasource
                 $ret[] = new Filter($property);
             }
         }
-
 
         /*
          * @todo keeping this for later (this code is from DoctrineExtractor
@@ -208,7 +208,7 @@ class DoctrineDatasource extends AbstractDatasource
      */
     public function supportsFulltextSearch()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -268,6 +268,8 @@ class DoctrineDatasource extends AbstractDatasource
      */
     private function applyFilters(Query $query, QueryBuilder $select)
     {
+        $inputDefinition = $query->getInputDefinition();
+
         foreach ($this->allowedFilters as $property) {
             if ($query->has($property)) {
                 $value = $query->get($property);
@@ -277,6 +279,32 @@ class DoctrineDatasource extends AbstractDatasource
                     $select->where('entity.'.$property.' = :' . $property)->setParameter($property, $value);
                 }
             }
+        }
+
+        // Find searchable fields
+        $searchables = [];
+        foreach ($this->classMetadata->getFieldNames() as $property) {
+            switch ($this->classMetadata->getTypeOfField($property)) {
+                case DBALType::STRING:
+                case DBALType::TEXT:
+                    $searchables[] = $property;
+                    break;
+            }
+        }
+
+        $searchString = $query->getSearchString();
+        if ($searchString && $searchables) {
+            if ($inputDefinition->hasSearchField()) {
+                $searchables = array_intersect($inputDefinition->getSearchFields(), $searchables);
+            }
+
+            // @todo should we break if there is no search field?
+            $orClause = [];
+            foreach ($searchables as $i => $property) {
+                $orClause[] = sprintf("entity.%s LIKE :search%d", $property, $i);
+                $select->setParameter('search'.$i, '%'.addcslashes($searchString, '\%_').'%');
+            }
+            $select->andWhere(implode(' or ', $orClause));
         }
     }
 
