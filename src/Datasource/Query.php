@@ -251,7 +251,7 @@ class Query
      *
      * @return string
      */
-    public function getOriginalRawSearchString()
+    public function getRawSearchString()
     {
         return $this->rawSearchString;
     }
