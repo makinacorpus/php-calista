@@ -180,6 +180,19 @@ class PropertyRenderer
             case Type::BUILTIN_TYPE_NULL:
                 return '';
 
+            case Type::BUILTIN_TYPE_OBJECT:
+                // Handle \DateTime natively
+                $class = $type->getClassName();
+
+                if ($class) {
+                    if (\DateTime::class === $class || \DateTimeInterface::class === $class || \DateTimeImmutable::class === $class ||
+                        ((new \ReflectionClass($class))->implementsInterface(\DateTimeInterface::class))
+                    ) {
+                        return $this->renderDate($value, $options);
+                    }
+                }
+                return self::RENDER_NOT_POSSIBLE;
+
             default:
                 return self::RENDER_NOT_POSSIBLE;
         }
