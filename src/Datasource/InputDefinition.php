@@ -45,10 +45,21 @@ class InputDefinition
         }
         $this->sortLabels = $datasource->getSorts();
 
+        $searchFields = $this->getSearchFields();
+
         // Do a few consistency checks based upon the datasource capabilities
         if (!$datasource->supportsFulltextSearch()) {
             if ($this->options['search_enable'] && !$this->options['search_parse']) {
                 throw new ConfigurationError("datasource cannot do fulltext search, yet it is enabled, but search parse is disabled");
+            }
+            if ($searchFields) {
+                throw new ConfigurationError("datasource cannot do fulltext search, yet it search fields are set");
+            }
+        } else {
+            foreach ($searchFields as $name) {
+                if (!$this->isFilterAllowed($name)) {
+                    throw new ConfigurationError(sprintf("'%s' search field is not a datasource allowed field", $name));
+                }
             }
         }
         if (!$datasource->supportsPagination()) {
@@ -93,6 +104,7 @@ class InputDefinition
             'pager_enable'        => true,
             'pager_param'         => 'page',
             'search_enable'       => false,
+            'search_field'        => null,
             'search_param'        => 's',
             'search_parse'        => false,
             'sort_default_field'  => '',
@@ -109,6 +121,7 @@ class InputDefinition
         $resolver->setAllowedTypes('pager_enable', ['numeric', 'bool']);
         $resolver->setAllowedTypes('pager_param', ['string']);
         $resolver->setAllowedTypes('search_enable', ['numeric', 'bool']);
+        $resolver->setAllowedTypes('search_field', ['null', 'string', 'array']);
         $resolver->setAllowedTypes('search_param', ['string']);
         $resolver->setAllowedTypes('search_parse', ['numeric', 'bool']);
         $resolver->setAllowedTypes('sort_default_field', ['string']);
@@ -261,6 +274,26 @@ class InputDefinition
     public function isSearchParsed()
     {
         return $this->options['search_parse'];
+    }
+
+    /**
+     * Is there a specifically configured search field
+     *
+     * @return bool
+     */
+    public function hasSearchField()
+    {
+        return !empty($this->options['search_field']);
+    }
+
+    /**
+     * Get search fields
+     *
+     * @return string[]
+     */
+    public function getSearchFields()
+    {
+        return (array)$this->options['search_field'];
     }
 
     /**
