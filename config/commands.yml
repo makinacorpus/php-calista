@@ -1,7 +1,9 @@
 services:
+
     calista.command.datasource:
         class: MakinaCorpus\Calista\Command\DatasourceCommand
         tags: [{name: console.command}]
+
     calista.command.view:
         class: MakinaCorpus\Calista\Command\ViewCommand
         tags: [{name: console.command}]
