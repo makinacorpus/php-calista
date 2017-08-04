@@ -1,17 +1,19 @@
 Getting started
 ===============
 
-This API can be used without the Symfony framework, but this tutorial will help
-you set it up in a Symfony project.
+This API can be used without the Symfony fullstack framework, nevertheless using
+it is the easiest way to start and learn.
+
+This guide postulates that you have a Symfony fullstack application up and running
+with at least one Doctrine entity, with data.
 
 Installation
 ------------
 
-First install it using composer:
+First install Calista using composer:
 
 .. code-block:: sh
 
-   cd /path/to/your/symfony/app
    composer require makinacorpus/php-calista
 
 .. note::
@@ -42,8 +44,8 @@ Then edit your ``app/AppKernel.php`` PHP file and add the bundle:
         }
     }
 
-Enable the ``property_info`` component. Edit your ``app/config/config.yml`` file
-then add ``property_info: {enabled: true}`` in the ``framework`` section:
+Enable the ``property_info`` component, edit your ``app/config/config.yml`` file
+then add the ``property_info`` section:
 
 .. code-block:: yaml
 
@@ -63,17 +65,17 @@ Now let's proceed to your first datasource registration.
 Write your first page (using Doctrine)
 --------------------------------------
 
-This API is backend, data source independent, nevertheless is provides a
-default, striped down and rather incomplete Doctrine datasource you can re-use
-that will be sufficient for the sake of example.
+This API is backend independent, nevertheless it provides a default, striped-down
+yet incomplete Doctrine datasource: we are going to use it for the sake of example.
 
 As a pre-requisite, you must have a working Doctrine entity in your application
-that will reference as ``AppBundle:MyEntity``.
+with data in your database, we will name this entity ``AppBundle:MyEntity`` in
+this guide.
 
 Step 1: Register the datasource
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Edit your `app/config/services.yml` and add the following service:
+Edit the ``app/config/services.yml`` file and add the following service:
 
 .. code-block:: yaml
 
@@ -185,6 +187,10 @@ Clear caches a very last time:
 
 An if nothing is broken, visit your site: http://127.0.0.1:8000/admin/my-entites
 
+At this point, you will notice that the page has no layout and no CSS, proceed
+with the next step to add the Bootstrap 3 framework, that will show you the
+default page styling.
+
 Step 3: Embedding into a page layout
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -196,45 +202,41 @@ creating a new base page template for the sake of our example, create the
 
    <!DOCTYPE html>
    <html lang="en">
-     <head>
-       <meta charset="utf-8">
-       <meta http-equiv="X-UA-Compatible" content="IE=edge">
-       <meta name="viewport" content="width=device-width, initial-scale=1">
-       <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-       <title>My site</title>
-
-       <!-- Bootstrap -->
-       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-       <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-       <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-       <!--[if lt IE 9]>
-         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-       <![endif]-->
-     </head>
-     <body>
-       {% block container %}
-         <div class="container-fluid">
-           <div class="row">
-             <div class="col-md-12">
-               {% block body %}{% endblock %}
-             </div>
-           </div>
-         </div>
-       {% endblock %}
-
-       <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-       <!-- Include all compiled plugins (below), or include individual files as needed -->
-       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-       {% block javascripts %}{% endblock %}
-     </body>
+   <head>
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>{{ "Calista test site"|trans }}</title>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+   <!--[if lt IE 9]>
+   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+   <![endif]-->
+   </head>
+   <body>
+     {% block body %}
+     {% endblock %}
+     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+     <!-- Include all compiled plugins (below), or include individual files as needed -->
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+     <script src="{{ asset('bundles/calista/calista.min.js') }}"></script>
+     {% block javascripts %}
+     {% endblock %}
+   </body>
    </html>
 
-This is, of course, just a an example.
+This is, of course, just a an example, you may use the frontend framework of
+your own choice, but you'll probably need to extend and adapt the default
+Calista page template.
 
-And now, create your own controller template file ``app/Resources/views/my-entity/admin-list.html.twig``:
+.. note::
+
+   Please notice the ``<script src="{{ asset('bundles/calista/calista.min.js') }}"></script>``
+   line, it enables pages AJAX refresh, independently of your frontend framework
+   choice you must add this JavaScript for AJAX refresh to work.
+
+Create your first page template file ``app/Resources/views/my-entity/admin-list.html.twig``:
 
 .. code-block:: twig
 
@@ -245,6 +247,21 @@ And now, create your own controller template file ``app/Resources/views/my-entit
 
        {{ calista_page('my_first_page_with_posts') }}
    {% endblock %}
+
+Edit the ``app/config/pages.yml`` file, and change the default template to
+``@calista/page/page-navbar.html.twig``:
+
+.. code-block:: yaml
+
+   calista:
+       pages:
+           my_first_page_with_entities:
+               # ...
+               view:
+                   # ...
+                   templates:
+                       default: '@calista/page/page-navbar.html.twig'
+                   view_type: twig_page
 
 End with rewriting ``src/AppBundle/Controller/MyEntityController.php`` file:
 
@@ -283,5 +300,5 @@ An if nothing is broken, visit your site: http://127.0.0.1:8000/admin/my-entites
 Bonnus step: add a CSV export
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
+@todo
 
