@@ -111,11 +111,6 @@
  #     {{ block('sort_link_shortcut') }}
  #   {% endwith %}
  # </th>
- #
- # Please note that with latest twig, with context is supposed to be
- # merged to current context, but if you use TFD7, it overrides the With
- # token parser and drops this feature, see:
- #   https://github.com/TFD7/TFD7/issues/43
  #}
 {% block sort_link_shortcut %}
     {# Order to use #}
@@ -370,37 +365,35 @@
 {% endblock %}
 
 {% block page_layout %}
-  <div class="calista-page">
-    <div class="row">
-      {% if 1 < displays|length or filters %}
-        <div class="col-md-2">
-          {% if displays %}
-            <div data-page-block="display_mode">
-              {% if 1 < displays|length %}
-                {{ block('display_mode') }}
-              {% endif %}
-            </div>
-          {% endif %}
-          {% if filters %}
-            <div data-page-block="filters">
-              {{ block('filters') }}
-            </div>
-          {% endif %}
-        </div>
-        <div id="calista-results" class="col-md-10">
-          {{ block('page_content') }}
-        </div>
-      {% else %}
-        <div id="calista-results" class="col-md-12">
-          {{ block('page_content') }}
-        </div>
-      {% endif %}
-    </div>
+  <div class="row">
+    {% if 1 < displays|length or filters %}
+      <div class="col-md-2">
+        {% if displays %}
+          <div data-page-block="display_mode">
+            {% if 1 < displays|length %}
+              {{ block('display_mode') }}
+            {% endif %}
+          </div>
+        {% endif %}
+        {% if filters %}
+          <div data-page-block="filters">
+            {{ block('filters') }}
+          </div>
+        {% endif %}
+      </div>
+      <div id="calista-results" class="col-md-10">
+        {{ block('page_content') }}
+      </div>
+    {% else %}
+      <div id="calista-results" class="col-md-12">
+        {{ block('page_content') }}
+      </div>
+    {% endif %}
   </div>
 {% endblock %}
 
-{% block page %}
-  <div{% if pageId %} data-page="{{ pageId }}" data-page-route="{{ query.route }}" data-page-query="{{ query.routeParameters|json_encode|e }}"{% endif %} data-page-search="{{ input.searchParameter|e }}">
+{%- block page -%}
+  <div{% if pageId %} data-page="{{ pageId }}" data-page-route="{{ query.route }}" data-page-query="{{ query.routeParameters|json_encode|e }}"{% endif %} data-page-search="{{ input.searchParameter|e }}" data-refresh-url="{{ path('calista_ajax_refresh') }}" class="calista-page">
     {{ block('page_layout') }}
   </div>
-{% endblock %}
+{%- endblock -%}
