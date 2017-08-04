@@ -256,7 +256,12 @@
  #}
 {%- block pager_href -%}
   {% if index is defined %}
-    {{ path(query.route, query.routeParameters|merge({(input.pagerParameter): index})) }}
+    {% if index == 1 %}
+      {{ path(query.route, query.routeParameters|merge({(input.pagerParameter): index})) }}
+    {% else %}
+      {# @todo drop the page parameter completly #}
+      {{ path(query.route, query.routeParameters|merge({(input.pagerParameter): index})) }}
+    {% endif %}
   {% else %}
     #
   {% endif %}
@@ -295,7 +300,7 @@
             {{ block('pager_link') }}
           </li>
         {% endfor %}
-        {% if page < items.pageCount %}
+        {% if page < items.pageCount(query.limit) %}
           <li>
             <a href="{% with {index: (page + 1)} %}{{ block('pager_href') }}{% endwith %}" aria-label="{{ "Next"|trans }}" data-page-link>
               <span aria-hidden="true">&raquo;</span>

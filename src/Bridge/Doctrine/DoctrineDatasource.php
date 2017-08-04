@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use MakinaCorpus\Calista\Datasource\AbstractDatasource;
 use MakinaCorpus\Calista\Datasource\Filter;
 use MakinaCorpus\Calista\Datasource\Query;
@@ -288,7 +289,11 @@ class DoctrineDatasource extends AbstractDatasource
         $this->applyFilters($query, $select);
         $this->processQuery($query, $select);
 
-        // @todo pagination
+        if ($query->getInputDefinition()->isPagerEnabled()) {
+            $paginator = new Paginator($select, true);
+
+            return $this->createResult($paginator, $paginator->count());
+        }
 
         return $this->createResult($select->getQuery()->getResult());
     }

@@ -55,6 +55,14 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     /**
      * {@inheritdoc}
      */
+    public function getPageCount($limit = Query::LIMIT_DEFAULT)
+    {
+        return null !== $this->totalCount ? ceil($this->totalCount / $limit) : 1;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getTotalCount()
     {
         return $this->totalCount;

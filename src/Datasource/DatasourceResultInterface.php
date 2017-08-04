@@ -65,6 +65,13 @@ interface DatasourceResultInterface extends \Traversable, \Countable
     public function getTotalCount();
 
     /**
+     * Get page count for the given limit
+     *
+     * @return int
+     */
+    public function getPageCount($limit = Query::LIMIT_DEFAULT);
+
+    /**
      * Compute the current page range
      *
      * @param int $page
