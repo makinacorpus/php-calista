@@ -10,11 +10,11 @@
           data-query="{{ visualFilters|calista_filter_query(query.all)|e }}">
         </div>
       {% else %}
-        <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ query.searchParameter }}"
+        <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ input.searchParameter }}"
           value="{{ query.rawSearchString|escape }}" maxlength="128" type="text"
         />
         {% for name, value in query.routeParameters %}
-          {% if name != query.searchParameter %}
+          {% if name != input.searchParameter %}
             <input type="hidden" name="{{ name }}" value="{{ value|calista_query_param }}"/>
           {% endif %}
         {% endfor %}
@@ -44,24 +44,6 @@
     {% for field, label in allowedSorts %}
       <li>{{ block('sort_link') }}</li>
     {% endfor %}
-  </ul>
-{% endblock %}
-
-{% block sort_links_order %}
-  <a href="#" class="dropdown-toggle" title="{{ "Order by:"|trans }}" role="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown">
-   {% if 'asc' == query.sortOrder %}{{ "ascending"|trans }}{% else %}{{ "descending"|trans }}{% endif %}&nbsp;<span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu dropdown-menu-right">
-    <li>
-      <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'asc'})) }}" {% if 'asc' == query.sortOrder %}class="active"{% endif %} data-page-link>
-        {{ "ascending"|trans }}
-      </a>
-    </li>
-    <li>
-      <a href="{{ path(query.route, query.routeParameters|merge({(input.sortOrderParameter): 'desc'})) }}" {% if 'desc' == query.sortOrder %}class="active"{% endif %} data-page-link>
-        {{ "descending"|trans }}
-      </a>
-    </li>
   </ul>
 {% endblock %}
 
@@ -107,13 +89,13 @@
         <a class="navbar-brand" href="#">Calista</a>
       </div>
       <div class="collapse navbar-collapse" id="calista-collapse-{{ pageId }}">
+        {% if input.isSearchEnabled or visualFilters %}
+          {{ block('search_form') }}
+        {% endif %}
         {% if sortsEnabled and 1 < input.allowedSorts|length %}
           <div data-page-block="sort_links">
             {{ block('sort_links') }}
           </div>
-        {% endif %}
-        {% if input.isSearchEnabled or visualFilters %}
-          {{ block('search_form') }}
         {% endif %}
       </div>
     </div>
