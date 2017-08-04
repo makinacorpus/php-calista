@@ -3,19 +3,29 @@
 namespace MakinaCorpus\Calista\Controller;
 
 use MakinaCorpus\Calista\View\Html\TwigView;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * AJAX controller for HTML pages, this is both suitable for the fullstack
  * Symfony's controller and makinacorpus/drupal-sf-dic degraded controller that
  * carries the same signature that Symfony's one.
  */
-trait AjaxControllerTrait
+class AjaxController implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
     use PageControllerTrait;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function get($id)
+    {
+        return $this->container->get($id);
+    }
 
     /**
      * Type search action

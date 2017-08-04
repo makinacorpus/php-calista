@@ -1,0 +1,3 @@
+calista_ajax_refresh:
+    path: /admin/calista/refresh
+    defaults: { _controller: 'CalistaBundle:Ajax:refresh' }
