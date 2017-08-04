@@ -54,6 +54,15 @@ then add the ``property_info`` section:
        property_info:
            enabled: true
 
+Add the bundle routing configuration in ``app/config/routing.yml``:
+
+.. code-block:: yaml
+
+   # ...
+
+   calista:
+       resource: '@CalistaBundle/config/routing.yml'
+
 Clear caches and check nothing is broken:
 
 .. code-block:: sh
@@ -243,8 +252,6 @@ Create your first page template file ``app/Resources/views/my-entity/admin-list.
    {% extends 'bootstrap-base.html.twig' %}
 
    {% block body %}
-       <h1>Posts</h1>
-
        {{ calista_page('my_first_page_with_posts') }}
    {% endblock %}
 
@@ -268,6 +275,7 @@ End with rewriting ``src/AppBundle/Controller/MyEntityController.php`` file:
 .. code-block:: php
 
    <?php
+
    namespace AppBundle\Controller;
 
    use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -297,8 +305,67 @@ Clear caches a very last time:
 
 An if nothing is broken, visit your site: http://127.0.0.1:8000/admin/my-entites
 
-Bonnus step: add a CSV export
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Bonus step: add a CSV export
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-@todo
+Edit the ``app/config/pages.yml`` file and add the following page:
 
+.. code-block:: yaml
+
+   calista:
+       pages:
+           # ...
+
+           my_first_csv_export:
+               datasource: my_entity
+               input:
+                   limit_default: 1000000
+               view:
+                   extra:
+                      add_bom: true
+                      add_headers: true
+                      filename: my_entities.csv
+                   view_type: csv_stream
+
+Add the CSV export action and route, edit the ``src/AppBundle/Controller/MyEntityController.php`` file:
+
+.. code-block:: php
+
+   <?php
+
+   namespace AppBundle\Controller;
+
+   use MakinaCorpus\Calista\Controller\PageControllerTrait;
+   // ...
+
+   /**
+    * The controller needs to extends default Symfony's one only for the get()
+    * method.
+    */
+   class PostController extends Controller
+   {
+       use PageControllerTrait;
+
+       // ...
+
+       /**
+        * @Route("/admin/my-entites/csv", name="app_admin_my_entities_csv")
+        */
+       public function adminListCsvAction(Request $request)
+       {
+           return $this->renderPageResponse('my_first_csv_export', $request);
+       }
+   }
+
+We added:
+
+ - the ``MakinaCorpus\Calista\Controller\PageControllerTrait`` use statement,
+ - the ``adminListCsvAction()`` method.
+
+Clear caches once again:
+
+.. code-block:: sh
+
+   bin/console cache:clear
+
+An if nothing is broken, visit your site: http://127.0.0.1:8000/admin/my-entites/csv
