@@ -56,6 +56,9 @@ class CalistaExtension extends Extension
         if (class_exists('Symfony\\Bundle\\FrameworkBundle\\Command\\ContainerAwareCommand')) {
             $loader->load('commands.yml');
         }
+        if (class_exists('Box\\Spout\\Writer\\WriterFactory')) {
+            $loader->load('spout.yml');
+        }
     }
 
     /**
