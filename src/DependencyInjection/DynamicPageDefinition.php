@@ -169,9 +169,9 @@ abstract class DynamicPageDefinition extends AbstractPageDefinition implements C
     /**
      * {@inheritdoc}
      */
-    final public function getViewDefinition()
+    final public function getViewDefinition(array $options = [])
     {
-        $options = $this->getDisplayOptions();
+        $options += $this->getDisplayOptions();
 
         // Handles the view type argument
         if (isset($this->viewType)) {

@@ -29,9 +29,12 @@ interface PageDefinitionInterface extends ServiceInterface
     /**
      * Create view definition for this page
      *
+     * @param mixed[] $options = []
+     *   Options overrides from the controller or per site configuration
+     *
      * @return ViewDefinition
      */
-    public function getViewDefinition();
+    public function getViewDefinition(array $options = []);
 
     /**
      * Get the associated datasource

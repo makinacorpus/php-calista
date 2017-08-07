@@ -60,9 +60,9 @@ class ConfigPageDefinition implements PageDefinitionInterface, ContainerAwareInt
     /**
      * {@inheritdoc}
      */
-    public function getViewDefinition()
+    public function getViewDefinition(array $options = [])
     {
-        return new ViewDefinition($this->config['view']);
+        return new ViewDefinition($options + $this->config['view']);
     }
 
     /**

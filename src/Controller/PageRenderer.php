@@ -104,7 +104,7 @@ class PageRenderer
      *
      * @return string
      */
-    public function renderPage($name, Request $request, array $inputOptions = [])
+    public function renderPage($name, Request $request, array $inputOptions = [], array $viewOptions = [])
     {
         if ($name instanceof PageDefinitionInterface) {
             $page = $name;
@@ -112,7 +112,7 @@ class PageRenderer
             $page = $this->viewFactory->getPageDefinition($name);
         }
 
-        $viewDefinition = $page->getViewDefinition();
+        $viewDefinition = $page->getViewDefinition($viewOptions);
         $view = $this->viewFactory->getView($viewDefinition->getViewType());
 
         $query = $page->getInputDefinition($inputOptions)->createQueryFromRequest($request);
@@ -141,7 +141,7 @@ class PageRenderer
      *
      * @return Response
      */
-    public function renderPageResponse($name, Request $request, array $inputOptions = [])
+    public function renderPageResponse($name, Request $request, array $inputOptions = [], array $viewOptions = [])
     {
         if ($name instanceof PageDefinitionInterface) {
             $page = $name;
@@ -149,7 +149,7 @@ class PageRenderer
             $page = $this->viewFactory->getPageDefinition($name);
         }
 
-        $viewDefinition = $page->getViewDefinition();
+        $viewDefinition = $page->getViewDefinition($viewOptions);
         $view = $this->viewFactory->getView($viewDefinition->getViewType());
 
         // View must inherit from the page definition identifier to ensure

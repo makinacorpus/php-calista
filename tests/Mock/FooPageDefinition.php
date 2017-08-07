@@ -35,9 +35,9 @@ class FooPageDefinition extends AbstractPageDefinition
     /**
      * {@inheritdoc}
      */
-    public function getViewDefinition()
+    public function getViewDefinition(array $options = [])
     {
-        return new ViewDefinition([
+        return new ViewDefinition($options + [
             'default_display' => 'default',
             'templates' => [
                 'default' => '@calista/page/page.html.twig',

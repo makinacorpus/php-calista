@@ -39,8 +39,8 @@ abstract class AbstractPageDefinition implements PageDefinitionInterface
     /**
      * {@inheritdoc}
      */
-    public function getViewDefinition()
+    public function getViewDefinition(array $options = [])
     {
-        return new ViewDefinition($this->getDisplayOptions());
+        return new ViewDefinition($options + $this->getDisplayOptions());
     }
 }
