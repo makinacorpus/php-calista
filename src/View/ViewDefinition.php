@@ -212,7 +212,7 @@ class ViewDefinition
      */
     public function getEnabledFilters()
     {
-        return $this->options['enabled_filters'];
+        return $this->isFiltersEnabled() ? $this->options['enabled_filters'] : [];
     }
 
     /**
@@ -224,7 +224,17 @@ class ViewDefinition
      */
     public function isFilterDisplayed($name)
     {
-        return null === $this->options['enabled_filters'] || in_array($name, $this->options['enabled_filters']);
+        return $this->isFiltersEnabled() && (null === $this->options['enabled_filters'] || in_array($name, $this->options['enabled_filters']));
+    }
+
+    /**
+     * Is filters enabled
+     *
+     * @return bool
+     */
+    public function isFiltersEnabled()
+    {
+        return $this->options['show_filters'];
     }
 
     /**
