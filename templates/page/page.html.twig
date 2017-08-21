@@ -390,7 +390,7 @@
 {% endblock %}
 
 {%- block page -%}
-  <div{% if pageId %} data-page="{{ pageId }}" data-page-route="{{ query.route }}" data-page-query="{{ query.routeParameters|json_encode|e }}"{% endif %} data-page-search="{{ input.searchParameter|e }}" data-refresh-url="{{ path('calista_ajax_refresh') }}" class="calista-page">
+  <div{% if pageId %} data-page="{{ pageId }}" data-page-route="{{ query.route }}" data-page-query="{{ query.routeParameters|json_encode|e }}"{% endif %} data-page-search="{{ input.searchParameter|e }}" data-refresh-url="{{ path('calista_ajax_refresh') }}" data-view-type="{{ definition.viewType }}" class="calista-page">
     {{ block('page_layout') }}
   </div>
 {%- endblock -%}
