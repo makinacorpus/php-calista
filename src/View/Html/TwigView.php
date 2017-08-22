@@ -97,10 +97,23 @@ class TwigView extends AbstractView
         // Build allowed filters arrays
         $enabledFilters = [];
         if ($viewDefinition->isFiltersEnabled()) {
+            $baseQuery = $inputDefinition->getBaseQuery();
             foreach ($inputDefinition->getFilters() as $filter) {
-                if ($viewDefinition->isFilterDisplayed($filter->getField()) && $filter->hasChoices()) {
-                    $enabledFilters[] = $filter;
+                // Only considers filters with choices.
+                if (!$filter->hasChoices()) {
+                    continue;
                 }
+                $field = $filter->getField();
+                // Checks that the filter must be displayed.
+                if (!$viewDefinition->isFilterDisplayed($field)) {
+                    continue;
+                }
+                // If the value of the filter is fixed by the base query and is
+                // not multiple, it becomes useless to display the filter.
+                if (isset($baseQuery[$field]) && (!is_array($baseQuery[$field]) || count($baseQuery[$field]) < 2)) {
+                    continue;
+                }
+                $enabledFilters[] = $filter;
             }
         }
 
