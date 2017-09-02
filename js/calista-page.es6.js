@@ -80,7 +80,7 @@ function placePageBlocks(page, response) {
   }
 
   if (response.blocks) {
-    $.each(response.blocks, (index, value) => {
+    Object.keys(response.blocks).forEach((index) => {
       var block = page.selector.find('[data-page-block=' + index + ']');
 
       if (!block.length) {
@@ -92,7 +92,7 @@ function placePageBlocks(page, response) {
       // Sometime when we have an empty rendering, we end up with " " as
       // almost empty string, this will disturb jQuery, and we cannot
       // attach behaviors there.
-      value = value.trim();
+      var value = response.blocks[index].trim();
       if (value.length) {
         var partialDom = $(value);
         block.html(partialDom);
@@ -136,11 +136,11 @@ function refreshPage(page, query, dropAll) {
   // Rebuild correct query data from our state.
   var data = {};
   if (!dropAll) {
-    $.each(page.query, (index, value) => data[index] = value);
+    Object.keys(page.query).forEach((index) => data[index] = page.query[index]);
   }
   // Then override using the incoming one.
   if (query) {
-    $.each(query, (index, value) => data[index] = value);
+    Object.keys(query).forEach((index) => data[index] = query[index]);
   }
   // For consistency ensure the page identifier is the right one.
   data._page_id = page.id;
