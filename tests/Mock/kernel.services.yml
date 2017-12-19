@@ -27,12 +27,12 @@ services:
         class: MakinaCorpus\Calista\Tests\Mock\IntActionProvider
         tags: [{name: calista.action_provider}]
 
-    _test_view:
+    test_view:
         class: MakinaCorpus\Calista\Tests\Mock\FooPageDefinition
         public: true
         tags: [{name: calista.page_definition, id: int_array_page}]
 
-    _test_datasource:
+    test_datasource:
         class: MakinaCorpus\Calista\Tests\Mock\IntArrayDatasource
         public: true
         tags: [{name: calista.datasource, id: int_array_datasource}]

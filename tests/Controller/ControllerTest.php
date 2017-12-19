@@ -39,7 +39,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $request->setSession($session);
 
         // With 'int_array_page' it cannot work, session will contain the
-        // real internal identifier, which is '_test_view' from our container
+        // real internal identifier, which is 'test_view' from our container
         // definition
         try {
             $controller->refreshAction($request);
@@ -63,7 +63,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 
         // And yes, page identifier has changed, since the internal one
         // is used instead
-        $request = new Request(['_page_id' => '_test_view']);
+        $request = new Request(['_page_id' => 'test_view']);
         $request->setSession($session);
 
         // Refresh action
@@ -80,7 +80,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 
         // And yes, page identifier has changed, since the internal one
         // is used instead
-        $request = new Request(['_page_id' => '_test_view']);
+        $request = new Request(['_page_id' => 'test_view']);
         $request->setSession($session);
 
         // Search action

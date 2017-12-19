@@ -1,9 +1,11 @@
 services:
 
     calista.command.datasource:
+        public: false
         class: MakinaCorpus\Calista\Command\DatasourceCommand
         tags: [{name: console.command}]
 
     calista.command.view:
+        public: false
         class: MakinaCorpus\Calista\Command\ViewCommand
         tags: [{name: console.command}]

@@ -67,7 +67,7 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
 
         // Existing datasource service id, no container, exception
         try {
-            $page->setDatasourceId('_test_datasource');
+            $page->setDatasourceId('test_datasource');
             $page->getDatasource();
             $this->fail();
         } catch (ConfigurationError $e) {
@@ -86,15 +86,15 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
         }
 
         // Existing datasource service id, container
-        $page->setDatasourceId('_test_datasource');
+        $page->setDatasourceId('test_datasource');
         // Change it without changing the name, no exception
-        $page->setDatasourceId('_test_datasource');
+        $page->setDatasourceId('test_datasource');
         // Fetch it, no exceptions
         $page->getDatasource();
 
         // Changing it now that it has been instanciated, exception
         try {
-            $page->setDatasourceId('_test_datasource');
+            $page->setDatasourceId('test_datasource');
             $this->fail();
         } catch (ConfigurationError $e) {
             $this->assertTrue(true);
@@ -102,7 +102,7 @@ class DynamicPageDefinitionTest extends \PHPUnit_Framework_TestCase
 
         // Change it, change the name, exception
         try {
-            $page->setDatasourceId('_test_datasource');
+            $page->setDatasourceId('test_datasource');
             $this->fail();
         } catch (ConfigurationError $e) {
             $this->assertTrue(true);

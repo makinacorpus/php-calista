@@ -33,10 +33,10 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
         $request = new Request();
 
         // Now ensures that we can find our definition
-        $pageDefinition = $factory->getPageDefinition('_test_view', $request);
+        $pageDefinition = $factory->getPageDefinition('test_view', $request);
         $this->assertInstanceOf(FooPageDefinition::class, $pageDefinition);
         // @todo fix me
-        //$this->assertSame('_test_view', $view->getId());
+        //$this->assertSame('test_view', $view->getId());
         $this->assertInstanceOf(IntArrayDatasource::class, $pageDefinition->getDatasource());
         $this->assertSame('_limit', $pageDefinition->getInputDefinition()->getLimitParameter());
 
@@ -57,7 +57,7 @@ class TwigViewTest extends \PHPUnit_Framework_TestCase
 
         // Ensure we have some stuff that do not work
         try {
-            $factory->getPageDefinition('_test_datasource', $request);
+            $factory->getPageDefinition('test_datasource', $request);
             $this->fail();
         } catch (\Exception $e) {
             $this->assertTrue(true);
