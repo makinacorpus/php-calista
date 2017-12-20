@@ -74,7 +74,7 @@
           data-query="{{ visualFilters|calista_filter_query(query.all)|e }}">
         </div>
       {% else %}
-        <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ query.searchParameter }}"
+        <input placeholder="{{ "Search"|trans }}" class="form-control form-text" name="{{ input.searchParameter }}"
           value="{{ query.rawSearchString|escape }}" maxlength="128" type="text"
         />
         {% for name, value in query.routeParameters %}

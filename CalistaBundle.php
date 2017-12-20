@@ -29,8 +29,8 @@ class CalistaBundle extends Bundle
     {
         $container->addCompilerPass(new ActionProviderRegisterPass());
         $container->addCompilerPass(new DowngradeCompatibilityPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 50 /* Make it run before twig's one */);
-        $container->addCompilerPass(new PageDefinitionRegisterPass(), PassConfig::TYPE_BEFORE_REMOVING);
-        $container->addCompilerPass(new RegisterTemplatePass());
+        $container->addCompilerPass(new PageDefinitionRegisterPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION);
+        $container->addCompilerPass(new RegisterTemplatePass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new RendererRegisterPass());
     }
 
