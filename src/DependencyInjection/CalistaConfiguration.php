@@ -24,6 +24,10 @@ class CalistaConfiguration implements ConfigurationInterface
         // it.
         $rootNode
             ->children()
+                ->arrayNode('context_pane')
+                    ->info('Context pane configuration')
+                    ->canBeEnabled()
+                ->end()
                 ->arrayNode('pages')
                     ->normalizeKeys(true)
                     ->prototype('array')

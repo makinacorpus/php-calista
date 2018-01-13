@@ -1,0 +1,44 @@
+{% set tabs = context.tabs %}
+<div id="contextual-pane" data-active-tab="{{ context.defaultTab }}" class="navbar-inverse contextual-collapsed">
+  <div class="inner inverse">
+    <div id="contextual-pane-toggle">
+      <a href="#" title="{{ "Toggle contextual pane"|trans }}">
+        <span class="fa fa-bars"></span>
+        <span class="sr-only">{{ "Toggle contextual pane"|trans }}</span>
+      </a>
+    </div>
+    <div id="contextual-pane-tabs">
+      <div class="tab-button">
+        <a href="#" data-tab-toggle="default" data-toggle="tooltip" title="{{ "Informations"|trans }}">
+          <span class="fa fa-info-circle"></span>
+        </a>
+      </div>
+      {% for key, tab in tabs %}
+        <div class="tab-button">
+          <a href="#" data-tab-toggle="{{ key }}" data-toggle="tooltip" title="{{ tab.label }}">
+            <span class="fa fa-{{ tab.icon }}"></span>
+            {% if tab.count %}
+              <span class="badge{% if tab.count > 0 %} badge-unread{% endif %}">{{ tab.count }}</span>
+            {% endif %}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="tabs">
+      {% for key, tab in tabs %}
+        <div id="tab-{{ key }}" data-tab="{{ key }}">
+          {{ items[key] }}
+        </div>
+      {% endfor %}
+      <div class="actions" id="tab-default" data-tab="default">
+        {% for data in context.actions %}
+          {% if data.raw %}
+            {{ data.actions }}
+          {% else %}
+            {{ calista_actions_raw(data.actions, data.icon, 'icon', data.title, data.showTitle) }}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

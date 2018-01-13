@@ -59,6 +59,10 @@ class CalistaExtension extends Extension
         if (class_exists('Box\\Spout\\Writer\\WriterFactory')) {
             $loader->load('spout.yml');
         }
+
+        if ($this->isConfigEnabled($container, $config['context_pane'])) {
+            $loader->load('contextpane.yml');
+        }
     }
 
     /**

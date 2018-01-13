@@ -1,0 +1,18 @@
+services:
+
+    calista.context_pane:
+        public: false
+        class: MakinaCorpus\Calista\Context\ContextPane
+        arguments: ['@event_dispatcher']
+
+    calista.kernel_event_subscriber:
+        public: true
+        class: MakinaCorpus\Calista\Event\KernelEventSubscriber
+        arguments: ['@calista.context_pane']
+        tags: [{name: kernel.event_subscriber}]
+
+    calista.twig.context_extension:
+        public: false
+        class: MakinaCorpus\Calista\Twig\ContextPaneExtension
+        arguments: ['@calista.context_pane']
+        tags: [{name: twig.extension}]
