@@ -31,6 +31,8 @@ class ContextPaneExtension extends \Twig_Extension
      */
     public function renderContextPane(\Twig_Environment $environment)
     {
+        $this->contextPane->init();
+
         return $environment->render('@calista/context/pane.html.twig', ['context' => $this->contextPane]);
     }
 

@@ -61,7 +61,7 @@ class CalistaExtension extends Extension
         }
 
         if ($this->isConfigEnabled($container, $config['context_pane'])) {
-            $loader->load('contextpane.yml');
+            $loader->load('context_pane.yml');
         }
     }
 
