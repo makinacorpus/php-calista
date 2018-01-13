@@ -9,6 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * Registers our own custom templates when using dependency injection.
  *
  * @codeCoverageIgnore
+ *
+ * @deprecated
+ *   Use the bundle namespace instead
  */
 class RegisterTemplatePass implements CompilerPassInterface
 {
@@ -22,7 +25,8 @@ class RegisterTemplatePass implements CompilerPassInterface
 
         if ($container->hasDefinition($id)) {
             $definition = $container->getDefinition($id);
-            $definition->addMethodCall('addPath', [dirname(dirname(dirname(__DIR__))) . '/templates', 'calista']);
+            $definition->addMethodCall('addPath', [dirname(dirname(__DIR__)) . '/Resources/views', 'calista']);
+            $definition->addMethodCall('addPath', [dirname(dirname(__DIR__)) . '/Resources/views', 'Calista']);
         }
     }
 }

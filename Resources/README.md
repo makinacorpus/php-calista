@@ -1,1 +1,0 @@
-Sadly Resources/public is the very last folder I could not get rid of.

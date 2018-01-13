@@ -1,43 +1,52 @@
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MinifyPlugin = require("babel-minify-webpack-plugin");
 const path = require('path');
 const webpack = require('webpack');
 
+const DIST_DIR = path.resolve(__dirname, 'src/Resources/public/dist');
+const extractLess = new ExtractTextPlugin({filename: "calista.css"});
+
 module.exports = {
-
-  entry: './js/calista-page.es6.js',
-
-  output: {
-    filename: './Resources/public/calista.min.js'
-  },
-
-  devtool: 'source-map',
-
-  plugins: [
-    /* new webpack.optimize.UglifyJsPlugin({
-      sourceMap: 1 // @todo options.devtool && (options.devtool.indexOf("sourcemap") >= 0 || options.devtool.indexOf("source-map") >= 0)
-    }) */
-  ],
-
-  module: {
-    rules: [
-      {
+    entry: ['core-js/modules/es6.promise', './src/Resources/front/index.js'],
+    //devtool: 'source-map',
+    plugins: [
+      new CleanWebpackPlugin([DIST_DIR]),
+      new MinifyPlugin(),
+      extractLess
+    ],
+    module: {
+      rules: [{
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [{
+          loader: "babel-loader"
+        }, {
+          loader: "ts-loader"
+        }],
+      },{
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader?cacheDirectory=true',
-          options: {
-            presets: ['env'],
-            plugins: ['transform-runtime']
-          }
-        }
-      },
-      {
-        test: /\.js$/, // include .js files
-        enforce: "pre", // preload the jshint loader
-        exclude: /node_modules/, // exclude any and all files in the node_modules folder
-        use: {
-          loader: "jshint-loader"
-        }
-      }
-    ]
-  }
-};
+        use: [{
+          loader: "babel-loader"
+        }]
+      },{
+        test: /\.less$/,
+        use: extractLess.extract({
+          fallback: "style-loader",
+          use: [{
+            loader: "css-loader"
+          },{
+            loader: "less-loader"
+          }]
+        })
+      }]
+    },
+    resolve: {
+      extensions: [".ts", ".js"]
+    },
+    output: {
+      filename: 'calista.min.js',
+      path: DIST_DIR
+    }
+  };

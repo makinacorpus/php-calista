@@ -55,10 +55,7 @@
     "autoload": {
         "psr-4": {
             "MakinaCorpus\\Calista\\": "src/"
-        },
-        "classmap": [
-            "CalistaBundle.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
