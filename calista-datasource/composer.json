@@ -1,0 +1,51 @@
+{
+    "name": "makinacorpus/calista-query",
+    "description": "Manage and normalize search query filters",
+    "type": "library",
+    "license": "GPL-2",
+    "authors": [
+        {
+            "name": "Lonny Loquesol",
+            "email": "lonny.loquesol@makina-corpus.com"
+        },
+        {
+            "name": "Pierre Rineau",
+            "email": "pierre.rineau@makina-corpus.com"
+        },
+        {
+            "name": "Régis Leroy",
+            "email": "regis.leroy@makina-corpus.com"
+        },
+        {
+            "name": "Sébastien Corbin",
+            "email": "sebastien.corbin@makina-corpus.com"
+        },
+        {
+            "name": "Yannick Chabbert",
+            "email": "yannick.chabbert@makina-corpus.com"
+        },
+        {
+            "name": "Makina Corpus",
+            "homepage": "http://makina-corpus.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7.1",
+        "calista-query": "^1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6"
+    },
+    "autoload": {
+        "psr-4": {
+            "MakinaCorpus\\Calista\\Datasource": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MakinaCorpus\\Calista\\Datasource\\Tests\\": "tests/"
+        }
+    }
+}
