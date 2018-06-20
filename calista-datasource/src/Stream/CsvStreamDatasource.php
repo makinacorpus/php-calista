@@ -3,6 +3,7 @@
 namespace MakinaCorpus\Calista\Datasource\Stream;
 
 use MakinaCorpus\Calista\Datasource\AbstractDatasource;
+use MakinaCorpus\Calista\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Calista\Query\Query;
 
 /**
@@ -29,7 +30,7 @@ class CsvStreamDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function supportsStreaming()
+    public function supportsStreaming(): bool
     {
         return true;
     }
@@ -37,7 +38,7 @@ class CsvStreamDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function supportsPagination()
+    public function supportsPagination(): bool
     {
         return false;
     }
@@ -45,7 +46,7 @@ class CsvStreamDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function supportsFulltextSearch()
+    public function supportsFulltextSearch(): bool
     {
         return false;
     }
@@ -53,7 +54,7 @@ class CsvStreamDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function getItems(Query $query)
+    public function getItems(Query $query): DatasourceResultInterface
     {
         $reader = new CsvStreamReader($this->filename, $this->options);
 

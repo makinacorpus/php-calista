@@ -20,8 +20,9 @@ interface DatasourceResultInterface extends \Traversable, \Countable
      * property extractors.
      *
      * @return null|string
+     *   Empty string means we don't know the data type
      */
-    public function getItemClass();
+    public function getItemClass(): string;
 
     /**
      * Datasource can provide its own set of known properties, useful for view
@@ -30,7 +31,7 @@ interface DatasourceResultInterface extends \Traversable, \Countable
      *
      * @return PropertyDescription[]
      */
-    public function getProperties();
+    public function getProperties(): array;
 
     /**
      * Can this datasource stream large datasets
@@ -40,38 +41,28 @@ interface DatasourceResultInterface extends \Traversable, \Countable
      * consumption, nevertheless, some might not be able to do this, case in
      * which this method should return false to indicate other developers this
      * must not be used for things like data to file export/streaming.
-     *
-     * @return bool
      */
-    public function canStream();
+    public function canStream(): bool;
 
     /**
-     * Get total item count
-     *
-     * @param int $count
+     * Set total item count
      */
-    public function setTotalItemCount($count);
+    public function setTotalItemCount(int $count): void;
 
     /**
      * Did the datasource provided an item count
-     *
-     * @return bool
      */
-    public function hasTotalItemCount();
+    public function hasTotalItemCount(): bool;
 
     /**
      * Get total item count
-     *
-     * @return int
      */
-    public function getTotalCount();
+    public function getTotalCount(): int;
 
     /**
      * Get page count for the given limit
-     *
-     * @return int
      */
-    public function getPageCount($limit = Query::LIMIT_DEFAULT);
+    public function getPageCount(int $limit = Query::LIMIT_DEFAULT): int;
 
     /**
      * Compute the current page range
@@ -83,5 +74,5 @@ interface DatasourceResultInterface extends \Traversable, \Countable
      *
      * @return int[]
      */
-    public function getPageRange($page = 1, $limit = Query::LIMIT_DEFAULT);
+    public function getPageRange(int $page = 1, int $limit = Query::LIMIT_DEFAULT): array;
 }

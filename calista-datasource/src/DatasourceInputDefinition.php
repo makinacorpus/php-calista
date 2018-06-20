@@ -4,11 +4,6 @@ namespace MakinaCorpus\Calista\Datasource;
 
 use MakinaCorpus\Calista\Query\InputDefinition;
 
-/**
- * Input query definition and sanitizer
- *
- * @codeCoverageIgnore
- */
 class DatasourceInputDefinition extends InputDefinition
 {
     /**

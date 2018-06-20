@@ -28,50 +28,42 @@ class PropertyDescription
      * @param array $defaultDisplayOptions
      *   Default view options for this property
      */
-    public function __construct($name, $label = null, $type = null, array $defaultViewOptions = [])
+    public function __construct(string $name, string $label = '', string $type = '', array $defaultViewOptions = [])
     {
-        $this->name = $name;
-        $this->label = $label;
-        $this->type = $type;
-        $this->defaultDisplayOptions = $defaultViewOptions;
+        $this->name = $name ?? '';
+        $this->label = $label ?? '';
+        $this->type = $type ?? '';
+        $this->defaultDisplayOptions = $defaultViewOptions ?? [];
     }
 
     /**
      * Get datasource item property name
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
      * Get human readable label
-     *
-     * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
     /**
      * Get property PHP class or PHP internal type
-     *
-     * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
     /**
      * Get default display options for this property
-     *
-     * @return array
      */
-    public function getDefaultDisplayOptions()
+    public function getDefaultDisplayOptions(): array
     {
         return $this->defaultDisplayOptions;
     }

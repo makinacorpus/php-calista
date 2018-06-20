@@ -6,8 +6,6 @@ use MakinaCorpus\Calista\Query\Query;
 
 /**
  * Basics for result iterators
- *
- * @codeCoverageIgnore
  */
 trait DatasourceResultTrait /* implements DatasourceResultInterface */
 {
@@ -17,23 +15,23 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     /**
      * {@inheritdoc}
      */
-    public function getItemClass()
+    public function getItemClass(): string
     {
-        return $this->itemClass;
+        return $this->itemClass ?? '';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getProperties()
+    public function getProperties(): array
     {
-        return $this->properties;
+        return $this->properties ?? [];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function canStream()
+    public function canStream(): bool
     {
         return true;
     }
@@ -41,7 +39,7 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     /**
      * {@inheritdoc}
      */
-    public function setTotalItemCount($count)
+    public function setTotalItemCount(int $count): void
     {
         $this->totalCount = $count;
     }
@@ -49,7 +47,7 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     /**
      * {@inheritdoc}
      */
-    public function hasTotalItemCount()
+    public function hasTotalItemCount(): bool
     {
         return null !== $this->totalCount;
     }
@@ -57,7 +55,7 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     /**
      * {@inheritdoc}
      */
-    public function getPageCount($limit = Query::LIMIT_DEFAULT)
+    public function getPageCount(int $limit = Query::LIMIT_DEFAULT): int
     {
         return null !== $this->totalCount ? ceil($this->totalCount / $limit) : 1;
     }
@@ -65,15 +63,15 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     /**
      * {@inheritdoc}
      */
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
-        return $this->totalCount;
+        return $this->totalCount ?? 0;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getPageRange($page = 1, $limit = Query::LIMIT_DEFAULT)
+    public function getPageRange(int $page = 1, int $limit = Query::LIMIT_DEFAULT): array
     {
         $num = ceil($this->getTotalCount() / $limit);
         $min = max([$page - 2, 1]);

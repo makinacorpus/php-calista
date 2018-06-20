@@ -28,12 +28,12 @@ class EmptyDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function getItemClass()
+    public function getItemClass(): string
     {
         return \stdClass::class;
     }
 
-    public function getFilters()
+    public function getFilters(): array
     {
         return array_map(
             function ($name) {
@@ -46,7 +46,7 @@ class EmptyDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function getSorts()
+    public function getSorts(): array
     {
         return array_combine($this->allowedSorts, $this->allowedSorts);
     }
@@ -54,7 +54,7 @@ class EmptyDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function getItems(Query $query)
+    public function getItems(Query $query): DatasourceResultInterface
     {
         return new DefaultDatasourceResult([]);
     }
@@ -62,7 +62,7 @@ class EmptyDatasource extends AbstractDatasource
     /**
      * {@inheritdoc}
      */
-    public function supportsFulltextSearch()
+    public function supportsFulltextSearch(): bool
     {
         return true;
     }

@@ -5,10 +5,7 @@ namespace MakinaCorpus\Calista\Datasource;
 use MakinaCorpus\Calista\Query\Query;
 
 /**
- * Datasource interface: fetches objects.
- *
- * You won't need to care about rendering or layout, just implement this in
- * order to expose your data.
+ * Datasource: fetches objects.
  */
 interface DatasourceInterface
 {
@@ -20,51 +17,40 @@ interface DatasourceInterface
      * property extractors.
      *
      * @return null|string
+     *   Empty string means we don't know the data type
      */
-    public function getItemClass();
+    public function getItemClass(): string;
 
     /**
      * Get ready to display filters
      *
-     * @param \MakinaCorpus\Calista\Query\Query $query
-     *   Incoming query parameters
-     *
      * @return \MakinaCorpus\Calista\Query\Filter[]
      *   Keys do not matter
      */
-    public function getFilters();
+    public function getFilters(): array;
 
     /**
      * Get sort fields
      *
-     * @param \MakinaCorpus\Calista\Query\Query $query
-     *   Incoming query parameters
-     *
      * @return string
      *   Keys are fields, values are human readable labels
      */
-    public function getSorts();
+    public function getSorts(): array;
 
     /**
      * Does this datasource streams data
-     *
-     * @return bool
      */
-    public function supportsStreaming();
+    public function supportsStreaming(): bool;
 
     /**
      * Does this datasource supports pagination
-     *
-     * @return bool
      */
-    public function supportsPagination();
+    public function supportsPagination(): bool;
 
     /**
      * Does this datasource supports full text search
-     *
-     * @return bool
      */
-    public function supportsFulltextSearch();
+    public function supportsFulltextSearch(): bool;
 
     /**
      * Get items to display
@@ -73,13 +59,8 @@ interface DatasourceInterface
      * identifiers depending upon your implementation: only the Display
      * instance will really display items, since it may change the display
      * depending upon current context
-     *
-     * @param \MakinaCorpus\Calista\Query\Query $query
-     *   Incoming query
-     *
-     * @return DatasourceResultInterface
      */
-    public function getItems(Query $query);
+    public function getItems(Query $query): DatasourceResultInterface;
 
     /**
      * Given an arbitrary list of identifiers that this datasource should
@@ -92,13 +73,6 @@ interface DatasourceInterface
      * This can be used by external code to implement complex form widget using
      * administration screens as item selectors, for example, but this module
      * does not care about it.
-     *
-     * @param Query $query
-     *   Incoming query
-     * @param string[] $idList
-     *   Arbitrary item identifier list
-     *
-     * @return bool
      */
-    public function validateItems(Query $query, array $idList);
+    public function validateItems(Query $query, array $idList): bool;
 }

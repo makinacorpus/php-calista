@@ -19,7 +19,7 @@ class DefaultDatasourceResult implements \IteratorAggregate, DatasourceResultInt
      * @param array|\Traversable $items
      * @param array PropertyDescription[]
      */
-    public function __construct($itemClass, $items, array $properties = [])
+    public function __construct(string $itemClass = '', iterable $items = [], array $properties = [])
     {
         $this->itemClass = $itemClass;
         $this->items = $items;
@@ -36,7 +36,7 @@ class DefaultDatasourceResult implements \IteratorAggregate, DatasourceResultInt
     /**
      * {@inheritdoc}
      */
-    public function canStream()
+    public function canStream(): bool
     {
         // Having an array here would mean data has been preloaded hence it is
         // not gracefully streamed from the real datasource.

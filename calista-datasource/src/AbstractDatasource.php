@@ -12,22 +12,15 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * {@inheritdoc}
      */
-    public function getItemClass()
+    public function getItemClass(): string
     {
+        return '';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
-    {
-        return [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSorts()
+    public function getFilters(): array
     {
         return [];
     }
@@ -35,7 +28,15 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsStreaming()
+    public function getSorts(): array
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsStreaming(): bool
     {
         return false; // Sensible default
     }
@@ -43,7 +44,7 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsPagination()
+    public function supportsPagination(): bool
     {
         return true; // Sensible default
     }
@@ -51,7 +52,7 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsFulltextSearch()
+    public function supportsFulltextSearch(): bool
     {
         return false; // Sensible default
     }
@@ -59,17 +60,15 @@ abstract class AbstractDatasource implements DatasourceInterface
     /**
      * {@inheritdoc}
      */
-    public function validateItems(Query $query, array $idList)
+    public function validateItems(Query $query, array $idList): bool
     {
         return false;
     }
 
     /**
      * Create an empty result
-     *
-     * @return DefaultDatasourceResult
      */
-    protected function createEmptyResult()
+    protected function createEmptyResult(): DatasourceResultInterface
     {
         return new DefaultDatasourceResult($this->getItemClass(), []);
     }
@@ -82,7 +81,7 @@ abstract class AbstractDatasource implements DatasourceInterface
      *
      * @return DefaultDatasourceResult
      */
-    protected function createResult($items, $totalCount = null)
+    protected function createResult($items, $totalCount = null): DatasourceResultInterface
     {
         if (!is_array($items) && !$items instanceof \Traversable && is_callable($items)) {
             throw new \LogicException("given items are nor an array nor a \Traversable instance nor a callable");
