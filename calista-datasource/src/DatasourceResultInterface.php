@@ -47,7 +47,7 @@ interface DatasourceResultInterface extends \Traversable, \Countable
     /**
      * Set total item count
      */
-    public function setTotalItemCount(int $count): void;
+    public function setTotalItemCount(int $count);
 
     /**
      * Did the datasource provided an item count

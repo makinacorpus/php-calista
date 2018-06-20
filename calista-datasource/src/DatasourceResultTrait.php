@@ -39,7 +39,7 @@ trait DatasourceResultTrait /* implements DatasourceResultInterface */
     /**
      * {@inheritdoc}
      */
-    public function setTotalItemCount(int $count): void
+    public function setTotalItemCount(int $count)
     {
         $this->totalCount = $count;
     }
