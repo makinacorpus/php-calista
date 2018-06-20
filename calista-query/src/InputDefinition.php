@@ -79,6 +79,9 @@ class InputDefinition
         }
     }
 
+    /**
+     * Convert in given array all values to Filter instance if they are not
+     */
     private function fixFilters(array $values): array
     {
         if (!$values) {
@@ -99,6 +102,9 @@ class InputDefinition
         return $ret;
     }
 
+    /**
+     * Convert given array to (id => name) pairs
+     */
     private function fixAllowedSorts(array $values): array
     {
         if (!$values) {
@@ -119,8 +125,6 @@ class InputDefinition
 
     /**
      * Build options resolver
-     *
-     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -171,7 +175,7 @@ class InputDefinition
      *
      * @return string[]
      */
-    public function getBaseQuery()
+    public function getBaseQuery(): array
     {
         return $this->options['base_query'];
     }
@@ -182,7 +186,7 @@ class InputDefinition
      * @return string[]
      *   Keys are field name, values are human readable labels
      */
-    public function getAllowedFilters()
+    public function getAllowedFilters(): array
     {
         return $this->filterLabels;
     }
@@ -192,19 +196,15 @@ class InputDefinition
      *
      * @return Filter[]
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return $this->options['filter_list'];
     }
 
     /**
      * Is the given filter field allowed
-     *
-     * @param string $name
-     *
-     * @return bool
      */
-    public function isFilterAllowed($name)
+    public function isFilterAllowed(string $name): bool
     {
         return isset($this->filterLabels[$name]);
     }
@@ -215,109 +215,87 @@ class InputDefinition
      * @return string[]
      *   Keys are field name, values are human readable labels
      */
-    public function getAllowedSorts()
+    public function getAllowedSorts(): array
     {
         return $this->options['sort_allowed_list'];
     }
 
     /**
      * Is the given sort field allowed
-     *
-     * @param string $name
-     *
-     * @return bool
      */
-    public function isSortAllowed($name)
+    public function isSortAllowed(string $name): bool
     {
         return isset($this->options['sort_allowed_list'][$name]);
     }
 
     /**
      * Get display parameter name
-     *
-     * @return string
      */
-    public function getDisplayParameter()
+    public function getDisplayParameter(): string
     {
         return $this->options['display_param'];
     }
 
     /**
      * Can the query change the limit
-     *
-     * @return bool
      */
-    public function isLimitAllowed()
+    public function isLimitAllowed(): bool
     {
         return $this->options['limit_allowed'];
     }
 
     /**
      * Get the default limit
-     *
-     * @return int
      */
-    public function getDefaultLimit()
+    public function getDefaultLimit(): int
     {
         return $this->options['limit_default'];
     }
 
     /**
      * Get the limit parameter name
-     *
-     * @return string
      */
-    public function getLimitParameter()
+    public function getLimitParameter(): string
     {
         return $this->options['limit_param'];
     }
 
     /**
      * Is paging enabled
-     *
-     * @return bool
      */
-    public function isPagerEnabled()
+    public function isPagerEnabled(): bool
     {
         return $this->options['pager_enable'];
     }
 
     /**
      * Get page parameter
-     *
-     * @return string
      */
-    public function getPagerParameter()
+    public function getPagerParameter(): string
     {
         return $this->options['pager_param'];
     }
 
     /**
      * Is full search enabled
-     *
-     * @return bool
      */
-    public function isSearchEnabled()
+    public function isSearchEnabled(): bool
     {
         return $this->options['search_enable'];
     }
 
     /**
      * Is search parsed
-     *
-     * @return bool
      */
-    public function isSearchParsed()
+    public function isSearchParsed(): bool
     {
         return $this->options['search_parse'];
     }
 
     /**
      * Is there a specifically configured search field
-     *
-     * @return bool
      */
-    public function hasSearchField()
+    public function hasSearchField(): bool
     {
         return !empty($this->options['search_field']);
     }
@@ -327,81 +305,63 @@ class InputDefinition
      *
      * @return string[]
      */
-    public function getSearchFields()
+    public function getSearchFields(): array
     {
         return (array)$this->options['search_field'];
     }
 
     /**
      * Get search parameter name
-     *
-     * @return string
      */
-    public function getSearchParameter()
+    public function getSearchParameter(): string
     {
-        return $this->options['search_param'];
+        return $this->options['search_param'] ?? '';
     }
 
     /**
      * Get sort field parameter
-     *
-     * @return string
      */
-    public function getSortFieldParameter()
+    public function getSortFieldParameter(): string
     {
-        return $this->options['sort_field_param'];
+        return $this->options['sort_field_param'] ?? '';
     }
 
     /**
      * Get sort order parameter
-     *
-     * @return string
      */
-    public function getSortOrderParameter()
+    public function getSortOrderParameter(): string
     {
-        return $this->options['sort_order_param'];
+        return $this->options['sort_order_param'] ?? '';
     }
 
     /**
      * Get default sort field
-     *
-     * @return string
      */
-    public function getDefaultSortField()
+    public function getDefaultSortField(): string
     {
-        return $this->options['sort_default_field'];
+        return $this->options['sort_default_field'] ?? '';
     }
 
     /**
      * Get default sort order
-     *
-     * @return string
      */
-    public function getDefaultSortOrder()
+    public function getDefaultSortOrder(): string
     {
-        return $this->options['sort_default_order'];
+        return $this->options['sort_default_order'] ?? '';
     }
 
     /**
      * Create query from array
-     *
-     * @param array $input
-     *
-     * @return Query
      */
-    public function createQueryFromArray(array $input)
+    public function createQueryFromArray(array $input): Query
     {
         return (new QueryFactory())->fromArray($this, $input);
     }
 
     /**
      * Create query from request
-     *
-     * @param Request $request
-     *
-     * @return Query
      */
-    public function createQueryFromRequest(Request $request)
+    public function createQueryFromRequest(Request $request): Query
     {
         return (new QueryFactory())->fromRequest($this, $request);
     }

@@ -36,7 +36,7 @@ class Query
      * @param string[] $filters
      *   Current filters (including defaults)
      */
-    public function __construct(InputDefinition $inputDefinition, $route, array $filters = [], array $routeParameters = [])
+    public function __construct(InputDefinition $inputDefinition, string $route, array $filters = [], array $routeParameters = [])
     {
         $this->inputDefinition = $inputDefinition;
         $this->filters = $filters;
@@ -149,149 +149,119 @@ class Query
      *
      * @return string|string[]
      */
-    public function get($name, $default = '')
+    public function get(string $name, $default = '')
     {
         return isset($this->filters[$name]) ? $this->filters[$name] : $default;
     }
 
     /**
      * Does the filter is set
-     *
-     * @param string $name
-     *
-     * @return bool
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         return array_key_exists($name, $this->filters);
     }
 
     /**
      * Get input definition
-     *
-     * @return InputDefinition
      */
-    public function getInputDefinition()
+    public function getInputDefinition(): InputDefinition
     {
         return $this->inputDefinition;
     }
 
     /**
      * Get current display switch
-     *
-     * @return string
      */
-    public function getCurrentDisplay()
+    public function getCurrentDisplay(): string
     {
         return $this->currentDisplay;
     }
 
     /**
      * Is a sort field set
-     *
-     * @return bool
      */
-    public function hasSortField()
+    public function hasSortField(): bool
     {
         return !!$this->sortField;
     }
 
     /**
      * Get sort field
-     *
-     * @return string
      */
-    public function getSortField()
+    public function getSortField(): string
     {
         return $this->sortField;
     }
 
     /**
      * Get sort order
-     *
-     * @return string
      */
-    public function getSortOrder()
+    public function getSortOrder(): string
     {
         return $this->sortOrder;
     }
 
     /**
      * Get limit
-     *
-     * @return int
      */
-    public function getLimit()
+    public function getLimit(): int
     {
         return $this->limit;
     }
 
     /**
      * Get offset
-     *
-     * @return int
      */
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->limit * max([0, $this->page - 1]);
     }
 
     /**
      * Get page number, starts with 1
-     *
-     * @return int
      */
-    public function getPageNumber()
+    public function getPageNumber(): int
     {
         return $this->page;
     }
 
     /**
      * Get raw search string, even if search parsing is enabled
-     *
-     * @return string
      */
-    public function getRawSearchString()
+    public function getRawSearchString(): string
     {
         return $this->rawSearchString;
     }
 
     /**
      * Get search string, after cleanup
-     *
-     * @return string
      */
-    public function getSearchString()
+    public function getSearchString(): string
     {
         return $this->searchString;
     }
 
     /**
      * Get the complete filter array
-     *
-     * @return array
      */
-    public function all()
+    public function all(): array
     {
         return $this->filters;
     }
 
     /**
      * Get current route
-     *
-     * @return string
      */
-    public function getRoute()
+    public function getRoute(): string
     {
         return $this->route;
     }
 
     /**
      * Get the query without the parsed query string
-     *
-     * @return array
      */
-    public function getRouteParameters()
+    public function getRouteParameters(): array
     {
         return $this->routeParameters;
     }

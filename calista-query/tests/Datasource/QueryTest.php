@@ -6,12 +6,13 @@ use MakinaCorpus\Calista\Query\InputDefinition;
 use MakinaCorpus\Calista\Query\Query;
 use MakinaCorpus\Calista\Query\QueryFactory;
 use MakinaCorpus\Calista\Query\QueryStringParser;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Tests the page query parsing
  */
-class QueryTest extends \PHPUnit_Framework_TestCase
+class QueryTest extends TestCase
 {
     /**
      * Tests basics

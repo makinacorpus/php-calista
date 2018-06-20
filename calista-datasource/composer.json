@@ -2,7 +2,7 @@
     "name": "makinacorpus/calista-query",
     "description": "Manage and normalize search query filters",
     "type": "library",
-    "license": "GPL-2",
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "Lonny Loquesol",
@@ -36,11 +36,11 @@
         "calista-query": "^1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6"
+        "phpunit/phpunit": "^7"
     },
     "autoload": {
         "psr-4": {
-            "MakinaCorpus\\Calista\\Datasource": "src/"
+            "MakinaCorpus\\Calista\\Datasource\\": "src/"
         }
     },
     "autoload-dev": {

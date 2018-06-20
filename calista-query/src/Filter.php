@@ -20,7 +20,7 @@ class Filter implements \Countable
      * @param string $title
      *   Filter title
      */
-    public function __construct($queryParameter, $title = null)
+    public function __construct(string $queryParameter, string $title = null)
     {
         $this->queryParameter = $queryParameter;
         $this->title = $title;
@@ -36,9 +36,9 @@ class Filter implements \Countable
      * @param string[] $choicesMap
      *   Keys are filter value, values are human readable labels
      *
-     * @return Filter
+     * @return $this
      */
-    public function setChoicesMap($choicesMap)
+    public function setChoicesMap(array $choicesMap): Filter
     {
         $this->isSafe = true;
         $this->choicesMap = $choicesMap;
@@ -48,21 +48,19 @@ class Filter implements \Countable
 
     /**
      * Has this filter choices
-     *
-     * @returnn bool
      */
-    public function hasChoices()
+    public function hasChoices(): bool
     {
         return !empty($this->choicesMap);
     }
 
     /**
-     * {inheritdoc}
+     * Get title
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         if (!$this->title) {
-            return $this->queryParameter;
+            return $this->queryParameter ?? '';
         }
 
         return $this->title;
@@ -80,8 +78,6 @@ class Filter implements \Countable
 
     /**
      * Remove selected choices
-     *
-     * @param array $choices
      */
     public function removeChoicesNotIn(array $choices)
     {
@@ -89,11 +85,11 @@ class Filter implements \Countable
     }
 
     /**
-     * {@inheritdoc}
+     * Get field
      */
-    public function getField()
+    public function getField(): string
     {
-        return $this->queryParameter;
+        return $this->queryParameter ?? '';
     }
 
     /**
@@ -103,7 +99,7 @@ class Filter implements \Countable
      *
      * @return string[]
      */
-    private function getSelectedValues($query)
+    private function getSelectedValues(array $query): array
     {
         $values = [];
 
@@ -136,7 +132,7 @@ class Filter implements \Countable
      * @return string[]
      *   New query with value added or removed
      */
-    private function getParametersForLink($query, $value, $remove = false)
+    private function getParametersForLink(array $query, string $value, bool $remove = false): array
     {
         if (isset($query[$this->queryParameter])) {
             if (is_array($query[$this->queryParameter])) {
@@ -174,7 +170,7 @@ class Filter implements \Countable
      *
      * @return Link[]
      */
-    public function getLinks(Query $query)
+    public function getLinks(Query $query): array
     {
         $ret = [];
 
@@ -202,23 +198,17 @@ class Filter implements \Countable
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->choicesMap);
     }
 
-    /**
-     * @return bool
-     */
-    public function isSafe()
+    public function isSafe(): bool
     {
         return $this->isSafe;
     }
 
-    /**
-     * @return array
-     */
-    public function getChoicesMap()
+    public function getChoicesMap(): array
     {
         return $this->choicesMap;
     }

@@ -3,11 +3,12 @@
 namespace MakinaCorpus\Calista\Datasource\Tests;
 
 use MakinaCorpus\Calista\Datasource\DefaultDatasourceResult;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test basic datasource functionnality and API
  */
-class DatasourceTest extends \PHPUnit_Framework_TestCase
+class DatasourceTest extends TestCase
 {
     /**
      * Tests basics

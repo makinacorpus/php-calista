@@ -5,12 +5,13 @@ namespace MakinaCorpus\Calista\Query\Tests;
 use MakinaCorpus\Calista\Query\Filter;
 use MakinaCorpus\Calista\Query\InputDefinition;
 use MakinaCorpus\Calista\Query\QueryFactory;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Tests the page query parsing
  */
-class FilterTest extends \PHPUnit_Framework_TestCase
+class FilterTest extends TestCase
 {
     /**
      * Tests basics

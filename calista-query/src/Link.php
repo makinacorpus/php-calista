@@ -3,8 +3,6 @@
 namespace MakinaCorpus\Calista\Query;
 
 /**
- * Represent a link, for templates.
- *
  * @codeCoverageIgnore
  */
 class Link
@@ -15,7 +13,7 @@ class Link
     private $isActive = false;
     private $icon;
 
-    public function __construct($title, $route, array $routeParameters = [], $isActive = false, $icon = null)
+    public function __construct(string $title, string $route, array $routeParameters = [], bool $isActive = false, string $icon = null)
     {
         $this->title = $title;
         $this->route = $route;
@@ -24,28 +22,28 @@ class Link
         $this->icon = $icon;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
-        return $this->title;
+        return $this->title ?? '';
     }
 
-    public function getRoute()
+    public function getRoute(): string
     {
-        return $this->route;
+        return $this->route ?? '';
     }
 
-    public function getRouteParameters()
+    public function getRouteParameters(): array
     {
-        return $this->routeParameters;
+        return $this->routeParameters ?? [];
     }
 
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->isActive;
     }
 
-    public function getIcon()
+    public function getIcon(): string
     {
-        return $this->icon;
+        return $this->icon ?? '';
     }
 }

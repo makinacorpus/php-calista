@@ -11,15 +11,8 @@ class QueryFactory
 {
     /**
      * Create query from array
-     *
-     * @param InputDefinition $inputDefinition
-     *   Current search configuration
-     * @param array $request
-     *   Incomming request
-     *
-     * @return Query
      */
-    public function fromArray(InputDefinition $inputDefinition, array $input, $route = null)
+    public function fromArray(InputDefinition $inputDefinition, array $input, string $route = ''): Query
     {
         $rawSearchString = '';
         $searchParameter = $inputDefinition->getSearchParameter();
@@ -68,12 +61,8 @@ class QueryFactory
 
     /**
      * Create a query from array
-     *
-     * @param array $input
-     *
-     * @return Query
      */
-    public function fromArbitraryArray(array $input)
+    public function fromArbitraryArray(array $input): Query
     {
         return $this->fromArray(new InputDefinition([
             'base_query'          => [],
@@ -95,17 +84,10 @@ class QueryFactory
 
     /**
      * Create query from request
-     *
-     * @param InputDefinition $inputDefinition
-     *   Current search configuration
-     * @param Request $request
-     *   Incomming request
-     *
-     * @return Query
      */
-    public function fromRequest(InputDefinition $inputDefinition, Request $request)
+    public function fromRequest(InputDefinition $inputDefinition, Request $request): Query
     {
-        $route = $request->attributes->get('_route');
+        $route = $request->attributes->get('_route', '');
         $input = array_merge($request->query->all(), $request->attributes->get('_route_params', []));
 
         return $this->fromArray($inputDefinition, $input, $route);
@@ -122,14 +104,8 @@ class QueryFactory
      * All parameters in the $needsImplode array will be imploded using a
      * whitespace, this is useful for the full text search parameter, that
      * needs to remain a single string.
-     *
-     * @param array $query
-     * @param string[] $needsImplode
-     * @param $isRouteParameters
-     *
-     * @return array
      */
-    private function flattenQuery($query, array $needsImplode = [], $isRouteParameters = false)
+    private function flattenQuery(array $query, array $needsImplode = [], bool $isRouteParameters = false): array
     {
         foreach ($query as $key => $values) {
             if (is_array($values)) {
@@ -155,7 +131,7 @@ class QueryFactory
      * @return string[][]
      *   Merged queries
      */
-    private function mergeQueries(array $queries)
+    private function mergeQueries(array $queries): array
     {
         $ret = [];
 
@@ -189,23 +165,25 @@ class QueryFactory
      * @return string[]|string[][]
      *   Prepare query parameters, using base query and filters
      */
-    private function normalizeInput(array $query, array $exclude = ['q'])
+    private function normalizeInput(array $query, array $exclude = ['q']): array
     {
         // Proceed to unwanted parameters exclusion
-        foreach ($exclude as $parameter) {
-            unset($query[$parameter]);
+        if ($exclude) {
+            foreach ($exclude as $parameter) {
+                unset($query[$parameter]);
+            }
         }
 
         // Normalize input
         foreach ($query as $key => $value) {
-            // Drops all empty values
+            // Drops all empty values (but not 0 or false)
             if ('' === $value || null === $value || [] === $value) {
                 unset($query[$key]);
                 continue;
             }
             // Normalize non-array input using the value separator
             if (is_string($value) && false !== strpos($value, Query::URL_VALUE_SEP)) {
-                $query[$key] = explode(Query::URL_VALUE_SEP, $value);
+                $query[$key] = $this->normalizeInput(explode(Query::URL_VALUE_SEP, $value), []);
             }
         }
 
@@ -215,19 +193,14 @@ class QueryFactory
     /**
      * From the given prepared but unfiltered query, drop all values that are
      * not in base query boundaries
-     *
-     * @param array $query
-     * @param array $baseQuery
-     * @param bool $dropIfEqualOrNone
-     *
-     * @return array $query
      */
-    private function applyBaseQuery(array $query, array $baseQuery, $isRouteParameters = false)
+    private function applyBaseQuery(array $query, array $baseQuery, bool $isRouteParameters = false): array
     {
         // Ensure that query values are in base query bounds
         foreach ($baseQuery as $name => $allowed) {
             if (isset($query[$name])) {
                 $input = $query[$name];
+
                 // Normalize
                 if (!is_array($allowed)) {
                     $allowed = [$allowed];

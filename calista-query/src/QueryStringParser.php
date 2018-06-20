@@ -47,7 +47,7 @@ final class QueryStringParser
      *   Query filter, keys are field names, values are arrays of string
      *   values.
      */
-    public function parse($string, $searchParameter)
+    public function parse(string $string, string $searchParameter): array
     {
         $ret = [];
 
