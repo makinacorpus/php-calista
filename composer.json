@@ -2,7 +2,7 @@
     "name": "makinacorpus/php-calista",
     "description": "Backend agnostic API for building user interface or data exports",
     "type": "library",
-    "license": "GPL-2",
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "Lonny Loquesol",
@@ -49,7 +49,7 @@
         "symfony/form": "^3.2|^4",
         "twig/twig": "^1.34|^2"
     },
-    "suggests": {
+    "suggest": {
         "box/spout ^2.7": "For XLSX (Excel) stream view support"
     },
     "autoload": {
