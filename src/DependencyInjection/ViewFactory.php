@@ -83,11 +83,11 @@ final class ViewFactory
      *
      * @return object
      */
-    private function createInstance($class, $name, array $services, array $classes)
+    private function createInstance($class, $name, array $services, array $classes, $break = false)
     {
-        if (isset($classes[$name])) {
+        if (isset($classes[$name]) && !$break) {
             // Only attempt with the first, class lookup is not always a good move
-            return $this->createInstance($class, reset($classes[$name]), $services, $classes);
+            return $this->createInstance($class, reset($classes[$name]), $services, $classes, true);
         }
 
         if (isset($services[$name])) {

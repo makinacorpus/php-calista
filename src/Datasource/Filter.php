@@ -11,8 +11,12 @@ class Filter implements \Countable
 {
     private $choicesMap = [];
     private $queryParameter;
+    private $arbitraryInput = false;
     private $title;
+    private $mandatory = false;
     private $isSafe = false;
+    private $noneOption;
+    private $multiple = true;
 
     /**
      * Default constructor
@@ -44,6 +48,102 @@ class Filter implements \Countable
     {
         $this->isSafe = true;
         $this->choicesMap = $choicesMap;
+
+        return $this;
+    }
+
+    /**
+     * Set or unset the "multiple" flag, default is true
+     *
+     * @param bool $toggle
+     *
+     * @return self
+     */
+    public function setMultiple($toggle = true)
+    {
+        $this->multiple = (bool)$toggle;
+
+        return $this;
+    }
+
+    /**
+     * Does this filter allows multiple input
+     *
+     * @return bool
+     */
+    public function isMultiple()
+    {
+        return $this->multiple;
+    }
+
+    /**
+     * Set the "None/All/N/A" option
+     *
+     * @param string
+     *
+     * @return self
+     */
+    public function setNoneOption($value)
+    {
+        $this->noneOption = (string)$value;
+
+        return $this;
+    }
+
+    /**
+     * Get the none option
+     *
+     * @return string
+     */
+    public function getNoneOption()
+    {
+        return $this->noneOption;
+    }
+
+    /**
+     * Set or unset the mandatory flag
+     *
+     * @param bool $toggle
+     *
+     * @return self
+     */
+    public function setMandatory($toggle = true)
+    {
+        $this->mandatory = (bool)$toggle;
+
+        return $this;
+    }
+
+    /**
+     * Is this filter mandatory
+     *
+     * @return bool
+     */
+    public function isMandatory()
+    {
+        return $this->mandatory;
+    }
+
+    /**
+     * Is arbitrary input field
+     *
+     * @return bool
+     */
+    public function isArbitraryInput()
+    {
+        return !$this->choicesMap && $this->arbitraryInput;
+    }
+
+    /**
+     * Set or unset the arbitrary input flag
+     *
+     * @param bool $toggle
+     *
+     * @return self
+     */
+    public function setArbitraryInput($toggle = true)
+    {
+        $this->arbitraryInput = (bool)$toggle;
 
         return $this;
     }

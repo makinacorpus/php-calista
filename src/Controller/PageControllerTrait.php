@@ -23,7 +23,7 @@ trait PageControllerTrait
      *
      * @return object
      */
-    // protected abstract function get($id);
+    protected abstract function get($id);
 
     /**
      * Escape string for HTML
