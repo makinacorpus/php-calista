@@ -17,6 +17,7 @@ class Filter implements \Countable
     private $isSafe = false;
     private $noneOption;
     private $multiple = true;
+    private $boolean = false;
 
     /**
      * Default constructor
@@ -50,6 +51,28 @@ class Filter implements \Countable
         $this->choicesMap = $choicesMap;
 
         return $this;
+    }
+
+    /**
+     * Set the "boolean" toggle
+     *
+     * @param bool $toggle
+     *
+     * @return self
+     */
+    public function setBoolean($toggle = true)
+    {
+        $this->boolean = (bool)$toggle;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBoolean()
+    {
+        return $this->boolean && !$this->arbitraryInput && !$this->choicesMap;
     }
 
     /**

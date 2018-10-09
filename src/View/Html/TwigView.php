@@ -100,7 +100,7 @@ class TwigView extends AbstractView
             $baseQuery = $inputDefinition->getBaseQuery();
             foreach ($inputDefinition->getFilters() as $filter) {
                 // Only considers filters with choices.
-                if (!$filter->hasChoices() && !$filter->isArbitraryInput()) {
+                if (!$filter->hasChoices() && !$filter->isArbitraryInput() && !$filter->isBoolean()) {
                     continue;
                 }
                 $field = $filter->getField();
