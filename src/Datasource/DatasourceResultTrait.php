@@ -10,6 +10,7 @@ namespace MakinaCorpus\Calista\Datasource;
 trait DatasourceResultTrait /* implements DatasourceResultInterface */
 {
     private $properties = [];
+    private $itemClass;
     private $totalCount;
 
     /**

@@ -2,12 +2,11 @@
 
 namespace MakinaCorpus\Calista\View;
 
-use MakinaCorpus\Calista\Datasource\PropertyDescription;
+use MakinaCorpus\Calista\Datasource\DatasourceResultInterface;
 use MakinaCorpus\Calista\DependencyInjection\ServiceTrait;
 use MakinaCorpus\Calista\Util\TypeUtil;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use MakinaCorpus\Calista\Datasource\DatasourceResultInterface;
 
 /**
  * Boilerplate code for view implementations.
