@@ -228,7 +228,7 @@ class Filter implements \Countable
      *
      * @return string[]
      */
-    private function getSelectedValues($query)
+    public function getSelectedValues($query)
     {
         $values = [];
 
